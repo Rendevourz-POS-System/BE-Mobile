@@ -1,0 +1,17 @@
+app:
+  Port: 8080
+  Name: shelter-app
+  Local: en
+  Environment: local
+  Key: shelter-app
+  Debug: true
+  MigrateKey:
+  UploadFolder: upload
+
+database:
+  Host: [ '34.101.177.226',]
+  Port: [ 1443]
+  Database: [ 'SALAD_DB' ]
+  Username: [ 'sa' ]
+  Password: [ 'gvu(:1Q:_-}\fiHH' ]
+  ExternalTableName: ['staging_items']
