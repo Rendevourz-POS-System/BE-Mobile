@@ -1,60 +1,47 @@
 package database
 
 import (
+	"context"
 	"fmt"
-	"gorm.io/driver/sqlserver"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
 	"net/url"
-	"time"
 )
 
 var (
-	gormConfig = &gorm.Config{
-		Logger:               logger.Default.LogMode(logger.Info),
-		FullSaveAssociations: true,
-		//NamingStrategy: schema.NamingStrategy{
-		//	TablePrefix: conf.Schema, // Set the schema name here
-		//},
-	}
-	db *gorm.DB
+	db *mongo.Client
 )
 
 func createDNS(conf app.Database, index int) string {
-	query := url.Values{}
-	query.Add("database", conf.Database[index])
 	safeDNS := url.UserPassword(conf.Username[index], conf.Password[index]).String()
 	log.Println("Connecting to database len: ", safeDNS, conf.Host[index], conf.Port[index])
-	return fmt.Sprintf("sqlserver://%s@%s:%d?%s",
-		safeDNS, conf.Host[index], conf.Port[index], query.Encode(),
+	return fmt.Sprintf("mongodb://%s@%s:%d/?tls=false&authMechanism=SCRAM-SHA-256",
+		safeDNS, conf.Host[index], conf.Port[index],
 	)
 }
 
-func ConnectDatabase(data string) *gorm.DB {
+func ConnectDatabase(data string) *mongo.Client {
 	conf := app.GetConfig().Database // Ensure this method correctly fetches your configuration
 	if data == _const.DB_SHELTER_APP {
 		if db == nil {
 			DNS := createDNS(conf, 0)
+			server := options.ServerAPI(options.ServerAPIVersion1)
+			opts := options.Client().ApplyURI(DNS).SetServerAPIOptions(server)
 			var err error
-			//db, err = gorm.Open(sqlserver.Open(DNS), gormConfig)
-			db, err = gorm.Open(sqlserver.Open(DNS), gormConfig)
+			db, err = mongo.Connect(context.Background(), opts)
 			if err != nil {
-
-				log.Fatalf("Error connecting to database : %v", err)
+				log.Fatalf("Error connecting to database: %v", err)
 			}
-			sqlDB, _ := db.DB()
-			// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-			sqlDB.SetMaxIdleConns(10)
-			// SetMaxOpenConns sets the maximum number of open connections to the database.
-			sqlDB.SetMaxOpenConns(100)
-			// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-			sqlDB.SetConnMaxLifetime(time.Hour)
 			return db
 		}
 		return db
 	}
 	return db
+}
+
+func CloseDatabase() error {
+	return db.Disconnect(context.Background())
 }

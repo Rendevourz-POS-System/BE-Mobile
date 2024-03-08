@@ -1,16 +1,16 @@
-package src
+package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/configs/app"
 	"main.go/configs/database"
 	"main.go/middlewares"
 	"net/http"
 )
 
-func Migrate(db *gorm.DB) {
-	err := database.Migrate(db)
+func Migrate(db *mongo.Client, dbName string) {
+	err := database.Migrate(db, dbName)
 	if err != nil {
 		panic("Error migrating database : " + err.Error())
 	}

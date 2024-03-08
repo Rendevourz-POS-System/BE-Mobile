@@ -1,4 +1,4 @@
-package src
+package main
 
 import (
 	"fmt"
@@ -19,7 +19,14 @@ func init() {
 
 func main() {
 	app := gin.Default()
-	Migrate(database.ConnectDatabase(_const.DB_SHELTER_APP))
+	db := database.ConnectDatabase(_const.DB_SHELTER_APP)
+	defer func() {
+		err := database.CloseDatabase()
+		if err != nil {
+			log.Fatalf("Error closing database: %v", err)
+		}
+	}()
+	Migrate(db, _const.DB_SHELTER_APP)
 	RegisterTrustedProxies(app)
 	RegisterMiddlewares(app)
 	RegisterRoutes(app)
