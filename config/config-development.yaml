@@ -9,12 +9,20 @@ app:
   UploadFolder: upload
 
 database:
-  Host: [ '35.240.248.22']
+  Host: [ 'shelter-apps-db.0kthmmf.mongodb.net']
   Port: [ 27017 ]
   Database: [ 'shelter-apps' ]
-  Username: [ 'shelter-app' ]
-  Password: [ 'pass123' ]
+  Username: [ 'tomomisooya' ]
+  Password: [ 'aAjV3oEE3sQ0qjcn' ]
   ExternalTableName: ['staging_items']
+
+#database:
+#  Host: [ '35.240.248.22']
+#  Port: [ 27017 ]
+#  Database: [ 'shelter-apps' ]
+#  Username: [ 'shelter-app' ]
+#  Password: [ 'pass123' ]
+#  ExternalTableName: ['staging_items']
 
 Proxy:
   ThrustProxy: ['35.240.248.22']

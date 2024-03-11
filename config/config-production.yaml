@@ -1,0 +1,17 @@
+app:
+  Port: 8080
+  Name: shelter-apps
+  Local: en
+  Environment: local
+  Key: shelter-apps
+  Debug: true
+  MigrateKey:
+  UploadFolder: upload
+
+database:
+  Host: [ 'shelter-apps-db.0kthmmf.mongodb.net']
+  Port: [ 27017 ]
+  Database: [ 'shelter-apps' ]
+  Username: [ 'tomomisooya' ]
+  Password: [ 'aAjV3oEE3sQ0qjcn' ]
+  ExternalTableName: ['staging_items']
