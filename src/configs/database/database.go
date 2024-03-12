@@ -8,6 +8,7 @@ import (
 	"log"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
+	"main.go/shared/helpers"
 	"net/url"
 )
 
@@ -48,4 +49,8 @@ func ConnectDatabase(data string) *mongo.Client {
 
 func CloseDatabase() error {
 	return db.Disconnect(context.Background())
+}
+
+func GetDatabase(data string) *mongo.Database {
+	return db.Database(helpers.ParseDatabase(data))
 }

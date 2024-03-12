@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/configs/app"
 	"main.go/configs/database"
+	UserHttp "main.go/domains/user/handlers/http"
 	"main.go/middlewares"
 	"net/http"
 )
@@ -32,4 +33,5 @@ func RegisterRoutes(router *gin.Engine) {
 			"message": "Hello World!",
 		})
 	})
+	UserHttp.NewUserHttp(router)
 }

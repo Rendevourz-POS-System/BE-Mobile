@@ -3,9 +3,10 @@ package entities
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type User struct {
-	ID       primitive.ObjectID `json:"Id" bson:"Id"`
-	Username string             `json:"Username" bson:"Username"`
-	Password string             `json:"Password" bson:"Password"`
-	Email    string             `json:"Email" bson:"Email"`
-	Role     string             `json:"Role" bson:"Role"`
+	ID       primitive.ObjectID `json:"Id" bson:"_id"`
+	Email    string             `json:"Email" bson:"email" validate:"required,email"`
+	Username string             `json:"Username" bson:"username"`
+	Password string             `json:"Password" bson:"password"`
+	Role     string             `json:"Role" bson:"role"`
+	IsActive bool               `json:"IsActive" bson:"is_active"`
 }
