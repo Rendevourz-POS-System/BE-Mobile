@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-playground/validator/v10"
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
 	"main.go/shared/helpers"
@@ -23,14 +25,22 @@ func (u userUsecase) GetAllData(ctx context.Context) ([]User.User, error) {
 	return data, nil
 }
 
-func (u userUsecase) RegisterUser(ctx context.Context, user *User.User) (*User.User, error) {
+func (u userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *User.User, err error) {
 	validate := helpers.NewValidator()
 	if err := validate.Struct(user); err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Println(err.Namespace(), err.Field(), err.StructNamespace(), err.StructField(), err.Tag(), err.ActualTag(), err.Kind(), err.Type(), err.Value(), err.Param())
+		}
 		return nil, err
 	}
-	data, err := u.userRepo.StoreOne(ctx, user)
+	user.IsActive = false
+	user.Password, err = helpers.HashPassword(user.Password)
 	if err != nil {
 		return nil, err
+	}
+	data, err2 := u.userRepo.StoreOne(ctx, user)
+	if err2 != nil {
+		return nil, err2
 	}
 	return data, nil
 }

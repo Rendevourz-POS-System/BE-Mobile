@@ -1,5 +1,7 @@
 package errors
 
 type ErrorWrapper struct {
-	Message string `json:"message"`
+	ErrorCode int    `json:"ErrorCode"`
+	Field     string `json:"Field"`
+	Message   string `json:"Message"`
 }

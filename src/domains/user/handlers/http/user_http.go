@@ -47,7 +47,7 @@ func (userHttp *UserHttp) RegisterUsers(c *gin.Context) {
 	}
 	res, err := userHttp.userUsecase.RegisterUser(c, user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return

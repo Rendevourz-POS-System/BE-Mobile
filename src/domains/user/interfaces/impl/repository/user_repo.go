@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,21 +31,35 @@ func (userRepo *userRepository) FindAll(c context.Context) (res []User.User, err
 	return res, nil
 }
 
-func (userRepo *userRepository) StoreOne(c context.Context, user *User.User) (res *User.User, errs error) {
+func (userRepo *userRepository) StoreOne(c context.Context, user *User.User) (*User.User, error) {
+	var existingUser User.User
+	err := userRepo.collection.FindOne(c, bson.M{"email": user.Email}).Decode(&existingUser)
+	if err == nil {
+		// A user with this email already exists, so return the existing user
+		return &existingUser, nil
+	} else if err != mongo.ErrNoDocuments {
+		// An actual error occurred while trying to find the user, other than "no documents found"
+		return nil, err
+	}
+
+	// Proceed with insertion if no existing user was found
 	insertResult, err := userRepo.collection.InsertOne(c, user)
 	if err != nil {
-		return nil, err
+		return nil, err // Return the error encountered during insertion
 	}
 
 	// Ensure the InsertedID is an ObjectID to use it in the FindOne query
 	objectID, ok := insertResult.InsertedID.(primitive.ObjectID)
 	if !ok {
-		return nil, err // You might want to return a more descriptive error here
+		// The type assertion failed, return a descriptive error
+		return nil, errors.New("inserted ID is not of type ObjectID")
 	}
 
-	if err = userRepo.collection.FindOne(c, bson.M{"_id": objectID}).Decode(&res); err != nil {
-		return nil, err
+	// Fetch the newly inserted document to return a complete user object, including its new _id
+	var newUser User.User
+	if err := userRepo.collection.FindOne(c, bson.M{"_id": objectID}).Decode(&newUser); err != nil {
+		return nil, err // Return any error encountered during fetching
 	}
 
-	return res, nil
+	return &newUser, nil
 }
