@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: install the gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2.0.0
+        uses: shelter-apps-be/setup-gcloud@v2.0.0
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
           service_account_key: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
@@ -34,8 +34,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/nginx:latest .
+          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/alpine:latest .
 
       - name: Push Docker image
         run: |
-          docker push asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/nginx:latest
+          docker push asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/alpine:latest
