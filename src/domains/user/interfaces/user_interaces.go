@@ -12,5 +12,5 @@ type UserUsecase interface {
 
 type UserRepository interface {
 	FindAll(ctx context.Context) ([]User.User, error)
-	StoreOne(ctx context.Context, user *User.User) (*User.User, error)
+	StoreOne(ctx context.Context, user *User.User) (*User.User, bool, error)
 }

@@ -38,9 +38,14 @@ func (u userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *Us
 	if err != nil {
 		return nil, err
 	}
-	data, err2 := u.userRepo.StoreOne(ctx, user)
+	data, checkUserData, err2 := u.userRepo.StoreOne(ctx, user)
 	if err2 != nil {
 		return nil, err2
+	}
+	if checkUserData {
+		// Email already exists
+	} else {
+
 	}
 	return data, nil
 }
