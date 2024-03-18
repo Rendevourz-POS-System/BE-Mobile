@@ -33,12 +33,12 @@ jobs:
             username: ${{ secrets.HUB_USERNAME }}
             password: ${{ secrets.HUB_PASSWORD }}
 
-      - name: Build and push Docker image
-        run: |
-          echo "gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest"
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest .
-          echo ${{ secrets.GCP_SA_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
-          docker push gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest
+#      - name: Build and push Docker image
+#        run: |
+#          echo "gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest"
+#          docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest .
+#          echo ${{ secrets.GCP_SA_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
+#          docker push gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest
 
 
   deploy:
@@ -70,15 +70,15 @@ jobs:
         env:
           GOOGLE_PROJECT: ${{ secrets.GCP_PROJECT }}
         run: |
-          gcloud auth configure-docker asia-southeast2
+          gcloud auth configure-docker asia-southeast2-docker.pkg.dev
 
       - name: Build Docker image
         run: |
-          docker build -t asia-southeast2.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
+          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
 
       - name: Push Docker image
         run: |
-          docker push asia-southeast2.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest
+          docker push asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest
 
 #  deploy:
 #    needs: build
