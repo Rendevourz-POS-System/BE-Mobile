@@ -23,9 +23,9 @@ jobs:
       - name: Display Go version
         run: go version
       - name: Install dependencies & Build
-        run: cd src && go mod download && go build -o build/main
+        run: cd src && go mod download && go build -o .
       - name: Display-Build-Golang-App
-        run: ls -R main/
+        run: ls -R src
 
       - name: Login To Docker Hub
         uses: docker/login-action@v2
