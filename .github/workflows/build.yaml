@@ -35,9 +35,11 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          echo "gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest"
           docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest .
           echo ${{ secrets.GCP_SA_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
           docker push gcr.io/${{ secrets.GCP_PROJECT }}/shelter-apps:latest
+
 
   deploy:
     runs-on: ubuntu-latest
