@@ -14,10 +14,11 @@ var (
 )
 
 type Config struct {
-	App      App
-	Database Database
-	Email    Email
-	Proxy    Proxy
+	App         App
+	Database    Database
+	Email       Email
+	Proxy       Proxy
+	AccessToken AccessToken
 }
 
 type App struct {
@@ -51,6 +52,13 @@ type Email struct {
 
 type Proxy struct {
 	TrustedProxies []string
+}
+
+type AccessToken struct {
+	AccessTokenExpireHour  int
+	RefreshTokenExpireHour int
+	AccessTokenSecret      string
+	RefreshTokenSecret     string
 }
 
 func loadConfig(environment string) (*viper.Viper, error) {

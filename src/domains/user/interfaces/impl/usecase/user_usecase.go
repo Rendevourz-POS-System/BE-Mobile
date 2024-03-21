@@ -49,3 +49,23 @@ func (u userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *Us
 	}
 	return data, nil
 }
+
+func (u userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) (res *User.LoginResponse, err error) {
+	user, err := u.userRepo.FindByEmail(ctx, userReq.Email)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, fmt.Errorf("user has not register yet ! ")
+	}
+	ok := helpers.ComparePassword(userReq.Password, user.Password)
+	if !ok {
+		return nil, fmt.Errorf("password not match ! ")
+	}
+	//token, err := helpers.GenerateToken()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//res.Token = token
+	return res, nil
+}

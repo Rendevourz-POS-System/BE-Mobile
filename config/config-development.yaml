@@ -26,3 +26,10 @@ database:
 
 Proxy:
   ThrustProxy: ['35.240.248.22']
+
+AccessToken:
+  Key: secret
+  AccessTokenExpireHour : 2
+  RefreshTokenExpireHour : 168
+  AccessTokenSecret: access_token_secret
+  RefreshTokenSecret: refresh_token_secret

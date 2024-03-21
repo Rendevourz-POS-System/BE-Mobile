@@ -63,3 +63,12 @@ func (userRepo *userRepository) StoreOne(c context.Context, user *User.User) (*U
 
 	return &newUser, false, nil
 }
+
+func (userRepo *userRepository) FindByEmail(c context.Context, email string) (*User.User, error) {
+	var user User.User
+	err := userRepo.collection.FindOne(c, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

@@ -39,6 +39,22 @@ func (userHttp *UserHttp) FindAll(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+func (userHttp *UserHttp) LoginUsers(c *gin.Context) {
+	user := &User.LoginPayload{}
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := userHttp.userUsecase.LoginUser(c, user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
 func (userHttp *UserHttp) RegisterUsers(c *gin.Context) {
 	user := &User.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {
