@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"log"
-	"main.go/shared/helpers"
 	"os"
 )
 
@@ -18,8 +17,9 @@ type Config struct {
 	App         App
 	Database    Database
 	Email       Email
+	Domain      Domain
 	Proxy       Proxy
-	AccessToken helpers.AccessToken
+	AccessToken AccessToken
 }
 
 type App struct {
@@ -44,11 +44,27 @@ type Database struct {
 }
 
 type Email struct {
-	Host     string
-	Port     int
-	Address  string
-	Username string
-	Password string
+	SenderName    string
+	SenderAddress string
+	Password      string
+}
+
+type Domain struct {
+	Name         string
+	Protocol     string
+	FrontendPath string
+	BackendPath  string
+	Port         string
+}
+
+type AccessToken struct {
+	Key                     string
+	AccessTokenHeaderName   string
+	AccessTokenHeaderPrefix string
+	AccessTokenExpireHour   int
+	RefreshTokenExpireHour  int
+	AccessTokenSecret       string
+	RefreshTokenSecret      string
 }
 
 type Proxy struct {

@@ -24,10 +24,13 @@ func RegisterTrustedProxies(router *gin.Engine) {
 
 func RegisterMiddlewares(router *gin.Engine) {
 	router.Use(middlewares.NewCors(router))
-	router.Use(middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	// Another Middlewares Here ...
 }
 
+func RegisterMiddlewares2(router *gin.Engine) {
+	router.Use(middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	// Another Middlewares Here ...
+}
 func RegisterRoutes(router *gin.Engine) {
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -35,4 +38,6 @@ func RegisterRoutes(router *gin.Engine) {
 		})
 	})
 	UserHttp.NewUserHttp(router)
+	UserHttp.NewUserTokenHttp(router)
+	RegisterMiddlewares(router)
 }

@@ -35,3 +35,15 @@ AccessToken:
   RefreshTokenExpireHour : 72
   AccessTokenSecret: access_token_secret
   RefreshTokenSecret: refresh_token_secret
+
+Email:
+  SenderName: Shelter Apps
+  SenderAddress:
+  SenderPassword:
+
+Domain:
+  Name: shelter-apps.com
+  Protocol: https
+  FrontendPath: /email/verification
+  Backend:
+  Port: 8080

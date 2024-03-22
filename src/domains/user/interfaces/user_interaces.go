@@ -7,8 +7,9 @@ import (
 
 type UserUsecase interface {
 	GetAllData(ctx context.Context) ([]User.User, error)
-	RegisterUser(ctx context.Context, user *User.User) (*User.User, error)
+	RegisterUser(ctx context.Context, user *User.User) (*User.User, []string)
 	LoginUser(ctx context.Context, userReq *User.LoginPayload) (*User.LoginResponse, error)
+	SendEmailVerification(ctx context.Context, data *User.User) (res *User.User, err error)
 }
 
 type UserRepository interface {

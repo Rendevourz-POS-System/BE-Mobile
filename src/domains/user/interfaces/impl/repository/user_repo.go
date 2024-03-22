@@ -16,7 +16,7 @@ type userRepository struct {
 }
 
 func NewUserRepository(database *mongo.Database) *userRepository {
-	return &userRepository{database, database.Collection(presistence.CollectionName)}
+	return &userRepository{database, database.Collection(presistence.UserCollectionName)}
 }
 
 func (userRepo *userRepository) FindAll(c context.Context) (res []User.User, err error) {
@@ -36,6 +36,9 @@ func (userRepo *userRepository) StoreOne(c context.Context, user *User.User) (*U
 	err := userRepo.collection.FindOne(c, bson.M{"email": user.Email}).Decode(&existingUser)
 	if err == nil {
 		// A user with this email already exists, so return the existing user
+		//if !existingUser.IsActive {
+		//	return nil, false, errors.New("this account already exists and is not active yet ! ")
+		//}
 		return &existingUser, true, nil
 	} else if err != mongo.ErrNoDocuments {
 		// An actual error occurred while trying to find the user, other than "no documents found"
