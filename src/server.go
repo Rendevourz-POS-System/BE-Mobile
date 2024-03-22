@@ -24,6 +24,7 @@ func RegisterTrustedProxies(router *gin.Engine) {
 
 func RegisterMiddlewares(router *gin.Engine) {
 	router.Use(middlewares.NewCors(router))
+	router.Use(middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	// Another Middlewares Here ...
 }
 

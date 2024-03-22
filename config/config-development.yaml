@@ -29,7 +29,9 @@ Proxy:
 
 AccessToken:
   Key: secret
-  AccessTokenExpireHour : 2
-  RefreshTokenExpireHour : 168
+  AccessTokenHeaderName: Authorization
+  AccessTokenHeaderPrefix: Bearer
+  AccessTokenExpireHour : 24
+  RefreshTokenExpireHour : 72
   AccessTokenSecret: access_token_secret
   RefreshTokenSecret: refresh_token_secret

@@ -1,6 +1,9 @@
 package entities
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // Entities
 type User struct {
@@ -21,7 +24,18 @@ type (
 	}
 	// Responses
 	LoginResponse struct {
-		Token string `json:"Token"`
+		Username string `json:"Username"`
+		Token    string `json:"Token"`
 	}
 	// Auth
+	JwtCustomClaims struct {
+		ID       string `json:"Id"`
+		Email    string `json:"Email"`
+		Username string `json:"Username"`
+		jwt.RegisteredClaims
+	}
+	JwtCustomRefreshClaims struct {
+		ID string `json:"Id"`
+		jwt.RegisteredClaims
+	}
 )

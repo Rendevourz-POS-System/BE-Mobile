@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"log"
+	"main.go/shared/helpers"
 	"os"
 )
 
@@ -18,7 +19,7 @@ type Config struct {
 	Database    Database
 	Email       Email
 	Proxy       Proxy
-	AccessToken AccessToken
+	AccessToken helpers.AccessToken
 }
 
 type App struct {
@@ -54,13 +55,6 @@ type Proxy struct {
 	TrustedProxies []string
 }
 
-type AccessToken struct {
-	AccessTokenExpireHour  int
-	RefreshTokenExpireHour int
-	AccessTokenSecret      string
-	RefreshTokenSecret     string
-}
-
 func loadConfig(environment string) (*viper.Viper, error) {
 	v := viper.New()
 	v.SetConfigName(fmt.Sprintf("../config/config-%s", environment))
@@ -94,6 +88,7 @@ func GetConfig() *Config {
 			log.Printf("unable to decode into struct, %v", err)
 			panic(err)
 		}
+		fmt.Println("Config Environment : ", config.AccessToken)
 	}
 	return config
 }

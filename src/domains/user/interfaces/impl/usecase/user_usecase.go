@@ -60,12 +60,16 @@ func (u userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) 
 	}
 	ok := helpers.ComparePassword(userReq.Password, user.Password)
 	if !ok {
-		return nil, fmt.Errorf("password not match ! ")
+		return nil, fmt.Errorf("password or email doesn't match ! ")
 	}
-	//token, err := helpers.GenerateToken()
-	//if err != nil {
-	//	return nil, err
-	//}
-	//res.Token = token
+	if !user.IsActive {
+		return nil, fmt.Errorf("user is not active ! ")
+	}
+	token, err := helpers.GenerateToken(user)
+	if err != nil {
+		return nil, err
+	}
+	res.Token = token
+	res.Username = user.Username
 	return res, nil
 }
