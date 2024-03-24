@@ -5,6 +5,7 @@ import (
 	"fmt"
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
+	"main.go/domains/user/mail/controller"
 	"main.go/shared/helpers"
 )
 
@@ -16,7 +17,7 @@ func NewUserUsecase(userRepo interfaces.UserRepository) *userUsecase {
 	return &userUsecase{userRepo}
 }
 
-func (u userUsecase) GetAllData(ctx context.Context) ([]User.User, error) {
+func (u *userUsecase) GetAllData(ctx context.Context) ([]User.User, error) {
 	data, err := u.userRepo.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -24,14 +25,15 @@ func (u userUsecase) GetAllData(ctx context.Context) ([]User.User, error) {
 	return data, nil
 }
 
-func (u userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *User.User, errs []string) {
+func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *User.User, errs []string) {
 	var err error
 	validate := helpers.NewValidator()
 	if err = validate.Struct(user); err != nil {
 		errs = helpers.CustomError(err)
 		return nil, errs
 	}
-	user.IsActive = false
+	user.Verified = false
+	user.CreatedAt = helpers.GetCurrentTime(nil)
 	user.Password, err = helpers.HashPassword(user.Password)
 	if err != nil {
 		errs = append(errs, err.Error())
@@ -43,24 +45,38 @@ func (u userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *Us
 		return nil, errs
 	}
 	if data != nil && !checkUserData {
-		_, SendEmailVerification := u.SendEmailVerification(ctx, user)
+		secretCode, err := u.userRepo.GenerateAndStoreToken(ctx, data.ID)
+		if err != nil {
+			errs = append(errs, err.Error())
+			return nil, errs
+		}
+		_, SendEmailVerification := u.SendEmailVerification(ctx, user, secretCode)
 		if SendEmailVerification != nil {
 			errs = append(errs, SendEmailVerification.Error())
 			return nil, errs
 		}
 		return data, nil
-	} else if data != nil {
-		return data, nil
 	}
 	return data, nil
 }
 
-func (u userUsecase) SendEmailVerification(ctx context.Context, data *User.User) (res *User.User, err error) {
+func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User, secretCode string) (res *User.User, err error) {
 	// send email verification
-	return nil, nil
+	ok := controller.SendEmail(&User.MailSend{
+		To:      data.Email,
+		Subject: "Email Verification",
+		Content: helpers.GetVerifiedUrl("", data.Email),
+		Cc:      "",
+		Bcc:     "",
+		Attach:  "readme.txt",
+	})
+	if ok != nil {
+		return nil, fmt.Errorf("failed to send email verification ! ")
+	}
+	return res, nil
 }
 
-func (u userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) (res *User.LoginResponse, err error) {
+func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) (res *User.LoginResponse, err error) {
 	user, err := u.userRepo.FindByEmail(ctx, userReq.Email)
 	if err != nil {
 		return nil, err
@@ -72,7 +88,7 @@ func (u userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) 
 	if !ok {
 		return nil, fmt.Errorf("password or email doesn't match ! ")
 	}
-	if !user.IsActive {
+	if !user.Verified {
 		return nil, fmt.Errorf("user is not active ! ")
 	}
 	token, err := helpers.GenerateToken(user)

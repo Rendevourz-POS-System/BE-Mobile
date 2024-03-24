@@ -1,18 +1,32 @@
 package entities
 
-import "time"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type VerifiedEmail struct {
-	Id         uint      `json:"Id" bson:"_id"`
-	UserId     uint      `json:"UserId" bson:"UserId"`
-	SecretCode string    `json:"SecretCode" bson:"SecretCode"`
-	IsUsed     bool      `json:"IsUsed" bson:"IsUsed"`
-	CreatedAt  time.Time `gorm:"autoCreateTime" json:"CreatedAt" bson:"CreatedAt"`
-	ExpiredAt  time.Time `gorm:"autoCreateTime + interval '15 minutes'" json:"ExpiredAt" bson:"ExpiredAt"`
+	Id         primitive.ObjectID `json:"Id" bson:"_id"`
+	UserId     primitive.ObjectID `json:"UserId" bson:"UserId"`
+	SecretCode string             `json:"SecretCode" bson:"SecretCode"`
+	IsUsed     bool               `json:"IsUsed" bson:"IsUsed"`
+	CreatedAt  time.Time          `json:"CreatedAt" bson:"CreatedAt"`
+	ExpiredAt  time.Time          `json:"ExpiredAt" bson:"ExpiredAt"`
 }
 
-type GmailSender struct {
-	Name              string
-	FromEmailAddress  string
-	FromEmailPassword string
-}
+type (
+	// MailSend Payload for sending mail (Send To Email)
+	MailSend struct {
+		To      string `json:"to"`
+		Subject string `json:"subject"`
+		Content string `json:"content"`
+		Cc      string `json:"cc"`
+		Bcc     string `json:"bcc"`
+		Attach  string `json:"attach"`
+	}
+	// MailVerifyResponse Response for mail verification
+	MailVerifyResponse struct {
+		Email   string `json:"email"`
+		Message string `json:"message"`
+	}
+)

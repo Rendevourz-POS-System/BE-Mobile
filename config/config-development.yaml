@@ -37,9 +37,12 @@ AccessToken:
   RefreshTokenSecret: refresh_token_secret
 
 Email:
-  SenderName: Shelter Apps
-  SenderAddress:
-  SenderPassword:
+  File: domains/user/mail/pkg
+  SenderHost: smtp.gmail.com
+  SenderPort: 587
+  SenderEmailName: Shelter Apps
+  SenderEmailAddress: reagentreagent4@gmail.com
+  SenderEmailPassword: dwqwziohlopnfurk
 
 Domain:
   Name: shelter-apps.com

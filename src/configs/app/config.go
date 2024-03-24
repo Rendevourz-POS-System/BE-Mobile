@@ -44,9 +44,12 @@ type Database struct {
 }
 
 type Email struct {
-	SenderName    string
-	SenderAddress string
-	Password      string
+	File                string
+	SenderHost          string
+	SenderPort          int
+	SenderEmailName     string
+	SenderEmailAddress  string
+	SenderEmailPassword string
 }
 
 type Domain struct {

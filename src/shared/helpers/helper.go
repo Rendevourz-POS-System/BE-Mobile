@@ -2,11 +2,15 @@ package helpers
 
 import (
 	"github.com/matthewhartstonge/argon2"
+	"main.go/configs/app"
 	_const "main.go/configs/const"
+	"math/rand"
+	"time"
 )
 
 var (
-	argon *argon2.Config
+	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	argon   *argon2.Config
 )
 
 func ParseDatabase(database string) string {
@@ -37,4 +41,26 @@ func ComparePassword(hashedPassword, password string) bool {
 		panic(err) // 💥
 	}
 	return ok
+}
+
+func GetVerifiedUrl(secretCode, email string) string {
+	return app.GetConfig().Domain.Protocol + "://" + app.GetConfig().Domain.Name + ":" + app.GetConfig().Domain.Port + app.GetConfig().Domain.FrontendPath + "/" + secretCode + "/" + email
+}
+
+func GetCurrentTime(hour *int) *time.Time {
+	if hour != nil {
+		times := time.Now().Add(time.Hour * time.Duration(*hour))
+		return &times
+	}
+	times := time.Now()
+	return &times
+}
+
+func GenerateRandomString(length int) string {
+	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }

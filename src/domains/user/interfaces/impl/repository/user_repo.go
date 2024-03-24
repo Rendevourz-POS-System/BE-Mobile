@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/presistence"
+	"main.go/shared/helpers"
 )
 
 type userRepository struct {
@@ -36,9 +37,9 @@ func (userRepo *userRepository) StoreOne(c context.Context, user *User.User) (*U
 	err := userRepo.collection.FindOne(c, bson.M{"email": user.Email}).Decode(&existingUser)
 	if err == nil {
 		// A user with this email already exists, so return the existing user
-		//if !existingUser.IsActive {
-		//	return nil, false, errors.New("this account already exists and is not active yet ! ")
-		//}
+		if !existingUser.Verified {
+			return nil, false, errors.New("this account already exists and is not active yet ! ")
+		}
 		return &existingUser, true, nil
 	} else if err != mongo.ErrNoDocuments {
 		// An actual error occurred while trying to find the user, other than "no documents found"
@@ -74,4 +75,21 @@ func (userRepo *userRepository) FindByEmail(c context.Context, email string) (*U
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId primitive.ObjectID) (string, error) {
+	hour := 3
+	userToken := &User.UserToken{
+		UserId:    userId,
+		Token:     helpers.GenerateRandomString(32),
+		IsUsed:    false,
+		CreatedAt: helpers.GetCurrentTime(nil),
+		ExpiredAt: helpers.GetCurrentTime(&hour),
+		DeletedAt: nil,
+	}
+	_, err := userRepo.database.Collection(presistence.UserTokenCollectionName).InsertOne(c, userToken)
+	if err != nil {
+		return "", err
+	}
+	return userToken.Token, nil
 }
