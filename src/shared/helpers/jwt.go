@@ -14,6 +14,10 @@ func generateTokenTime(expiry int) *jwt.NumericDate {
 	return jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(expiry)))
 }
 
+func generateTokenTimeMinute(expiry int) *jwt.NumericDate {
+	return jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(expiry)))
+}
+
 func GenerateRefreshToken(user *User.User, expiry int) (string, error) {
 	claimsRefresh := &User.JwtCustomRefreshClaims{
 		ID: user.ID.Hex(),
@@ -22,7 +26,7 @@ func GenerateRefreshToken(user *User.User, expiry int) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
-	tokenString, err := token.SignedString([]byte(appConfig.GetConfig().AccessToken.Key))
+	tokenString, err := token.SignedString([]byte(appConfig.GetConfig().AccessToken.AccessTokenSecret))
 	if err != nil {
 		return "", errors.New("error when generate token")
 	}
@@ -40,7 +44,7 @@ func GenerateToken(user *User.User) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(appConfig.GetConfig().AccessToken.Key))
+	tokenString, err := token.SignedString([]byte(appConfig.GetConfig().AccessToken.AccessTokenSecret))
 	if err != nil {
 		return "", errors.New("error when generate token")
 	}
@@ -93,4 +97,50 @@ func ExtractIDFromToken(requestToken, secret string) (string, error) {
 		return "", errResponse
 	}
 	return claims["Id"].(string), nil
+}
+
+func GenerateJwtTokenForVerificationEmail(id, email, secretCode string) (string, error) {
+	claims := &User.JwtEmailClaims{
+		ID:    id,
+		Email: email,
+		Nonce: secretCode,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: generateTokenTimeMinute(appConfig.GetConfig().AccessToken.VerificationTokenExpireHour),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(appConfig.GetConfig().AccessToken.AccessTokenSecret))
+	if err != nil {
+		return "", errors.New("error when generate token")
+	}
+	return tokenString, nil
+}
+
+func ClaimsJwtTokenForVerificationEmail(requestToken string) (*User.JwtEmailClaims, error) {
+	errResponse := errors.New("sign in to proceed")
+	token, _ := jwt.Parse(requestToken, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
+		}
+		return []byte(appConfig.GetConfig().AccessToken.AccessTokenSecret), nil
+	})
+	//fmt.Println("Masuk : ", token)
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		//fmt.Println("Error : ", errResponse)
+		return nil, errResponse
+	}
+	//fmt.Println("Claims : ", claims)
+	exps, _ := claims.GetExpirationTime()
+	if time.Now().UTC().After(time.Unix(exps.Unix(), 0)) {
+		return nil, errors.New("token has expired")
+	}
+	return &User.JwtEmailClaims{
+		ID:    claims["Id"].(string),
+		Email: claims["Email"].(string),
+		Nonce: claims["Nonce"].(string),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: exps,
+		},
+	}, nil
 }

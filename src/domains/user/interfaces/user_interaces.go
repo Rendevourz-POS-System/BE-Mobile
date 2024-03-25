@@ -17,5 +17,5 @@ type UserRepository interface {
 	FindAll(ctx context.Context) ([]User.User, error)
 	StoreOne(ctx context.Context, user *User.User) (*User.User, bool, error)
 	FindByEmail(ctx context.Context, email string) (*User.User, error)
-	GenerateAndStoreToken(ctx context.Context, userId primitive.ObjectID) (string, error)
+	GenerateAndStoreToken(ctx context.Context, userId primitive.ObjectID, email string) (string, error)
 }

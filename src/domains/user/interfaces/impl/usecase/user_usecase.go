@@ -45,7 +45,7 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 		return nil, errs
 	}
 	if data != nil && !checkUserData {
-		secretCode, err := u.userRepo.GenerateAndStoreToken(ctx, data.ID)
+		secretCode, err := u.userRepo.GenerateAndStoreToken(ctx, data.ID, data.Email)
 		if err != nil {
 			errs = append(errs, err.Error())
 			return nil, errs
@@ -65,7 +65,7 @@ func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User
 	ok := controller.SendEmail(&User.MailSend{
 		To:      data.Email,
 		Subject: "Email Verification",
-		Content: helpers.GetVerifiedUrl("", data.Email),
+		Content: helpers.GetVerifiedUrl(secretCode, data.Email),
 		Cc:      "",
 		Bcc:     "",
 		Attach:  "readme.txt",

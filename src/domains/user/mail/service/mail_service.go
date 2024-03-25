@@ -50,7 +50,10 @@ func (service *GmailSender) ExecuteSendEmail(subject, content string, to, cc, bc
 	mailer.SetHeader("Subject", subject)
 	mailer.SetBody("text/html",
 		"Hello, <b>have a nice day </b>\n"+
-			"<a href='"+content+"'> Here ! </a>")
+			"<a href='"+content+"'> Here ! </a>\n"+
+			"<h1>"+content+"</h1>"+
+			"\n\n\n\nThank You For Using Shelter-Apps"+
+			"Regards,\n Admin")
 	if attach != "" {
 		mailer.Attach(attach)
 	}

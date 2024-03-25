@@ -42,4 +42,11 @@ type (
 		ID string `json:"Id"`
 		jwt.RegisteredClaims
 	}
+	// JwtEmailClaims Custom claims for JWT Email Verification
+	JwtEmailClaims struct {
+		ID    string `json:"Id"`
+		Email string `json:"Email"`
+		Nonce string `json:"Nonce"`
+		jwt.RegisteredClaims
+	}
 )

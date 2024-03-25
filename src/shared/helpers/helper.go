@@ -44,12 +44,13 @@ func ComparePassword(hashedPassword, password string) bool {
 }
 
 func GetVerifiedUrl(secretCode, email string) string {
-	return app.GetConfig().Domain.Protocol + "://" + app.GetConfig().Domain.Name + ":" + app.GetConfig().Domain.Port + app.GetConfig().Domain.FrontendPath + "/" + secretCode + "/" + email
+	return app.GetConfig().Domain.Protocol + "://" + app.GetConfig().Domain.Name + ":" + app.GetConfig().Domain.Port + app.GetConfig().Domain.FrontendPath + "/" + secretCode
+	//+ "/" + email
 }
 
-func GetCurrentTime(hour *int) *time.Time {
-	if hour != nil {
-		times := time.Now().Add(time.Hour * time.Duration(*hour))
+func GetCurrentTime(minute *int) *time.Time {
+	if minute != nil {
+		times := time.Now().Add(time.Minute * time.Duration(*minute))
 		return &times
 	}
 	times := time.Now()

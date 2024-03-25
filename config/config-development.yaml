@@ -35,6 +35,7 @@ AccessToken:
   RefreshTokenExpireHour : 72
   AccessTokenSecret: access_token_secret
   RefreshTokenSecret: refresh_token_secret
+  VerificationTokenExpireHour: 30
 
 Email:
   File: domains/user/mail/pkg

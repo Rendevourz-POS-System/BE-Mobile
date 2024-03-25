@@ -77,19 +77,32 @@ func (userRepo *userRepository) FindByEmail(c context.Context, email string) (*U
 	return &user, nil
 }
 
-func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId primitive.ObjectID) (string, error) {
-	hour := 3
+func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId primitive.ObjectID, email string) (string, error) {
+	minute := 30
 	userToken := &User.UserToken{
 		UserId:    userId,
 		Token:     helpers.GenerateRandomString(32),
 		IsUsed:    false,
 		CreatedAt: helpers.GetCurrentTime(nil),
-		ExpiredAt: helpers.GetCurrentTime(&hour),
+		ExpiredAt: helpers.GetCurrentTime(&minute),
 		DeletedAt: nil,
 	}
-	_, err := userRepo.database.Collection(presistence.UserTokenCollectionName).InsertOne(c, userToken)
+	data, err := userRepo.database.Collection(presistence.UserTokenCollectionName).InsertOne(c, userToken)
 	if err != nil {
 		return "", err
 	}
-	return userToken.Token, nil
+	// Fetch the newly inserted document to return a complete user object, including its new _id
+	var newUserToken *User.UserToken
+	if err = userRepo.database.Collection(presistence.UserTokenCollectionName).FindOne(c, bson.M{"_id": data.InsertedID}).Decode(&newUserToken); err != nil {
+		return "", err // Return any error encountered during fetching
+	}
+	//fmt.Printf("UserData : %v\n", newUserToken)
+	secretCode, errs := helpers.GenerateJwtTokenForVerificationEmail(newUserToken.Id.Hex(), email, userToken.Token)
+	if errs != nil {
+		return "", errs
+	}
+	//fmt.Printf("SecretCode : %s", secretCode)
+	//test, _ := helpers.ClaimsJwtTokenForVerificationEmail(secretCode)
+	//fmt.Printf("CodeData : %v\n", test)
+	return secretCode, nil
 }

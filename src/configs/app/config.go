@@ -61,13 +61,14 @@ type Domain struct {
 }
 
 type AccessToken struct {
-	Key                     string
-	AccessTokenHeaderName   string
-	AccessTokenHeaderPrefix string
-	AccessTokenExpireHour   int
-	RefreshTokenExpireHour  int
-	AccessTokenSecret       string
-	RefreshTokenSecret      string
+	AccessTokenExpireHour       int
+	AccessTokenHeaderName       string
+	AccessTokenHeaderPrefix     string
+	AccessTokenSecret           string
+	Key                         string
+	RefreshTokenSecret          string
+	RefreshTokenExpireHour      int
+	VerificationTokenExpireHour int
 }
 
 type Proxy struct {
