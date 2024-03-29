@@ -2,6 +2,7 @@ package database
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
+	UserPresistence "main.go/domains/user/presistence"
 )
 
 var (
@@ -10,7 +11,7 @@ var (
 )
 
 func Migrate(db *mongo.Client, dbName string) error {
-	User = db.Database(dbName).Collection("users")
-	UserToken = db.Database(dbName).Collection("user_tokens")
+	User = db.Database(dbName).Collection(UserPresistence.UserCollectionName)
+	UserToken = db.Database(dbName).Collection(UserPresistence.UserTokenCollectionName)
 	return nil
 }

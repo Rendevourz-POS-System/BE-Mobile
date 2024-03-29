@@ -22,7 +22,7 @@ func createDNS(conf app.Database, index int) string {
 	//return fmt.Sprintf("mongodb://%s@%s:%d/?tls=false&authMechanism=SCRAM-SHA-256",
 	//	safeDNS, conf.Host[index], conf.Port[index],
 	//)
-	log.Println("Connecting to database len: ", safeDNS, conf.Host[index], conf.Port[index])
+	//log.Println("Connecting to database len: ", safeDNS, conf.Host[index], conf.Port[index])
 	return fmt.Sprintf("mongodb+srv://%s@%s/?retryWrites=true&w=majority&appName=shelter-apps-db",
 		safeDNS, conf.Host[index],
 	)

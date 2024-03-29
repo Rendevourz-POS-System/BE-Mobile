@@ -45,7 +45,6 @@ func ComparePassword(hashedPassword, password string) bool {
 
 func GetVerifiedUrl(secretCode, email string) string {
 	return app.GetConfig().Domain.Protocol + "://" + app.GetConfig().Domain.Name + ":" + app.GetConfig().Domain.Port + app.GetConfig().Domain.FrontendPath + "/" + secretCode
-	//+ "/" + email
 }
 
 func GetCurrentTime(minute *int) *time.Time {

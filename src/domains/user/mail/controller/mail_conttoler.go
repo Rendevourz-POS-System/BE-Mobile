@@ -9,8 +9,8 @@ import (
 )
 
 func SendEmail(send *Email.MailSend) error {
-	cc := []string{}
-	bcc := []string{}
+	var cc []string
+	var bcc []string
 	if send.Cc != "" {
 		cc = []string{send.Cc}
 	}
