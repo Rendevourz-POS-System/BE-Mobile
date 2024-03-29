@@ -33,7 +33,7 @@ func HashPassword(password string) (string, error) {
 }
 
 func ComparePassword(hashedPassword, password string) bool {
-	ok, err := argon2.VerifyEncoded([]byte(password), []byte(hashedPassword))
+	ok, err := argon2.VerifyEncoded([]byte(hashedPassword), []byte(password))
 	if err != nil {
 		panic(err) // 💥
 	}

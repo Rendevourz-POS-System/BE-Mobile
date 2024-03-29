@@ -85,7 +85,7 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 	if user == nil {
 		return nil, fmt.Errorf("user has not register yet ! ")
 	}
-	ok := helpers.ComparePassword(user.Password, userReq.Password)
+	ok := helpers.ComparePassword(userReq.Password, user.Password)
 	if !ok {
 		return nil, fmt.Errorf("password or email doesn't match ! ")
 	}
