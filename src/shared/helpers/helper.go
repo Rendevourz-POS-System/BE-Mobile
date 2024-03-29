@@ -33,9 +33,6 @@ func HashPassword(password string) (string, error) {
 }
 
 func ComparePassword(hashedPassword, password string) bool {
-	if argon == nil {
-		*argon = argon2.DefaultConfig()
-	}
 	ok, err := argon2.VerifyEncoded([]byte(password), []byte(hashedPassword))
 	if err != nil {
 		panic(err) // 💥

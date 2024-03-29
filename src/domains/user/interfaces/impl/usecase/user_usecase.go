@@ -76,7 +76,8 @@ func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User
 	return res, nil
 }
 
-func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) (res *User.LoginResponse, err error) {
+func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload) (*User.LoginResponse, error) {
+	var res = &User.LoginResponse{}
 	user, err := u.userRepo.FindByEmail(ctx, userReq.Email)
 	if err != nil {
 		return nil, err
@@ -84,7 +85,7 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 	if user == nil {
 		return nil, fmt.Errorf("user has not register yet ! ")
 	}
-	ok := helpers.ComparePassword(userReq.Password, user.Password)
+	ok := helpers.ComparePassword(user.Password, userReq.Password)
 	if !ok {
 		return nil, fmt.Errorf("password or email doesn't match ! ")
 	}

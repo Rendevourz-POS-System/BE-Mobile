@@ -24,6 +24,7 @@ func NewUserHttp(router *gin.Engine) *UserHttp {
 	{
 		guest.GET("/", handler.FindAll)
 		guest.POST("/register", handler.RegisterUsers)
+		guest.POST("/login", handler.LoginUsers)
 	}
 	return handler
 }
