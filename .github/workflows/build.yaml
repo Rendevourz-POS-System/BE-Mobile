@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: shelter-apps
+      PROJECT_ID: ${{ secrets.GCP_PROJECT }}
 
     strategy:
       matrix:
@@ -33,19 +36,35 @@ jobs:
             username: ${{ secrets.HUB_USERNAME }}
             password: ${{ secrets.HUB_PASSWORD }}
 
+      - name: install the gcloud CLI
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
+          export_default_credentials: true
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }}:latest .
+#          docker tag ${{ secrets.HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest ${{ secrets.HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+      - name: Configure Docker Client
+        run: gcloud auth configure-docker --quiet # asia-southeast2-docker.pkg.dev
+
+      - name: Push Docker image to GCR (Google Container Registry)
+        env:
+          GIT_TAG: ${{ github.sha }}
+        run: |
+            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: install the gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT }}
-          service_account_key: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
 
 #      - name: Deploy to Compute Engine
 #        run: |
