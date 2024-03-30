@@ -37,7 +37,7 @@ jobs:
             password: ${{ secrets.HUB_PASSWORD }}
 
       - name: install the gcloud CLI
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
@@ -59,12 +59,12 @@ jobs:
             docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
             docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
 
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+#  deploy:
+#    needs: build-and-push
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v4
 
 #      - name: Deploy to Compute Engine
 #        run: |
