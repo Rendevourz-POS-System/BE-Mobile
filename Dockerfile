@@ -14,18 +14,26 @@ COPY . .
 RUN go mod download
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./src
+WORKDIR /app/src
+RUN go build -o shelter-apps .
+
+# Ensure your binary is executable (if necessary)
+#RUN chmod +x /app/src/shelter-apps
+CMD ["/shelter-apps"]
 
 # Start a new stage from scratch
-FROM alpine:latest  
+FROM alpine:latest
 
-WORKDIR /root/
+WORKDIR /app/
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main .
+COPY --from=builder /app/src/shelter-apps /app/src/
+COPY --from=builder /app/config /app/config/
+COPY --from=builder /app/src/local.env /app/src/
 
 # Expose port 8008 to the outside world
-EXPOSE 8008
+EXPOSE 8080
 
+WORKDIR /app/src
 # Command to run the executable
-CMD ["./main"]
+CMD ["./shelter-apps"]
