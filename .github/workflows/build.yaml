@@ -56,8 +56,7 @@ jobs:
 
       - name: Configure Docker with gcloud
         run: |-
-          gcloud auth configure-docker --quiet
-#          ${{ env.ARTIFACT_REGISTRY }}
+          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
       - name: Push Docker image to GCR (Google Container Registry)
         run: |-
