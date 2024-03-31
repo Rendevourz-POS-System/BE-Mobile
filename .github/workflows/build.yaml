@@ -41,7 +41,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-        run: |-
+        run:
           gcloud iam service-accounts keys create key.json --iam-account ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
 
 #      - name: install the gcloud CLI
