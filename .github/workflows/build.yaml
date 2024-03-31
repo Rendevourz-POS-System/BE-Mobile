@@ -8,7 +8,7 @@ on:
 env:
   IMAGE_NAME: shelter-apps
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-  ARTIFACT_REGISTRY: $ {{ secrets.ARTIFACT_REGISTRY }}
+  ARTIFACT_REGISTRY: ${{ secrets.ARTIFACT_REGISTRY }}
   CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
   GIT_TAG: v0.1.0
 
