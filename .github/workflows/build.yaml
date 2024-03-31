@@ -5,16 +5,14 @@ on:
     branches:
       - master
 
-env:
-  IMAGE_NAME: shelter-apps
-  ARTIFACT_REGISTRY: ${{ secrets.ARTIFACT_REGISTRY }}
-  CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
-  GIT_TAG: v0.1.0
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
+    env:
+      IMAGE_NAME: shelter-apps
+      ARTIFACT_REGISTRY: ${{ secrets.ARTIFACT_REGISTRY }}
+      CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
+      GIT_TAG: v0.1.0
     strategy:
       matrix:
         go-version: [ '1.20' ]
