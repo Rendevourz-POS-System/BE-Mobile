@@ -8,7 +8,7 @@ on:
 env:
   IMAGE_NAME: shelter-apps
   ARTIFACT_REGISTRY: ${{ secrets.ARTIFACT_REGISTRY }}
-  CONTAINER_REGISTRY: docker-artifact
+  CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
   GIT_TAG: v0.1.0
 
 jobs:
@@ -73,7 +73,6 @@ jobs:
             docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
 #            docker push gcr.io/${{ secrets.GCP_PROJECT }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
 
-
 #  deploy:
 #    needs: build-and-push
 #    runs-on: ubuntu-latest
@@ -101,3 +100,4 @@ jobs:
 #      - name: Push Docker image
 #        run: |
 #          docker push asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest
+
