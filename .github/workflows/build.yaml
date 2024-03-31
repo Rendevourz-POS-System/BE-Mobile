@@ -44,6 +44,7 @@ jobs:
 
       - name: Build Docker image
         run: |
+          docker build -t ${{ env.IMAGE_NAME }}:latest .
           docker build -t gcr.io/${{ env.PROJECT_IDY }}/${{ env.IMAGE_NAME }}:latest .
 
       - name: Push Docker image to GCR (Google Container Registry)
