@@ -9,8 +9,7 @@ env:
   IMAGE_NAME: shelter-apps
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   ARTIFACT_REGISTRY: $ {{ secrets.ARTIFACT_REGISTRY }}
-  CONTAINER_REGISTRY: gcr.io
-
+  CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -55,7 +54,7 @@ jobs:
 #            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
 #            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
 #            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
-            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest .
+            docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
 
 #  deploy:
 #    needs: build-and-push
