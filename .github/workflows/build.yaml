@@ -25,11 +25,11 @@ jobs:
         run: |
           echo "Project ID: ${{ secrets.GCP_PROJECT }}"
 
-      - name: Check if secrets are present
+      - name: Check if GCP_PROJECT secret is present
+        run: |
+          echo "GCP_PROJECT length: ${#GCP_PROJECT}"
         env:
           GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
-        run: |
-          echo "GCP_PROJECT length: ${{ GCP_PROJECT }}"
 
 #      - uses: actions/checkout@v4
 #      - name: Setup Go ${{ matrix.go-version }}
