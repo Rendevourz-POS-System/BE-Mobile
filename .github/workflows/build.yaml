@@ -35,14 +35,15 @@ jobs:
             username: ${{ secrets.HUB_USERNAME }}
             password: ${{ secrets.HUB_PASSWORD }}
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        run:
+          gcloud iam service-accounts keys create key.json --iam-account tomomisooyat@${{ secrets.GCP_PROJECT }}.iam.gserviceaccount.com
+
       - id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        run:
-          gcloud iam service-accounts keys create key.json --iam-account ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
 
 #      - name: install the gcloud CLI
 #        uses: google-github-actions/setup-gcloud@v2
