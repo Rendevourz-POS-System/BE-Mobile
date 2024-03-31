@@ -77,9 +77,9 @@ jobs:
 #        run: |
 #          gcloud auth configure-docker asia-southeast2-docker.pkg.dev
 #
-      - name: Build Docker image
-        run: |
-          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
+#      - name: Build Docker image
+#        run: |
+#          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
 #
 #      - name: Push Docker image
 #        run: |
