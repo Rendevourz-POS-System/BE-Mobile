@@ -25,12 +25,6 @@ jobs:
       # You can test your matrix by printing the current Go version
       - name: Display Go version
         run: go version
-#
-#      - name: Install dependencies & Build
-#        run: cd src && go mod download && go build -o shelter-apps.exe
-#
-#      - name: Display-Build-Golang-App
-#        run: ls -R src
 
       - name: Login To Docker Hub
         uses: docker/login-action@v2
@@ -54,7 +48,7 @@ jobs:
 
       - name: Push Docker image to GCR (Google Container Registry)
         env:
-          GIT_TAG: ${{ github.sha }}
+          GIT_TAG: v0.1.0
         run: |
             docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
             docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
