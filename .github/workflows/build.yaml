@@ -30,6 +30,8 @@ jobs:
         run: |
           go version
           echo ${{ secrets.GCP_PROJECT }}
+          echo ${{ secrets.ARTIFACT_REGISTRY }}
+          echo ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
           
 
 #      - name: Check secrets
