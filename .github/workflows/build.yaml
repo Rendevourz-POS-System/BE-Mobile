@@ -5,12 +5,15 @@ on:
     branches:
       - master
 
+env:
+  IMAGE_NAME: shelter-apps
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+  ARTIFACT_REGISTRY: $ {{ secrets.ARTIFACT_REGISTRY }}
+  CONTAINER_REGISTRY: gcr.io
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: shelter-apps
-      PROJECT_ID: ${{ secrets.GCP_PROJECT }}
 
     strategy:
       matrix:
@@ -41,19 +44,18 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:latest .
-
-      - name: Configure Docker Client
-        run: gcloud auth configure-docker --quiet # asia-southeast2-docker.pkg.dev
+#          docker build -t ${{ env.IMAGE_NAME }}:latest .
+          docker build -t gcr.io/${{ env.PROJECT_IDY }}/${{ env.IMAGE_NAME }}:latest .
 
       - name: Push Docker image to GCR (Google Container Registry)
         env:
           GIT_TAG: v0.1.0
         run: |
-            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
-            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
-            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
-            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+#            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+#            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+#            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+#            docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+            docker push gcr.io/${{ env.PROJECT_IDY }}/${{ env.IMAGE_NAME }}:latest .
 
 #  deploy:
 #    needs: build-and-push
@@ -75,27 +77,11 @@ jobs:
 #        run: |
 #          gcloud auth configure-docker asia-southeast2-docker.pkg.dev
 #
-#      - name: Build Docker image
-#        run: |
-#          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
+      - name: Build Docker image
+        run: |
+          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
 #
 #      - name: Push Docker image
 #        run: |
 #          docker push asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest
 
-#  deploy:
-#    needs: build
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - name: Deploy container with SSH
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.SSH_HOST }}
-#          username: ${{ secrets.SSH_USERNAME }}
-#          password: ${{ secrets.SSH_PASSWORD }}
-#          port: 22
-#          script: |
-#            docker login -u ${{ secrets.HUB_USERNAME }} -p ${{ secrets.HUB_TOKEN }}
-#            docker rm -f node-cicd
-#            docker pull ${{ secrets.HUB_USERNAME }}/node-cicd:${{ github.run_number }}
-#            docker run -d -p 80:3000 --name node-cicd ${{ secrets.HUB_USERNAME }}/node-cicd:${{ github.run_number }}
