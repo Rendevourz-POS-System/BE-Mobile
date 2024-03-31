@@ -48,6 +48,10 @@ jobs:
           docker build -t ${{ env.IMAGE_NAME }}:latest .
           docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/${{ env.IMAGE_NAME }}:latest .
 
+      - name: Configure Docker with gcloud
+        run: |
+          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+
       - name: Push Docker image to GCR (Google Container Registry)
         run:
 #            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
