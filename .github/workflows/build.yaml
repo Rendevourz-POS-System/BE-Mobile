@@ -10,6 +10,8 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   ARTIFACT_REGISTRY: $ {{ secrets.ARTIFACT_REGISTRY }}
   CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
+  GIT_TAG: v0.1.0
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -47,8 +49,6 @@ jobs:
           docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest .
 
       - name: Push Docker image to GCR (Google Container Registry)
-        env:
-          GIT_TAG: v0.1.0
         run: |
 #            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
 #            docker tag ${{ env.IMAGE_NAME }}:latest gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
