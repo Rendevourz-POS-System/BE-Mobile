@@ -56,6 +56,7 @@ jobs:
       - name: Build Docker image
         run: |-
           docker build -t ${{ env.IMAGE_NAME }}:latest .
+          docker ps -a
 #          docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/${{ env.IMAGE_NAME }}:latest .
 
       - name: Configure Docker with gcloud
@@ -65,7 +66,7 @@ jobs:
       - name: Push Docker image to GCR (Google Container Registry)
         run: |-
             docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker container ps -a
+            docker ps -a
           
 
 #            docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
