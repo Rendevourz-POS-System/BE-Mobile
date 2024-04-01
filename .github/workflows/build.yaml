@@ -45,7 +45,7 @@ jobs:
 
       - name: Build Docker image
         run: |-
-          docker build . --file ./Dockerfile --tag ${{ env.GAR_LOCATION }}:latest
+          docker build --tag ${{ env.GAR_LOCATION }}:latest . 
 
       - name: Login To Docker Hub
         uses: docker/login-action@v2
