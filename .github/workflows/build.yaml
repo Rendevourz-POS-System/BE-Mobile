@@ -43,6 +43,9 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+          install_components: gcloud,beta
 
 #      - name: Use gcloud CLI
 #        run: gcloud info
@@ -52,7 +55,7 @@ jobs:
 
       - name: Build Docker image
         run: |-
-          docker build -t ${{ env.GAR_LOCATION }}:latest .
+          docker build -t ${{ env.IMAGE_NAME }}:latest .
 #          docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/${{ env.IMAGE_NAME }}:latest .
 
       - name: Configure Docker with gcloud
