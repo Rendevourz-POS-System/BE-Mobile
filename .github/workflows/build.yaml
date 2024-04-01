@@ -7,7 +7,7 @@ on:
 
 env:
   IMAGE_NAME: shelter-apps
-  REGION: ${{ secrets.REGION }}
+#  REGION: ${{ secrets.REGION }}
   GAR_LOCATION: ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.GCP_PROJECT }}/docker-artifact/
   CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
   GIT_TAG: v0.1.0
@@ -37,7 +37,7 @@ jobs:
 
       - name: Configure Docker with gcloud
         run: |-
-          gcloud auth configure-docker ${{ env.GR_LOCATION }} --quiet
+          gcloud auth configure-docker ${{ secrets.ARTIFACT_REGISTRY }} --quiet
 
 #      - name: Build Docker image
 #        run: |-
