@@ -61,3 +61,7 @@ func GenerateRandomString(length int) string {
 	}
 	return string(b)
 }
+
+func ToString(value interface{}) string {
+	return value.(string)
+}

@@ -11,6 +11,7 @@ type UserUsecase interface {
 	RegisterUser(ctx context.Context, user *User.User) (*User.User, []string)
 	LoginUser(ctx context.Context, userReq *User.LoginPayload) (*User.LoginResponse, error)
 	SendEmailVerification(ctx context.Context, data *User.User, secretCode string) (res *User.User, err error)
+	GetUserByUserId(ctx context.Context, token string) (*User.User, error)
 }
 
 type UserRepository interface {
@@ -18,4 +19,5 @@ type UserRepository interface {
 	StoreOne(ctx context.Context, user *User.User) (*User.User, bool, error)
 	FindByEmail(ctx context.Context, email string) (*User.User, error)
 	GenerateAndStoreToken(ctx context.Context, userId primitive.ObjectID, email string) (string, error)
+	FindUserById(ctx context.Context, userId string) (*User.User, error)
 }

@@ -100,3 +100,11 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 	res.Username = user.Username
 	return res, nil
 }
+
+func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.User, error) {
+	user, err := u.userRepo.FindUserById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

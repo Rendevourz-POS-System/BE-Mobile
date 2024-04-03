@@ -52,7 +52,7 @@ func GenerateToken(user *User.User) (string, error) {
 }
 
 func VerifyToken(requestToken, secret string) (bool, error) {
-	errResponse := errors.New("middleware Error: sign in to proceed")
+	errResponse := errors.New("middleware Error: failed to authenticate token ! ")
 	_, err := jwt.Parse(requestToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])

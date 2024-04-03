@@ -33,7 +33,7 @@ AccessToken:
   AccessTokenHeaderPrefix: Bearer
   AccessTokenExpireHour : 24
   RefreshTokenExpireHour : 72
-  AccessTokenSecret: access_token_secret
+  AccessTokenSecret: Bearer
   RefreshTokenSecret: refresh_token_secret
   VerificationTokenExpireHour: 30
 

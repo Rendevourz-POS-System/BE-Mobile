@@ -106,3 +106,17 @@ func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId 
 	//fmt.Printf("CodeData : %v\n", test)
 	return secretCode, nil
 }
+
+func (userRepo *userRepository) FindUserById(c context.Context, userId string) (res *User.User, errs error) {
+	var user User.User
+	objectId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return nil, err
+	}
+	err = userRepo.collection.FindOne(c, bson.M{"_id": objectId}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = ""
+	return &user, nil
+}
