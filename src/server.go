@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/configs/app"
 	"main.go/configs/database"
+	Shelter "main.go/domains/shelter/handlers/http"
 	UserHttp "main.go/domains/user/handlers/http"
 	"main.go/middlewares"
 	"net/http"
@@ -40,4 +41,5 @@ func RegisterRoutes(router *gin.Engine) {
 	UserHttp.NewUserHttp(router)
 	UserHttp.NewUserTokenHttp(router)
 	RegisterMiddlewares(router)
+	Shelter.NewShelterHttp(router)
 }

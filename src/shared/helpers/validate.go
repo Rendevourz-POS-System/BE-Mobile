@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"main.go/domains/user/presistence"
 	"regexp"
 )
 
@@ -12,6 +13,9 @@ var (
 		"email":           "The %s field must be a valid email address",
 		"min":             "The %s field must be at least %s characters",
 		"alphanum_symbol": "The %s field must contain at least one letter, one number, and one symbol",
+		"number":          "The %s field must be a number",
+		"max":             "The %s field must be at most %s characters",
+		"role":            "The %s field must be a valid be either Staff or User",
 	}
 	validate *validator.Validate
 )
@@ -24,7 +28,13 @@ func NewValidator() *validator.Validate {
 	if err != nil {
 		panic(err)
 	}
+	err = validate.RegisterValidation("role", roleValidation)
 	return validate
+}
+
+func roleValidation(fl validator.FieldLevel) bool {
+	role := fl.Field().String()
+	return role == presistence.StaffRole || role == presistence.UserRole || role == ""
 }
 
 func isAlphanumericAndSymbol(fl validator.FieldLevel) bool {

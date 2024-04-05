@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	User "main.go/domains/user/entities"
-	"main.go/domains/user/presistence"
+	"main.go/shared/collections"
 	"main.go/shared/helpers"
 )
 
@@ -17,7 +17,7 @@ type userRepository struct {
 }
 
 func NewUserRepository(database *mongo.Database) *userRepository {
-	return &userRepository{database, database.Collection(presistence.UserCollectionName)}
+	return &userRepository{database, database.Collection(collections.UserCollectionName)}
 }
 
 func (userRepo *userRepository) FindAll(c context.Context) (res []User.User, err error) {
@@ -87,13 +87,13 @@ func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId 
 		ExpiredAt: helpers.GetCurrentTime(&minute),
 		DeletedAt: nil,
 	}
-	data, err := userRepo.database.Collection(presistence.UserTokenCollectionName).InsertOne(c, userToken)
+	data, err := userRepo.database.Collection(collections.UserTokenCollectionName).InsertOne(c, userToken)
 	if err != nil {
 		return "", err
 	}
 	// Fetch the newly inserted document to return a complete user object, including its new _id
 	var newUserToken *User.UserToken
-	if err = userRepo.database.Collection(presistence.UserTokenCollectionName).FindOne(c, bson.M{"_id": data.InsertedID}).Decode(&newUserToken); err != nil {
+	if err = userRepo.database.Collection(collections.UserTokenCollectionName).FindOne(c, bson.M{"_id": data.InsertedID}).Decode(&newUserToken); err != nil {
 		return "", err // Return any error encountered during fetching
 	}
 	//fmt.Printf("UserData : %v\n", newUserToken)

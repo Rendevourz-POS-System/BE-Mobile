@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
@@ -32,20 +33,18 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 		errs = helpers.CustomError(err)
 		return nil, errs
 	}
-	user.Verified = false
-	user.CreatedAt = helpers.GetCurrentTime(nil)
-	user.Password, err = helpers.HashPassword(user.Password)
+	datas := u.setDefaultUserData(user)
 	if err != nil {
 		errs = append(errs, err.Error())
 		return nil, errs
 	}
-	data, checkUserData, err2 := u.userRepo.StoreOne(ctx, user)
+	resData, checkUserData, err2 := u.userRepo.StoreOne(ctx, datas)
 	if err2 != nil {
 		errs = append(errs, err2.Error())
 		return nil, errs
 	}
-	if data != nil && !checkUserData {
-		secretCode, err := u.userRepo.GenerateAndStoreToken(ctx, data.ID, data.Email)
+	if resData != nil && !checkUserData {
+		secretCode, err := u.userRepo.GenerateAndStoreToken(ctx, resData.ID, resData.Email)
 		if err != nil {
 			errs = append(errs, err.Error())
 			return nil, errs
@@ -55,9 +54,29 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 			errs = append(errs, SendEmailVerification.Error())
 			return nil, errs
 		}
-		return data, nil
+		return resData, nil
 	}
-	return data, nil
+	return resData, nil
+}
+
+func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
+	StaffSatus := helpers.CheckStaffStatus(user.Role)
+	return &User.User{
+		Nik:                user.Nik,
+		Email:              user.Email,
+		Username:           user.Username,
+		PostalCode:         user.PostalCode,
+		Province:           user.Province,
+		PhoneNumber:        user.PhoneNumber,
+		Password:           helpers.HashPassword(user.Password),
+		Address:            user.Address,
+		City:               user.City,
+		Verified:           false,
+		ShelterIsActivated: false,
+		StaffStatus:        StaffSatus,
+		Role:               helpers.GetRole(user.Role),
+		CreatedAt:          helpers.GetCurrentTime(nil),
+	}
 }
 
 func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User, secretCode string) (res *User.User, err error) {
@@ -83,14 +102,14 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 		return nil, err
 	}
 	if user == nil {
-		return nil, fmt.Errorf("user has not register yet ! ")
+		return nil, errors.New("user has not register yet ! ")
 	}
 	ok := helpers.ComparePassword(userReq.Password, user.Password)
 	if !ok {
-		return nil, fmt.Errorf("password or email doesn't match ! ")
+		return nil, errors.New("password or email doesn't match ! ")
 	}
 	if !user.Verified {
-		return nil, fmt.Errorf("user is not active ! ")
+		return nil, errors.New("user is not active ! ")
 	}
 	token, err := helpers.GenerateToken(user)
 	if err != nil {

@@ -8,14 +8,22 @@ import (
 
 // Entities
 type User struct {
-	ID        primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-	Email     string             `json:"Email" bson:"email" validate:"required,email"`
-	Username  string             `json:"Username" bson:"username" validate:"required,min=4"`
-	Password  string             `json:"Password" bson:"password" validate:"required,min=8,alphanum_symbol"`
-	Role      string             `json:"Role" bson:"role"`
-	Verified  bool               `json:"Verified" bson:"is_active"`
-	CreatedAt *time.Time         `json:"createdAt" bson:"CreatedAt,omitempty"`
-	DeletedAt *time.Time         `json:"deletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	ID                 primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
+	Nik                string             `json:"Nik" bson:"nik" validate:"required"`
+	PhoneNumber        string             `json:"PhoneNumber" bson:"phone_number" validate:"required,number"`
+	Address            string             `json:"Address" bson:"address" validate:"required"`
+	City               string             `json:"City" bson:"city" validate:"required"`
+	PostalCode         int                `json:"PostalCode" bson:"postal_code" validate:"required,number"`
+	Province           string             `json:"Province" bson:"province" validate:"required"`
+	Email              string             `json:"Email" bson:"email" validate:"required,email"`
+	Username           string             `json:"Username" bson:"username" validate:"required,min=4"`
+	Password           string             `json:"Password" bson:"password" validate:"required,min=8,alphanum_symbol"`
+	StaffStatus        bool               `json:"StaffStatus" bson:"staff_status" default:"false" validate:"omitempty"`
+	ShelterIsActivated bool               `json:"ShelterIsActivated" bson:"shelter_is_activated" default:"false" validate:"omitempty"`
+	Role               string             `json:"Role" bson:"role" validate:"omitempty,required,role" default:"User"`
+	Verified           bool               `json:"Verified" bson:"is_active"`
+	CreatedAt          *time.Time         `json:"createdAt" bson:"CreatedAt,omitempty"`
+	DeletedAt          *time.Time         `json:"deletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
 type (

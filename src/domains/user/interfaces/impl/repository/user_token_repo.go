@@ -2,7 +2,7 @@ package repository
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
-	"main.go/domains/user/presistence"
+	"main.go/shared/collections"
 )
 
 type userTokenRepo struct {
@@ -11,7 +11,7 @@ type userTokenRepo struct {
 }
 
 func NewUserTokenRepository(database *mongo.Database) *userTokenRepo {
-	return &userTokenRepo{database, database.Collection(presistence.UserTokenCollectionName)}
+	return &userTokenRepo{database, database.Collection(collections.UserTokenCollectionName)}
 }
 
 func (repo *userTokenRepo) StoreToken(token string) error {

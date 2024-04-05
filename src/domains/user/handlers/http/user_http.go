@@ -12,6 +12,7 @@ import (
 	"main.go/domains/user/interfaces/impl/usecase"
 	"main.go/middlewares"
 	"main.go/shared/helpers"
+	"main.go/shared/message/errors"
 	"net/http"
 )
 
@@ -29,7 +30,10 @@ func NewUserHttp(router *gin.Engine) *UserHttp {
 		guest.GET("/", handler.FindAll)
 		guest.POST("/register", handler.RegisterUsers)
 		guest.POST("/login", handler.LoginUsers)
-		guest.GET("data", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret), handler.FindUserByToken)
+	}
+	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	{
+		user.GET("data", handler.FindUserByToken)
 	}
 	return handler
 }
@@ -37,9 +41,8 @@ func NewUserHttp(router *gin.Engine) *UserHttp {
 func (userHttp *UserHttp) FindAll(c *gin.Context) {
 	data, err := userHttp.userUsecase.GetAllData(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, errors.ErrorWrapper{
+			Message: "Failed To Get All Data ! ", Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, data)
@@ -48,14 +51,14 @@ func (userHttp *UserHttp) FindAll(c *gin.Context) {
 func (userHttp *UserHttp) LoginUsers(c *gin.Context) {
 	user := &User.LoginPayload{}
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{
+			Message: "Failed To Parse Request ! ", Error: err.Error()})
 		return
 	}
 	res, err := userHttp.userUsecase.LoginUser(c, user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{
+			Message: "Failed To Login ! ", Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
@@ -64,14 +67,12 @@ func (userHttp *UserHttp) LoginUsers(c *gin.Context) {
 func (userHttp *UserHttp) RegisterUsers(c *gin.Context) {
 	user := &User.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
 	}
 	res, err := userHttp.userUsecase.RegisterUser(c, user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errors": err,
-		})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{ErrorS: err})
 		return
 	}
 	c.JSON(http.StatusOK, res)
@@ -82,9 +83,7 @@ func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
 	fmt.Println("UserId: ", userId)
 	data, err := userHttp.userUsecase.GetUserByUserId(c, userId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, data)

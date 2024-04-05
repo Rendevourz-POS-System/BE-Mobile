@@ -2,7 +2,7 @@ package database
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
-	UserPresistence "main.go/domains/user/presistence"
+	"main.go/shared/collections"
 )
 
 var (
@@ -11,7 +11,7 @@ var (
 )
 
 func Migrate(db *mongo.Client, dbName string) error {
-	User = db.Database(dbName).Collection(UserPresistence.UserCollectionName)
-	UserToken = db.Database(dbName).Collection(UserPresistence.UserTokenCollectionName)
+	User = db.Database(dbName).Collection(collections.UserCollectionName)
+	UserToken = db.Database(dbName).Collection(collections.UserTokenCollectionName)
 	return nil
 }

@@ -1,10 +1,14 @@
 package helpers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
+	"main.go/domains/user/presistence"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -20,16 +24,16 @@ func ParseDatabase(database string) string {
 	return _const.DB_SHELTER_APP
 }
 
-func HashPassword(password string) (string, error) {
+func HashPassword(password string) string {
 	if argon == nil {
 		config := argon2.DefaultConfig()
 		argon = &config
 	}
 	hashedPassword, err := argon.HashEncoded([]byte(password))
 	if err != nil {
-		return "", err // Return the error to be handled by the caller
+		return ""
 	}
-	return string(hashedPassword), nil
+	return string(hashedPassword)
 }
 
 func ComparePassword(hashedPassword, password string) bool {
@@ -64,4 +68,40 @@ func GenerateRandomString(length int) string {
 
 func ToString(value interface{}) string {
 	return value.(string)
+}
+
+func CheckStaffStatus(value string) bool {
+	if value == presistence.StaffRole {
+		return true
+	}
+	return false
+}
+
+func GetRole(value string) string {
+	if value == presistence.StaffRole {
+		return presistence.StaffRole
+	}
+	return presistence.UserRole
+}
+
+func ParseStringToInt(value string) int {
+	result, _ := strconv.Atoi(value)
+	return result
+}
+
+func GetUserId(c *gin.Context) primitive.ObjectID {
+	userId, _ := c.MustGet("x-user-id").(string)
+	userID, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		panic("Failed to get user id from middlewares !")
+	}
+	return userID
+}
+
+func ParseStringToObjectId(value string) primitive.ObjectID {
+	objectId, err := primitive.ObjectIDFromHex(value)
+	if err != nil {
+		panic("Failed to parse string to object id !")
+	}
+	return objectId
 }
