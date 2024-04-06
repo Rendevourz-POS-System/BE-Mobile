@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
+	ShelterPresistence "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
 	"math/rand"
 	"strconv"
@@ -104,4 +105,11 @@ func ParseStringToObjectId(value string) primitive.ObjectID {
 		panic("Failed to parse string to object id !")
 	}
 	return objectId
+}
+
+func CheckPetGender(value string) string {
+	if value == ShelterPresistence.PetGenderMale || value == ShelterPresistence.PetGenderFemale {
+		return value
+	}
+	return ""
 }

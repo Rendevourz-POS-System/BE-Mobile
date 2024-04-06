@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	ShelterConst "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
 	"regexp"
 )
@@ -16,6 +17,7 @@ var (
 		"number":          "The %s field must be a number",
 		"max":             "The %s field must be at most %s characters",
 		"role":            "The %s field must be a valid be either Staff or User",
+		"pet-gender":      "The %s field must be a valid be either Male or Female",
 	}
 	validate *validator.Validate
 )
@@ -29,7 +31,13 @@ func NewValidator() *validator.Validate {
 		panic(err)
 	}
 	err = validate.RegisterValidation("role", roleValidation)
+	err = validate.RegisterValidation("pet-gender", petGenderValidation)
 	return validate
+}
+
+func petGenderValidation(fl validator.FieldLevel) bool {
+	gender := fl.Field().String()
+	return gender == ShelterConst.PetGenderMale || gender == ShelterConst.PetGenderFemale
 }
 
 func roleValidation(fl validator.FieldLevel) bool {
@@ -61,11 +69,3 @@ func CustomError(err error) (errsMsg []string) {
 	//}
 	return errsMsg
 }
-
-//func ValidateStruct(s interface{}) error {
-//	return NewValidator().Struct(s)
-//}
-//
-//func RegisterValidation(tag string, fn validator.Func, callValidationEvenIfNull ...bool) error {
-//	return NewValidator().RegisterValidation(tag, fn, callValidationEvenIfNull...)
-//}

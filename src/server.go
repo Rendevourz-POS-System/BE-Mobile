@@ -40,6 +40,5 @@ func RegisterRoutes(router *gin.Engine) {
 	})
 	UserHttp.NewUserHttp(router)
 	UserHttp.NewUserTokenHttp(router)
-	RegisterMiddlewares(router)
 	Shelter.NewShelterHttp(router)
 }

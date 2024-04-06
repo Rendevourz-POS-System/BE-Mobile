@@ -13,13 +13,12 @@ type Shelter struct {
 	ShelterCapacity      int                `json:"ShelterCapacity" bson:"shelter_capacity" validate:"required,number"`
 	ShelterContactNumber string             `json:"ShelterContactNumber" bson:"shelter_contact_number" validate:"required,min=10"`
 	ShelterDescription   string             `json:"ShelterDescription,omitempty" bson:"shelter_description" default:""`
-	//ShelterAcceptedPetType []string           `json:"ShelterAcceptedPetType" bson:"shelter_accepted_pet_type" validate:"required"`
-	TotalPet          int        `json:"TotalPet" bson:"total_pet" default:"0"`
-	BankAccountNumber string     `json:"BankAccountNumber" bson:"bank_account_number" validate:"omitempty,required,min=10"`
-	Pin               string     `json:"Pin" bson:"pin" validate:"omitempty,required,min=6,max=8"`
-	ShelterVerified   bool       `json:"ShelterVerified" bson:"shelter_verified" default:"false"`
-	CreatedAt         *time.Time `json:"CreatedAt" bson:"CreatedAt,omitempty"`
-	DeletedAt         *time.Time `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	TotalPet             int                `json:"TotalPet" bson:"total_pet" default:"0"`
+	BankAccountNumber    string             `json:"BankAccountNumber" bson:"bank_account_number" validate:"omitempty,required,min=10"`
+	Pin                  string             `json:"Pin" bson:"pin" validate:"omitempty,required,min=6,max=8"`
+	ShelterVerified      bool               `json:"ShelterVerified" bson:"shelter_verified" default:"false"`
+	CreatedAt            *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+	DeletedAt            *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
 type (

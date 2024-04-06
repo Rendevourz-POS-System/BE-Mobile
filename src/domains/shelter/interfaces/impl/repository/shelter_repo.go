@@ -107,6 +107,13 @@ func (shelterRepo *shelterRepository) FindOneDataById(c context.Context, Id *pri
 }
 
 func (shelterRepo *shelterRepository) StoreData(c context.Context, shelter *Shelter.Shelter) (res *Shelter.Shelter, errs error) {
+	var existingShelter Shelter.Shelter
+	// Check if the shelter name already exists
+	if err := shelterRepo.collection.FindOne(c, bson.M{"shelter_name": shelter.ShelterName}).Decode(&existingShelter); err == nil {
+		if existingShelter.UserId != shelter.UserId {
+			return nil, errors.New("Shelter Name Already Exist ! ")
+		}
+	}
 	if errs = shelterRepo.collection.FindOneAndUpdate(c, bson.M{"user_id": shelter.UserId}, bson.M{"$set": shelter}).Err(); errs == nil {
 		if errs = shelterRepo.collection.FindOne(c, bson.M{"user_id": shelter.UserId}).Decode(&res); errs == nil {
 			return res, errors.New("Shelter already exist & Updated ! ")
