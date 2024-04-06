@@ -21,28 +21,17 @@ func NewShelterRepository(database *mongo.Database) *shelterRepository {
 }
 
 func (shelterRepo *shelterRepository) paginationShelter(search *Shelter.ShelterSearch) *options.FindOptions {
-	//if search.Page > 0 {
-	//	filter = append(filter, bson.E{
-	//		Key:   "$skip",
-	//		Value: (search.Page - 1) * search.PageSize,
-	//	})
-	//}
-	//if search.PageSize > 0 {
-	//	filter = append(filter, bson.E{
-	//		Key:   "$limit",
-	//		Value: search.PageSize,
-	//	})
-	//}
 	findOptions := options.Find()
+	orderBy := "CreatedAt" // Default sorting field "CreatedAt
+	sortOrder := 1         // Ascending
 	// Sorting
-	if search.OrderBy != "" || search.Sort != "" {
-		orderBy := search.OrderBy
-		sortOrder := 1 // Ascending
-		if search.Sort == "Desc" {
-			sortOrder = -1 // Descending
-		}
-		findOptions.SetSort(bson.D{{Key: orderBy, Value: sortOrder}})
+	if search.Sort == "Desc" {
+		sortOrder = -1 // Descending
 	}
+	if search.OrderBy != "" {
+		orderBy = search.OrderBy
+	}
+	findOptions.SetSort(bson.D{{Key: orderBy, Value: sortOrder}})
 	// Pagination
 	if search.Page > 0 && search.PageSize > 0 {
 		skip := (search.Page - 1) * search.PageSize

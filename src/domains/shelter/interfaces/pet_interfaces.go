@@ -1,10 +1,14 @@
 package interfaces
 
-import Pet "main.go/domains/shelter/entities"
+import (
+	"context"
+	Pet "main.go/domains/shelter/entities"
+)
 
 type PetRepository interface {
+	FindAllPets(ctx context.Context, search *Pet.PetSearch) ([]Pet.Pet, error)
 }
 
 type PetUseCase interface {
-	GetAllPets(search *Pet.PetSearch) ([]Pet.Pet, error)
+	GetAllPets(ctx context.Context, search *Pet.PetSearch) ([]Pet.Pet, error)
 }
