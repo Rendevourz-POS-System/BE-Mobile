@@ -13,7 +13,7 @@ func NewPetUseCase(petRepo interfaces.PetRepository) *petUseCase {
 	return &petUseCase{petRepo}
 }
 
-func (u *petUseCase) GetAllPets(search *Pet.PetSearch) ([]Pet.PetSearch, error) {
+func (u *petUseCase) GetAllPets(search *Pet.PetSearch) ([]Pet.Pet, error) {
 
 	return nil, nil
 }
