@@ -40,7 +40,7 @@ func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 		AgeStart: helpers.ParseStringToInt(ctx.Query("age_start")),
 		AgeEnd:   helpers.ParseStringToInt(ctx.Query("age_end")),
 	}
-	data, err := h.petUsecase.GetAllPets(search)
+	data, err := h.petUsecase.GetAllPets(ctx, search)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
