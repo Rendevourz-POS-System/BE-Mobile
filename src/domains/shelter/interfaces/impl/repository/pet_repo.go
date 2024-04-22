@@ -103,7 +103,14 @@ func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res [
 }
 
 func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res []Pet.Pet, err []string) {
-	if _, errs := r.collection.InsertOne(ctx, data); errs != nil {
+	var errs error
+	var insertedResult *mongo.InsertOneResult
+	if insertedResult, errs = r.collection.InsertOne(ctx, data); errs != nil {
+		err = append(err, errs.Error())
+		return nil, err
+	}
+	if errs = r.collection.FindOne(ctx, bson.M{"_id": insertedResult.InsertedID}).Decode(&res); errs != nil {
+		err = append(err, errs.Error())
 		return nil, err
 	}
 	return res, nil
