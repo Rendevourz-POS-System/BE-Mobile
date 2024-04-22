@@ -48,9 +48,7 @@ func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 	}
 	data, err := shelterHttp.shelterUsecase.GetAllData(c, search)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Get Shelter Data ! ", Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, data)
@@ -59,7 +57,7 @@ func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 	shelter := &Shelter.Shelter{}
 	if err := c.ShouldBindJSON(&shelter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return
 	}
 	shelter.UserId = helpers.GetUserId(c)

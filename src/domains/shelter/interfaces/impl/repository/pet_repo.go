@@ -101,3 +101,10 @@ func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res [
 	}
 	return res, nil
 }
+
+func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res []Pet.Pet, err []string) {
+	if _, errs := r.collection.InsertOne(ctx, data); errs != nil {
+		return nil, err
+	}
+	return res, nil
+}

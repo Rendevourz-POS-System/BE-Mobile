@@ -6,6 +6,7 @@ var ShelterFilterTable = map[string]bool{
 }
 
 const (
-	PetGenderMale   = "Male"
-	PetGenderFemale = "Female"
+	PetGenderMale    = "Male"
+	PetGenderFemale  = "Female"
+	PetGenderUnknown = "Unknown"
 )

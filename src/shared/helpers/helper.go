@@ -113,3 +113,7 @@ func CheckPetGender(value string) string {
 	}
 	return ""
 }
+
+func GenerateFileName(filename string) string {
+	return GenerateRandomString(10) + "_" + filename
+}

@@ -18,6 +18,7 @@ var (
 		"max":             "The %s field must be at most %s characters",
 		"role":            "The %s field must be a valid be either Staff or User",
 		"pet-gender":      "The %s field must be a valid be either Male or Female",
+		"pet-age":         "The %s field must be a valid number and greater than or equal to 0",
 	}
 	validate *validator.Validate
 )
@@ -32,12 +33,18 @@ func NewValidator() *validator.Validate {
 	}
 	err = validate.RegisterValidation("role", roleValidation)
 	err = validate.RegisterValidation("pet-gender", petGenderValidation)
+	err = validate.RegisterValidation("pet-age", petAgeValidation)
 	return validate
+}
+
+func petAgeValidation(fl validator.FieldLevel) bool {
+	age := fl.Field().Int()
+	return age >= 0
 }
 
 func petGenderValidation(fl validator.FieldLevel) bool {
 	gender := fl.Field().String()
-	return gender == ShelterConst.PetGenderMale || gender == ShelterConst.PetGenderFemale
+	return gender == ShelterConst.PetGenderMale || gender == ShelterConst.PetGenderFemale || gender == ShelterConst.PetGenderUnknown
 }
 
 func roleValidation(fl validator.FieldLevel) bool {

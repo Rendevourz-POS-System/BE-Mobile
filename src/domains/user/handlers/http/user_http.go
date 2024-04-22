@@ -51,14 +51,12 @@ func (userHttp *UserHttp) FindAll(c *gin.Context) {
 func (userHttp *UserHttp) LoginUsers(c *gin.Context) {
 	user := &User.LoginPayload{}
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{
-			Message: "Failed To Parse Request ! ", Error: err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse Request ! ", Error: err.Error()})
 		return
 	}
 	res, err := userHttp.userUsecase.LoginUser(c, user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{
-			Message: "Failed To Login ! ", Error: err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Login ! ", Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
