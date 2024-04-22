@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/domains/shelter/interfaces"
 	"main.go/shared/helpers"
@@ -23,7 +22,7 @@ func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res
 	return res, nil
 }
 
-func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res []Pet.Pet, err []string) {
+func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res *Pet.Pet, err []string) {
 	validate := helpers.NewValidator()
 	// Validate data
 	if errs := validate.Struct(pet); errs != nil {
@@ -37,6 +36,5 @@ func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res []
 	if res, err = u.petRepo.StorePets(ctx, &pet.Pet); err != nil {
 		return nil, err
 	}
-	fmt.Println("petData", pet.Pet)
 	return res, nil
 }

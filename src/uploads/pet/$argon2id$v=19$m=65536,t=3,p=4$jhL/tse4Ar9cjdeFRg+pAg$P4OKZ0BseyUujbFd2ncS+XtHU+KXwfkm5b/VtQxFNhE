@@ -1,0 +1,271 @@
+{
+	"info": {
+		"_postman_id": "8941dab7-c3c4-46fd-ad14-71533bd3d7e5",
+		"name": "Shelter-Apps",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17446633",
+		"_collection_link": "https://gold-rocket-788517.postman.co/workspace/Shelter-apps-API~8d099998-e684-4416-9852-45f8267a77eb/collection/17446633-8941dab7-c3c4-46fd-ad14-71533bd3d7e5?action=share&source=collection_link&creator=17446633"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get All User Data",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_port}}/user",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Data By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjY2MDU4MTMyZGQwNGMxYmJlMmFhOWNhNSIsIkVtYWlsIjoid29vZG91MjZAZ21haWwuY29tIiwiVXNlcm5hbWUiOiJBZHJvIiwiZXhwIjoxNzEyMjQxNjAyfQ.8BsPE5Bm8i7yKoLbhhm_I4WRg13hAFRUxA6jjgSWbhM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_port}}/user/data",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"user",
+								"data"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth Login",
+			"item": [
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Email\" : \"reagentreagent3@gmail.com\",\r\n    \"Password\" : \"Testing@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_port}}/user/login",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create One User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "asdas",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Email\" : \"reagentreagent3@gmail.com\",\r\n    \"Nik\" : \"3173021410020003\",\r\n    \"PhoneNumber\" : \"123123123\",\r\n    \"City\" : \"Indonesia\",\r\n    \"Address\" : \"LALAL\",\r\n    \"PostalCode\" : 11460,\r\n    \"Province\" : \"Jawa Barat\",\r\n    \"Username\" : \"Adro\",\r\n    \"Password\" : \"Testing@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_port}}/user/register",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shelter",
+			"item": [
+				{
+					"name": "Find All Shelter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_port}}/shelter/?search=A-Shelter&page=1&page_size=50",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"shelter",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "A-Shelter"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Create Shelter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ShelterName\" : \"B-Shelter\",\r\n    \"ShelterLocation\" : \"Pekan Barus OIT\",\r\n    \"ShelterCapacity\" : 3,\r\n    \"ShelterContactNumber\" : \"+6281944426902\",\r\n    \"ShelterDescription\" : \"Test Aj Bang\",\r\n    // \"TotalPet\": 0, // Nullable\r\n    // \"BankAccountNumber\": \"\", // Nullable\r\n    \"Pin\" : \"123321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_port}}/shelter/register",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"shelter",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Data By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_port}}/shelter/6610608d116e9f21f42a7b97",
+							"host": [
+								"{{local_port}}"
+							],
+							"path": [
+								"shelter",
+								"6610608d116e9f21f42a7b97"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjY2MTA1ZDAyZmM2NjBmN2YxZTc0NDg5YyIsIkVtYWlsIjoicmVhZ2VudHJlYWdlbnQzQGdtYWlsLmNvbSIsIlVzZXJuYW1lIjoiQWRybyIsImV4cCI6MTcxMjQzNDg0NH0.SKq3WHw7vT5H83-xFomhRRERILJcY4fUDjVbolUII8s",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local_port",
+			"value": "localhost:8080",
+			"type": "string"
+		}
+	]
+}

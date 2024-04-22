@@ -102,7 +102,7 @@ func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res [
 	return res, nil
 }
 
-func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res []Pet.Pet, err []string) {
+func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res *Pet.Pet, err []string) {
 	var errs error
 	var insertedResult *mongo.InsertOneResult
 	if insertedResult, errs = r.collection.InsertOne(ctx, data); errs != nil {
