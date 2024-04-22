@@ -107,6 +107,10 @@ func ParseStringToObjectId(value string) primitive.ObjectID {
 	return objectId
 }
 
+func ParseObjectIdToString(value primitive.ObjectID) string {
+	return value.Hex()
+}
+
 func CheckPetGender(value string) string {
 	if value == ShelterPresistence.PetGenderMale || value == ShelterPresistence.PetGenderFemale {
 		return value
