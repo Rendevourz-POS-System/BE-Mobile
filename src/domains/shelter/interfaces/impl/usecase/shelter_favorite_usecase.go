@@ -15,7 +15,11 @@ func NewShelterFavoriteUseCase(shelterFavoriteRepo interfaces.ShelterFavoriteRep
 }
 
 func (u *shelterFavoriteUseCase) UpdateIsFavoriteShelter(ctx context.Context, req *Shelter.ShelterFavoriteCreate) error {
-	if err := u.shelterFavoriteRepo.StoreOrUpdateIsFavorite(ctx, req); err != nil {
+	request := &Shelter.ShelterFavorite{
+		ShelterId: req.ShelterId,
+		UserId:    req.UserId,
+	}
+	if err := u.shelterFavoriteRepo.StoreOrUpdateIsFavorite(ctx, request); err != nil {
 		return err
 	}
 	return nil

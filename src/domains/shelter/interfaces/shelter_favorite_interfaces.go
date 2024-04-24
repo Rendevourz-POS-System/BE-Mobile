@@ -10,5 +10,5 @@ type ShelterFavoriteUseCase interface {
 }
 
 type ShelterFavoriteRepository interface {
-	StoreOrUpdateIsFavorite(ctx context.Context, req *Shelter.ShelterFavoriteCreate) error
+	StoreOrUpdateIsFavorite(ctx context.Context, req *Shelter.ShelterFavorite) error
 }

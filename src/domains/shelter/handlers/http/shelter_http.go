@@ -34,9 +34,26 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 		user.GET("/my-shelter", handler.FindOneByUserId)
 		user.GET("/:id", handler.FindOneById)
 		user.POST("/register", handler.RegisterShelter)
+		//user.GET("/favorite", handler.FindAllFavorite)
 	}
 	return handler
 }
+
+//func (shelterHttp *ShelterHttp) FindAllFavorite(c *gin.Context) {
+//	search := &Shelter.ShelterSearch{
+//		Search:   c.Query("search"),
+//		Page:     helpers.ParseStringToInt(c.Query("page")),
+//		PageSize: helpers.ParseStringToInt(c.Query("page_size")),
+//		Sort:     c.Query("sort"),
+//		OrderBy:  c.Query("order_by"),
+//	}
+//	data, err := shelterHttp.shelterUsecase.GetAllData(c, search)
+//	if err != nil {
+//		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Get Shelter Data ! ", Error: err.Error()})
+//		return
+//	}
+//	c.JSON(http.StatusOK, data)
+//}
 
 func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 	search := &Shelter.ShelterSearch{

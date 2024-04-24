@@ -25,19 +25,9 @@ func NewShelterFavoriteHttp(router *gin.Engine) *ShelterFavoriteHttp {
 	}
 	user := router.Group("/shelter_favorite", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
-		user.GET("/get_all", handler.GetAllData)
 		user.POST("update", handler.UpdateData)
 	}
 	return handler
-}
-
-func (shelterFavorite *ShelterFavoriteHttp) GetAllData(ctx *gin.Context) {
-	//data, err := shelterFavorite.shelterFavoriteUseCase.GetAllData(ctx)
-	//if err != nil {
-	//	ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to get data", Error: err.Error()})
-	//	return
-	//}
-	//ctx.JSON(http.StatusOK, data)
 }
 
 func (shelterFavorite *ShelterFavoriteHttp) UpdateData(ctx *gin.Context) {
@@ -46,7 +36,7 @@ func (shelterFavorite *ShelterFavoriteHttp) UpdateData(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to process request", Error: err.Error()})
 		return
 	}
-	data.ShelterId = helpers.ParseObjectIdToString(helpers.GetUserId(ctx))
+	data.UserId = helpers.ParseObjectIdToString(helpers.GetUserId(ctx))
 	err := shelterFavorite.shelterFavoriteUseCase.UpdateIsFavoriteShelter(ctx, data)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to update data", Error: err.Error()})
