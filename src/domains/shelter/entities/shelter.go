@@ -29,5 +29,6 @@ type (
 		OrderBy   string             `json:"OrderBy"`
 		Sort      string             `json:"Sort"`
 		ShelterId primitive.ObjectID `json:"ShelterId"`
+		UserId    primitive.ObjectID `json:"UserId"`
 	}
 )

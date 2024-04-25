@@ -67,9 +67,37 @@ func (shelterRepo *shelterRepository) filterShelter(search *Shelter.ShelterSearc
 	return filter
 }
 
+func (shelterRepo *shelterRepository) getAllFavoriteShelters(c context.Context, userID *primitive.ObjectID) (shelterIDs []primitive.ObjectID, err error) {
+	cursor, errs := shelterRepo.database.Collection(collections.ShelterFavoriteName).Find(c, bson.M{"user_id": userID})
+	if errs != nil {
+		if errs == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, errs
+	}
+	for cursor.Next(c) {
+		var favorite Shelter.ShelterFavorite
+		if err = cursor.Decode(&favorite); err != nil {
+			return nil, err
+		}
+		shelterIDs = append(shelterIDs, favorite.ShelterId)
+	}
+	return shelterIDs, nil
+}
+
 func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *Shelter.ShelterSearch) (res []Shelter.Shelter, err error) {
 	filter := shelterRepo.filterShelter(search)          // Filter
 	findOptions := shelterRepo.paginationShelter(search) // Pagination
+	if search.UserId != primitive.NilObjectID {
+		favoriteShelterIDs, errs := shelterRepo.getAllFavoriteShelters(c, &search.UserId)
+		if errs != nil {
+			return nil, errs
+		}
+		filter = append(filter, bson.E{
+			Key:   "_id",
+			Value: bson.M{"$in": favoriteShelterIDs},
+		})
+	}
 	data, err := shelterRepo.collection.Find(c, filter, findOptions)
 	if err != nil {
 		return nil, err

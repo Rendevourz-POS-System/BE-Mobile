@@ -36,7 +36,7 @@ func (shelterFavorite *ShelterFavoriteHttp) UpdateData(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to process request", Error: err.Error()})
 		return
 	}
-	data.UserId = helpers.ParseObjectIdToString(helpers.GetUserId(ctx))
+	data.UserId = helpers.GetUserId(ctx)
 	err := shelterFavorite.shelterFavoriteUseCase.UpdateIsFavoriteShelter(ctx, data)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to update data", Error: err.Error()})
