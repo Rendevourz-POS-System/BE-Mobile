@@ -93,10 +93,12 @@ func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *She
 		if errs != nil {
 			return nil, errs
 		}
-		filter = append(filter, bson.E{
-			Key:   "_id",
-			Value: bson.M{"$in": favoriteShelterIDs},
-		})
+		if len(favoriteShelterIDs) > 0 {
+			filter = append(filter, bson.E{
+				Key:   "_id",
+				Value: bson.M{"$in": favoriteShelterIDs},
+			})
+		}
 	}
 	data, err := shelterRepo.collection.Find(c, filter, findOptions)
 	if err != nil {
