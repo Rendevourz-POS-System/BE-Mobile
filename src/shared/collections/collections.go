@@ -7,4 +7,5 @@ const (
 	ShelterCollectionName   = "shelters"
 	PetCollectionName       = "pets"
 	ShelterFavoriteName     = "shelter_favorites"
+	PetTypeName             = "pet_types"
 )

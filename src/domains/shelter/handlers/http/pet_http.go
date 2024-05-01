@@ -48,21 +48,20 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return
 	}
-	files := form.File["files"]
-	for _, file := range files {
-		filename := helpers.HashPassword(file.Filename)
-		err := ctx.SaveUploadedFile(file, fmt.Sprintf("uploads/pet/%s", filename))
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Save File ! ", Errors: err})
-			return
-		} else {
-			pet.Pet.ImagePath = append(pet.Pet.ImagePath, filename)
-		}
-	}
 	data, err := h.petUsecase.CreatePets(ctx, pet)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: err})
 		return
+	}
+	files := form.File["files"]
+	for _, file := range files {
+		err := ctx.SaveUploadedFile(file, fmt.Sprintf("uploads/%s/pets/%s", data.ID, file.Filename))
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Save File ! ", Errors: err})
+			return
+		} else {
+			pet.Pet.ImagePath = append(pet.Pet.ImagePath, file.Filename)
+		}
 	}
 	ctx.JSON(http.StatusOK, data)
 }

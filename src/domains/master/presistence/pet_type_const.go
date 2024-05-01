@@ -1,10 +1,10 @@
 package presistence
 
-type PetType string
+type PetTypes string
 
 const (
-	Dog     PetType = "Dog"
-	Cat     PetType = "Cat"
-	Rabbit  PetType = "Rabbit"
-	Hamster PetType = "Hamster"
+	Dog     PetTypes = "Dog"
+	Cat     PetTypes = "Cat"
+	Rabbit  PetTypes = "Rabbit"
+	Hamster PetTypes = "Hamster"
 )

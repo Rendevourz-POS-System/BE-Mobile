@@ -6,12 +6,18 @@ import (
 )
 
 var (
-	User      *mongo.Collection
-	UserToken *mongo.Collection
+	User             *mongo.Collection
+	UserToken        *mongo.Collection
+	PetType          *mongo.Collection
+	ShelterFavorites *mongo.Collection
+	Shelter          *mongo.Collection
 )
 
 func Migrate(db *mongo.Client, dbName string) error {
 	User = db.Database(dbName).Collection(collections.UserCollectionName)
 	UserToken = db.Database(dbName).Collection(collections.UserTokenCollectionName)
+	Shelter = db.Database(dbName).Collection(collections.ShelterCollectionName)
+	PetType = db.Database(dbName).Collection(collections.PetTypeName)
+	ShelterFavorites = db.Database(dbName).Collection(collections.ShelterFavoriteName)
 	return nil
 }

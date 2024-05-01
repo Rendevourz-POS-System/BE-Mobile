@@ -26,9 +26,15 @@ func main() {
 			log.Fatalf("Error closing database: %v", err)
 		}
 	}()
+	// Migrate database
 	Migrate(db, _const.DB_SHELTER_APP)
+	// Create indexes
+	SetupDatabaseIndexes(db, _const.DB_SHELTER_APP)
+	// Register Trusted Proxy And Certificate
 	RegisterTrustedProxies(app)
+	// Register Middleware
 	RegisterMiddlewares(app)
+	// Register Routes
 	RegisterRoutes(app)
 	err := app.Run(fmt.Sprintf(":%d", appConfig.GetConfig().App.Port))
 	if err != nil {
