@@ -115,3 +115,23 @@ func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res *Pet.Pet, e
 	}
 	return res, nil
 }
+
+func (r *petRepo) UpdatePet(ctx context.Context, pet *Pet.Pet) (res *Pet.Pet, errs error) {
+	filter := bson.D{{Key: "_id", Value: pet.ID}}
+	update := bson.D{{Key: "$set", Value: pet}}
+	// Perform the update operation
+	result, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.MatchedCount == 0 {
+		return nil, mongo.ErrNoDocuments
+	}
+	// Optionally, you can retrieve the updated document
+	err = r.collection.FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

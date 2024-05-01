@@ -4,6 +4,7 @@
     <inspection_tool class="GoDfaErrorMayBeNotNil" enabled="true" level="WARNING" enabled_by_default="true">
       <methods>
         <method importPath="go.mongodb.org/mongo-driver/mongo" receiver="*Collection" name="Find" />
+        <method importPath="main.go/domains/shelter/handlers/http" receiver="*PetHttp" name="moveUploadedFile" />
       </methods>
     </inspection_tool>
   </profile>
