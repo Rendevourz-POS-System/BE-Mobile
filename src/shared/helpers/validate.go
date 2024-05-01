@@ -5,20 +5,22 @@ import (
 	"github.com/go-playground/validator/v10"
 	ShelterConst "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
+	"reflect"
 	"regexp"
 )
 
 var (
 	errorMsg = map[interface{}]string{
-		"required":        "The %s field is required",
-		"email":           "The %s field must be a valid email address",
-		"min":             "The %s field must be at least %s characters",
-		"alphanum_symbol": "The %s field must contain at least one letter, one number, and one symbol",
-		"number":          "The %s field must be a number",
-		"max":             "The %s field must be at most %s characters",
-		"role":            "The %s field must be a valid be either Staff or User",
-		"pet-gender":      "The %s field must be a valid be either Male or Female",
-		"pet-age":         "The %s field must be a valid number and greater than or equal to 0",
+		"required":         "The %s field is required",
+		"email":            "The %s field must be a valid email address",
+		"min":              "The %s field must be at least %s characters",
+		"alphanum_symbol":  "The %s field must contain at least one letter, one number, and one symbol",
+		"number":           "The %s field must be a number",
+		"max":              "The %s field must be at most %s characters",
+		"role":             "The %s field must be a valid be either Staff or User",
+		"pet-gender":       "The %s field must be a valid be either Male or Female",
+		"pet-age":          "The %s field must be a valid number and greater than or equal to 0",
+		"pet-accepted-min": "The %s field must be a valid and greater than or equal to 0",
 	}
 	validate *validator.Validate
 )
@@ -34,7 +36,19 @@ func NewValidator() *validator.Validate {
 	err = validate.RegisterValidation("role", roleValidation)
 	err = validate.RegisterValidation("pet-gender", petGenderValidation)
 	err = validate.RegisterValidation("pet-age", petAgeValidation)
+	err = validate.RegisterValidation("pet-accepted-min", petTypeAcceptedMin)
 	return validate
+}
+
+func petTypeAcceptedMin(fl validator.FieldLevel) bool {
+	field := fl.Field()
+	// Check if the field is actually a slice or array
+	if field.Kind() == reflect.Slice || field.Kind() == reflect.Array {
+		length := field.Len()
+		return length > 0
+	}
+	// If it's not a slice or array, the validation does not apply
+	return false
 }
 
 func petAgeValidation(fl validator.FieldLevel) bool {

@@ -15,10 +15,10 @@ type Pet struct {
 	PetGender      string             `json:"PetGender" bson:"pet_gender" validate:"omitempty,required,pet-gender"`
 	PetStatus      bool               `json:"PetStatus" bson:"pet_status" validate:"omitempty" default:"false"`
 	PetDescription string             `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
-	//IsVaccinated   string             `json:"IsVaccinated" bson:"is_vaccinated"`
-	ImagePath []string   `json:"Image" bson:"image" validate:"omitempty"`
-	CreatedAt *time.Time `json:"CreatedAt" bson:"CreatedAt,omitempty"`
-	DeletedAt *time.Time `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	IsVaccinated   bool               `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required"`
+	ImagePath      []string           `json:"Image" bson:"image" validate:"omitempty"`
+	CreatedAt      *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+	DeletedAt      *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
 type (

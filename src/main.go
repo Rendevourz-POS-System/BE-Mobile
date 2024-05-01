@@ -30,6 +30,9 @@ func main() {
 	Migrate(db, _const.DB_SHELTER_APP)
 	// Create indexes
 	SetupDatabaseIndexes(db, _const.DB_SHELTER_APP)
+	//if err := EnsureValidPetTypes(db, _const.DB_SHELTER_APP); err != nil {
+	//	log.Fatalf("Error Aggre")
+	//}
 	// Register Trusted Proxy And Certificate
 	RegisterTrustedProxies(app)
 	// Register Middleware

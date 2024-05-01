@@ -15,7 +15,7 @@ type ShelterRepository interface {
 
 type ShelterUsecase interface {
 	GetAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.Shelter, error)
-	RegisterShelter(ctx context.Context, shelter *Shelter.Shelter) (*Shelter.Shelter, error)
+	RegisterShelter(ctx context.Context, shelter *Shelter.Shelter) (*Shelter.Shelter, []string)
 	GetOneDataById(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error)
 	GetOneDataByUserId(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error)
 }

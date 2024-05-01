@@ -82,10 +82,10 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 	res, err := shelterHttp.shelterUsecase.RegisterShelter(c, shelter)
 	if err != nil {
 		if res != nil {
-			c.JSON(http.StatusOK, errors.ErrorWrapper{Message: err.Error(), Data: res})
+			c.JSON(http.StatusOK, errors.ErrorWrapper{ErrorS: err, Data: res})
 			return
 		}
-		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Register Shelter ! ", Error: err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Register Shelter ! ", ErrorS: err})
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Register Shelter", Data: res})

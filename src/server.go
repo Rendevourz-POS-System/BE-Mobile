@@ -13,6 +13,7 @@ import (
 	Shelter "main.go/domains/shelter/handlers/http"
 	UserHttp "main.go/domains/user/handlers/http"
 	"main.go/middlewares"
+	"main.go/shared/collections"
 	"net/http"
 )
 
@@ -25,7 +26,7 @@ func Migrate(db *mongo.Client, dbName string) {
 
 func SetupDatabaseIndexes(db *mongo.Client, dbName string) {
 	// Setting up indexes for the PetType collection
-	petTypeCollection := db.Database(dbName).Collection("pet_types")
+	petTypeCollection := db.Database(dbName).Collection(collections.PetTypeName)
 	petTypeIndexModel := mongo.IndexModel{
 		Keys:    bson.M{"type": 1}, // Ensure unique index on "type"
 		Options: options.Index().SetUnique(true),
@@ -35,6 +36,63 @@ func SetupDatabaseIndexes(db *mongo.Client, dbName string) {
 		log.Fatalf("Failed to create unique index on pet types: %v", err)
 	}
 }
+
+//func WatchPetTypeChanges(db *mongo.Database, cache *SomeCacheType) {
+//	pipeline := mongo.Pipeline{
+//		{{"$match", bson.D{{"operationType", "insert"}}}},
+//	}
+//	options := options.ChangeStream().SetFullDocument(options.UpdateLookup)
+//	changeStream, err := db.Collection("pet_types").Watch(context.Background(), pipeline, options)
+//	if err != nil {
+//		log.Fatalf("Failed to watch changes: %v", err)
+//	}
+//	defer changeStream.Close(context.Background())
+//
+//	for changeStream.Next(context.Background()) {
+//		var change bson.M
+//		if err := changeStream.Decode(&change); err != nil {
+//			log.Printf("Could not decode change: %v", err)
+//			continue
+//		}
+//		updatedDoc := change["fullDocument"].(bson.M)
+//		cache.Update(updatedDoc["_id"].(primitive.ObjectID), updatedDoc)
+//	}
+//}
+
+//func EnsureValidPetTypes(db *mongo.Client, dbName string) error {
+//	pipeline := mongo.Pipeline{
+//		{{"$lookup", bson.D{
+//			{"from", "pet_types"},
+//			{"localField", "pet_type_accepted"},
+//			{"foreignField", "_id"},
+//			{"as", "matched_pet_types"},
+//		}}},
+//		{{"$match", bson.D{
+//			{"matched_pet_types", bson.D{{"$not", bson.D{{"$size", 0}}}}},
+//		}}},
+//		{{"$project", bson.D{
+//			{"_id", 1},
+//			{"ShelterName", 1},
+//			{"matched_pet_types.Type", 1}, // Optional: project types to view which types are matched
+//		}}},
+//	}
+//
+//	cursor, err := db.Database(dbName).Collection(collections.ShelterCollectionName).Aggregate(context.TODO(), pipeline)
+//	if err != nil {
+//		return fmt.Errorf("failed to execute aggregation: %v", err)
+//	}
+//	var invalidShelters []bson.M
+//	if err = cursor.All(context.Background(), &invalidShelters); err != nil {
+//		return fmt.Errorf("failed to decode results: %v", err)
+//	}
+//
+//	// Optionally handle invalid shelters, such as logging them or taking corrective action
+//	for _, shelter := range invalidShelters {
+//		fmt.Printf("Invalid shelter ID: %v\n", shelter["_id"])
+//	}
+//
+//	return nil
+//}
 
 func RegisterTrustedProxies(router *gin.Engine) {
 	app.TrustedProxies(router)

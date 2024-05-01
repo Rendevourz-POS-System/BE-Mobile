@@ -30,10 +30,16 @@ func (u *shelterUsecase) GetAllData(ctx context.Context, search *Shelter.Shelter
 	return data, nil
 }
 
-func (u *shelterUsecase) RegisterShelter(ctx context.Context, shelter *Shelter.Shelter) (*Shelter.Shelter, error) {
+func (u *shelterUsecase) RegisterShelter(ctx context.Context, shelter *Shelter.Shelter) (res *Shelter.Shelter, err []string) {
+	validate := helpers.NewValidator()
+	if errs := validate.Struct(shelter); errs != nil {
+		err := helpers.CustomError(errs)
+		return nil, err
+	}
 	shelter.CreatedAt = helpers.GetCurrentTime(nil)
-	data, err := u.shelterRepo.StoreData(ctx, shelter)
-	if err != nil {
+	data, errs := u.shelterRepo.StoreData(ctx, shelter)
+	if errs != nil {
+		err = append(err, errs.Error())
 		if data != nil {
 			return data, err
 		}

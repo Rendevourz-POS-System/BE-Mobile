@@ -8,6 +8,7 @@ type ErrorWrapper struct {
 	Errors    error       `json:"Errors,omitempty"`
 	Data      interface{} `json:"Data,omitempty"`
 	Message   string      `json:"Message,omitempty"`
+	Messages  []string    `json:"Messages,omitempty"`
 }
 
 type SuccessWrapper struct {
