@@ -15,6 +15,7 @@ type Shelter struct {
 	ShelterDescription   string             `json:"ShelterDescription,omitempty" bson:"shelter_description" default:""`
 	TotalPet             int                `json:"TotalPet" bson:"total_pet" default:"0"`
 	BankAccountNumber    string             `json:"BankAccountNumber" bson:"bank_account_number" validate:"omitempty,required,min=10"`
+	PetTypeAccepted      []string           `json:"PetTypeAccepted" bson:"pet_type_accepted"`
 	Pin                  string             `json:"Pin" bson:"pin" validate:"omitempty,required,min=6,max=8"`
 	ShelterVerified      bool               `json:"ShelterVerified" bson:"shelter_verified" default:"false"`
 	CreatedAt            *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`

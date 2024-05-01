@@ -98,6 +98,8 @@ func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *She
 				Key:   "_id",
 				Value: bson.M{"$in": favoriteShelterIDs},
 			})
+		} else {
+			return []Shelter.Shelter{}, nil
 		}
 	}
 	data, err := shelterRepo.collection.Find(c, filter, findOptions)
