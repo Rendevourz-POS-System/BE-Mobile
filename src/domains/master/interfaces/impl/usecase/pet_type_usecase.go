@@ -21,6 +21,7 @@ func (uc *petTypeUsecase) GetAllPetTypes(ctx context.Context) ([]PetType.PetType
 	}
 	return data, nil
 }
+
 func (uc *petTypeUsecase) CreatePetType(ctx context.Context, req *PetType.PetType) (*PetType.PetType, error) {
 	data, err := uc.petRepo.StorePetType(ctx, req)
 	if err != nil {

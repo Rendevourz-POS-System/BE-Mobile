@@ -8,8 +8,8 @@ import (
 type Shelter struct {
 	ID                   string             `json:"Id" bson:"_id,omitempty"`
 	UserId               primitive.ObjectID `json:"UserId" bson:"user_id"`
+	ShelterLocation      primitive.ObjectID `json:"ShelterLocation" bson:"shelter_location" validate:"required"`
 	ShelterName          string             `json:"ShelterName" bson:"shelter_name" validate:"required"`
-	ShelterLocation      string             `json:"ShelterLocation" bson:"shelter_location" validate:"required"`
 	ShelterAddress       string             `json:"ShelterAddress" bson:"shelter_address" validate:"required"`
 	ShelterCapacity      int                `json:"ShelterCapacity" bson:"shelter_capacity" validate:"required,number"`
 	ShelterContactNumber string             `json:"ShelterContactNumber" bson:"shelter_contact_number" validate:"required,min=10"`
