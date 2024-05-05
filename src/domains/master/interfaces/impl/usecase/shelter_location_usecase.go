@@ -21,3 +21,16 @@ func (u *shelterLocationUsecase) GetAllShelterLocation(ctx context.Context) ([]S
 	}
 	return data, nil
 }
+
+func (u *shelterLocationUsecase) CreateShelterLocation(ctx context.Context, req []ShelterLocation.ShelterLocation) (res []ShelterLocation.ShelterLocation, errs []string) {
+	interfacesData := []interface{}{}
+	for _, location := range req {
+		interfacesData = append(interfacesData, location)
+	}
+	data, err := u.shelterLocationRepo.StoreShelterLocation(ctx, interfacesData)
+	if err != nil {
+		errs = append(errs, err.Error())
+		return nil, errs
+	}
+	return data, nil
+}

@@ -13,7 +13,6 @@ import (
 	Shelter "main.go/domains/shelter/handlers/http"
 	UserHttp "main.go/domains/user/handlers/http"
 	"main.go/middlewares"
-	"main.go/shared/collections"
 	"net/http"
 )
 
@@ -26,15 +25,23 @@ func Migrate(db *mongo.Client, dbName string) {
 
 func SetupDatabaseIndexes(db *mongo.Client, dbName string) {
 	// Setting up indexes for the PetType collection
-	petTypeCollection := db.Database(dbName).Collection(collections.PetTypeName)
 	petTypeIndexModel := mongo.IndexModel{
 		Keys:    bson.M{"type": 1}, // Ensure unique index on "type"
 		Options: options.Index().SetUnique(true),
 	}
-	_, err := petTypeCollection.Indexes().CreateOne(context.TODO(), petTypeIndexModel)
+	shelterLocationIndexModel := mongo.IndexModel{
+		Keys:    bson.M{"location_name": 1}, // Ensure unique index on "type"
+		Options: options.Index().SetUnique(true),
+	}
+	_, err := database.PetType.Indexes().CreateOne(context.TODO(), petTypeIndexModel)
 	if err != nil {
 		log.Fatalf("Failed to create unique index on pet types: %v", err)
 	}
+	_, err = database.ShelterLocation.Indexes().CreateOne(context.TODO(), shelterLocationIndexModel)
+	if err != nil {
+		log.Fatalf("Failed to create unique index on shelter location : %v", err)
+	}
+
 }
 
 //func WatchPetTypeChanges(db *mongo.Database, cache *SomeCacheType) {
@@ -120,4 +127,5 @@ func RegisterRoutes(router *gin.Engine) {
 	Shelter.NewPetHttp(router)
 	Shelter.NewShelterFavoriteHttp(router)
 	Master.NewPetTypeHttp(router)
+	Master.NewShelterLocationHttp(router)
 }
