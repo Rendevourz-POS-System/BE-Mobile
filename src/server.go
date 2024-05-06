@@ -33,7 +33,20 @@ func SetupDatabaseIndexes(db *mongo.Client, dbName string) {
 		Keys:    bson.M{"location_name": 1}, // Ensure unique index on "type"
 		Options: options.Index().SetUnique(true),
 	}
-	_, err := database.PetType.Indexes().CreateOne(context.TODO(), petTypeIndexModel)
+	userIndexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "nik", Value: 1},       // 1 for ascending index
+			{Key: "email", Value: 1},     // 1 for ascending index
+			{Key: "user_name", Value: 1}, // 1 for ascending index
+		},
+		Options: options.Index().SetUnique(true),
+	}
+	// Create an index using the CreateOne() method
+	_, err := database.User.Indexes().CreateOne(context.TODO(), userIndexModel)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = database.PetType.Indexes().CreateOne(context.TODO(), petTypeIndexModel)
 	if err != nil {
 		log.Fatalf("Failed to create unique index on pet types: %v", err)
 	}

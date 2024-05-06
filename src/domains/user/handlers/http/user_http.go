@@ -34,6 +34,7 @@ func NewUserHttp(router *gin.Engine) *UserHttp {
 	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
 		user.GET("data", handler.FindUserByToken)
+		user.PUT("/update", handler.UpdateUser)
 	}
 	return handler
 }
@@ -85,4 +86,19 @@ func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, data)
+}
+
+func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
+	data := &User.User{}
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update User Bad Request", Error: err.Error()})
+		return
+	}
+	data.ID = helpers.GetUserId(c)
+	res, err := userHttp.userUsecase.UpdateUserData(c, data)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update User ! ", ErrorS: err})
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }

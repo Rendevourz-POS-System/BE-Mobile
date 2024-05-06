@@ -34,10 +34,6 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 		return nil, errs
 	}
 	datas := u.setDefaultUserData(user)
-	if err != nil {
-		errs = append(errs, err.Error())
-		return nil, errs
-	}
 	resData, checkUserData, err2 := u.userRepo.StoreOne(ctx, datas)
 	if err2 != nil {
 		errs = append(errs, err2.Error())
@@ -104,7 +100,7 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 	if user == nil {
 		return nil, errors.New("user has not register yet ! ")
 	}
-	ok := helpers.ComparePassword(userReq.Password, user.Password)
+	ok := helpers.ComparePassword(user.Password, userReq.Password)
 	if !ok {
 		return nil, errors.New("password or email doesn't match ! ")
 	}
@@ -126,4 +122,49 @@ func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.Use
 		return nil, err
 	}
 	return user, nil
+}
+
+func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.User) (res *User.User, errs []string) {
+	var err error
+	validate := helpers.NewValidator()
+	if err = validate.Struct(req); err != nil {
+		errs = helpers.CustomError(err)
+		return nil, errs
+	}
+	findUser, err2 := u.userRepo.FindUserById(ctx, req.ID.Hex())
+	if err2 != nil {
+		errs = append(errs, err2.Error())
+		return nil, errs
+	}
+	if !helpers.ComparePassword(findUser.Password, req.Password) {
+		errs = append(errs, fmt.Sprintf("password or email not valid ! "))
+		return nil, errs
+	}
+	data, err := u.userRepo.PutUser(ctx, u.updateFindUser(req))
+	data.NewPassword = req.NewPassword
+	if err != nil {
+		errs = append(errs, err.Error())
+		return nil, errs
+	}
+	return data, nil
+}
+
+func (u *userUsecase) updateFindUser(user *User.User) *User.User {
+	StaffSatus := helpers.CheckStaffStatus(user.Role)
+	return &User.User{
+		ID:          user.ID,
+		Nik:         user.Nik,
+		Email:       user.Email,
+		Username:    user.Username,
+		PostalCode:  user.PostalCode,
+		Province:    user.Province,
+		PhoneNumber: user.PhoneNumber,
+		Password:    helpers.HashPassword(user.NewPassword),
+		Address:     user.Address,
+		City:        user.City,
+		District:    user.District,
+		State:       user.State,
+		StaffStatus: StaffSatus,
+		UpdatedAt:   helpers.GetCurrentTime(nil),
+	}
 }

@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	User "main.go/domains/user/entities"
 	"main.go/shared/collections"
 	"main.go/shared/helpers"
@@ -72,6 +73,9 @@ func (userRepo *userRepository) FindByEmail(c context.Context, email string) (*U
 	var user User.User
 	err := userRepo.collection.FindOne(c, bson.M{"email": email}).Decode(&user)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("user not found ! ")
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -117,6 +121,16 @@ func (userRepo *userRepository) FindUserById(c context.Context, userId string) (
 	if err != nil {
 		return nil, err
 	}
-	user.Password = ""
 	return &user, nil
+}
+
+func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.User, err error) {
+	filter := bson.M{"_id": user.ID}
+	update := bson.M{"$set": user}
+	// Set the options to return the updated document
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	if err = userRepo.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&res); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
