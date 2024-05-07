@@ -124,7 +124,7 @@ func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.Use
 	return user, nil
 }
 
-func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.User) (res *User.User, errs []string) {
+func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfilePayload) (res *User.UpdateProfilePayload, errs []string) {
 	var err error
 	validate := helpers.NewValidator()
 	if err = validate.Struct(req); err != nil {
@@ -141,7 +141,6 @@ func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.User) (res *
 		return nil, errs
 	}
 	data, err := u.userRepo.PutUser(ctx, u.updateFindUser(req))
-	data.NewPassword = req.NewPassword
 	if err != nil {
 		errs = append(errs, err.Error())
 		return nil, errs
@@ -149,7 +148,7 @@ func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.User) (res *
 	return data, nil
 }
 
-func (u *userUsecase) updateFindUser(user *User.User) *User.User {
+func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload) *User.User {
 	StaffSatus := helpers.CheckStaffStatus(user.Role)
 	return &User.User{
 		ID:          user.ID,

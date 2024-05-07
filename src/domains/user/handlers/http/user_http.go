@@ -89,7 +89,7 @@ func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
 }
 
 func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
-	data := &User.User{}
+	data := &User.UpdateProfilePayload{}
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update User Bad Request", Error: err.Error()})
 		return

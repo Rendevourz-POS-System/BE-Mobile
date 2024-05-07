@@ -124,7 +124,7 @@ func (userRepo *userRepository) FindUserById(c context.Context, userId string) (
 	return &user, nil
 }
 
-func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.User, err error) {
+func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.UpdateProfilePayload, err error) {
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{"$set": user}
 	// Set the options to return the updated document
