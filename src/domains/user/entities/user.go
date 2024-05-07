@@ -12,7 +12,7 @@ type User struct {
 	Nik                string             `json:"Nik" bson:"nik" validate:"required"`
 	PhoneNumber        string             `json:"PhoneNumber" bson:"phone_number" validate:"required,number"`
 	Address            string             `json:"Address" bson:"address" validate:"required"`
-	State              string             `json:"State" bson:"state" validate:"required"`
+	State              string             `json:"State" bson:"state" default:"Indonesia"`
 	City               string             `json:"City" bson:"city" validate:"required"`
 	Province           string             `json:"Province" bson:"province" validate:"required"`
 	District           string             `json:"District" bson:"district" validate:"required"`

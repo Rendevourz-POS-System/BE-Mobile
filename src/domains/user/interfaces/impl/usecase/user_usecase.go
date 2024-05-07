@@ -69,6 +69,7 @@ func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
 		City:               user.City,
 		Verified:           false,
 		ShelterIsActivated: false,
+		State:              user.State,
 		StaffStatus:        StaffSatus,
 		Role:               helpers.GetRole(user.Role),
 		CreatedAt:          helpers.GetCurrentTime(nil),
