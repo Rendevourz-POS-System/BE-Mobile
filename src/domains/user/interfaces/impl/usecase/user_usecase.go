@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
 	"main.go/domains/user/mail/controller"
@@ -67,6 +68,7 @@ func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
 		Password:           helpers.HashPassword(user.Password),
 		Address:            user.Address,
 		City:               user.City,
+		District:           user.District,
 		Verified:           false,
 		ShelterIsActivated: false,
 		State:              user.State,
