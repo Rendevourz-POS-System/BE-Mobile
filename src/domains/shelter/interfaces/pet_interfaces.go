@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	Pet "main.go/domains/shelter/entities"
 )
@@ -13,7 +14,7 @@ type PetRepository interface {
 }
 
 type PetUseCase interface {
-	GetAllPets(ctx context.Context, search *Pet.PetSearch) ([]Pet.PetResponsePayload, error)
+	GetAllPets(ctx *gin.Context, search *Pet.PetSearch) ([]Pet.PetResponsePayload, error)
 	CreatePets(ctx context.Context, pet *Pet.PetCreate) (*Pet.Pet, []string)
 	UpdatePet(ctx context.Context, Id *primitive.ObjectID, pet *Pet.Pet) (res *Pet.Pet, err error)
 }
