@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/base64"
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/domains/shelter/interfaces"
@@ -19,7 +18,7 @@ func NewPetUseCase(petRepo interfaces.PetRepository) *petUseCase {
 	return &petUseCase{petRepo}
 }
 
-func (u *petUseCase) GetAllPets(ctx *gin.Context, search *Pet.PetSearch) (res []Pet.PetResponsePayload, err error) {
+func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.PetResponsePayload, err error) {
 	if res, err = u.petRepo.FindAllPets(ctx, search); err != nil {
 		return nil, err
 	}
@@ -32,7 +31,6 @@ func (u *petUseCase) GetAllPets(ctx *gin.Context, search *Pet.PetSearch) (res []
 			}
 			base64Image := base64.StdEncoding.EncodeToString(imageData) // Convert to Base64
 			base64Images = append(base64Images, base64Image)
-			ctx.File(imagePath)
 		}
 		res[i].ImageBase64 = base64Images // Assuming pets have an ImageBase64 field to store the base64 strings
 	}
