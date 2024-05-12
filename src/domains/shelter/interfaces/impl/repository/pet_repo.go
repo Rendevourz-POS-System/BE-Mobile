@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/shared/collections"
+	"regexp"
 )
 
 type petRepo struct {
@@ -39,12 +40,6 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) *bson.D {
 		filter = append(filter, bson.E{
 			Key:   "shelter_id",
 			Value: search.ShelterId,
-		})
-	}
-	if search.Location != "" {
-		filter = append(filter, bson.E{
-			Key:   "location",
-			Value: search.Location,
 		})
 	}
 	if search.AgeEnd <= 0 {
@@ -89,10 +84,85 @@ func (r *petRepo) paginationPets(search *Pet.PetSearch) *options.FindOptions {
 	return findOptions
 }
 
-func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.Pet, err error) {
-	filter := r.filterPets(search)          // Filter
-	findOptions := r.paginationPets(search) // Pagination
-	data, errs := r.collection.Find(ctx, *filter, findOptions)
+func (r *petRepo) createPipeline(filter *bson.D, search *Pet.PetSearch) mongo.Pipeline {
+	pipeline := mongo.Pipeline{
+		{{"$match", filter}}, // Apply search filters
+	}
+	// Create Shelter pipeline (Aggregated)
+	pipeline = r.createShelterPipeline(pipeline, search)
+	// Create Location pipeline (Aggregated)
+	pipeline = r.createLocationPipeline(pipeline, search)
+
+	// Adjusting the $project stage
+	// Here we add extra fields and assume all other pet fields should be included
+	pipeline = append(pipeline, bson.D{{"$addFields", bson.M{
+		"shelter_name":     "$shelter.shelter_name",   // Adds shelter_name field
+		"location_name":    "$location.location_name", // Adds location_name field
+		"shelter_location": "$location.location_name", // Adds shelter_location field
+	}}})
+	return pipeline
+}
+
+func (r *petRepo) createShelterPipeline(pipeline mongo.Pipeline, search *Pet.PetSearch) mongo.Pipeline {
+	// Lookup to fetch the corresponding shelter
+	pipeline = append(pipeline, bson.D{{
+		"$lookup", bson.M{
+			"from":         "shelters",
+			"localField":   "shelter_id",
+			"foreignField": "_id",
+			"as":           "shelter",
+		}},
+	})
+	// Unwind the result to simplify processing (consider handling missing shelters)
+	pipeline = append(pipeline, bson.D{{"$unwind", bson.M{
+		"path":                       "$shelter",
+		"preserveNullAndEmptyArrays": true, // Keeps pets even if the shelter is missing
+	}}})
+	return pipeline
+}
+
+func (r *petRepo) createLocationPipeline(pipeline mongo.Pipeline, search *Pet.PetSearch) mongo.Pipeline {
+	// Additional lookup to fetch the location from the shelter
+	pipeline = append(pipeline, bson.D{{
+		"$lookup", bson.M{
+			"from":         "shelter_location",
+			"localField":   "shelter.shelter_location",
+			"foreignField": "_id",
+			"as":           "location",
+		}},
+	})
+
+	// Unwind the location (consider handling missing locations)
+	pipeline = append(pipeline, bson.D{{"$unwind", bson.M{
+		"path":                       "$location",
+		"preserveNullAndEmptyArrays": true,
+	}}})
+
+	// Add location filter if specified and make it case insensitive
+	if search.Location != "" {
+		regexPattern := bson.M{"$regex": primitive.Regex{
+			Pattern: "^" + regexp.QuoteMeta(search.Location) + "$", // Exact match, case insensitive
+			Options: "i",                                           // Case-insensitive
+		}}
+		pipeline = append(pipeline, bson.D{{"$match", bson.M{"location.location_name": regexPattern}}})
+	}
+	return pipeline
+}
+
+func (r *petRepo) createPaginationPipeline(pipeline mongo.Pipeline, search *Pet.PetSearch) mongo.Pipeline {
+	// Pagination can be added here if required
+	if search.Page > 0 && search.PageSize > 0 {
+		skip := (search.Page - 1) * search.PageSize
+		pipeline = append(pipeline, bson.D{{"$skip", skip}}, bson.D{{"$limit", search.PageSize}})
+	}
+	return pipeline
+}
+
+func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.PetResponsePayload, err error) {
+	filter := r.filterPets(search)                          // Filter
+	pipeline := r.createPipeline(filter, search)            // Create pipeline
+	pipeline = r.createPaginationPipeline(pipeline, search) // Create pagination pipeline
+	data, errs := r.collection.Aggregate(ctx, pipeline)
 	if errs != nil {
 		return nil, errs
 	}

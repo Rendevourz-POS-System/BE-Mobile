@@ -23,12 +23,12 @@ type User struct {
 	StaffStatus        bool               `json:"StaffStatus" bson:"staff_status" default:"false" validate:"omitempty"`
 	ShelterIsActivated bool               `json:"ShelterIsActivated" bson:"shelter_is_activated" default:"false" validate:"omitempty"`
 	Role               string             `json:"Role" bson:"role" validate:"omitempty,required,role" default:"User"`
-	//ImagePath          string             `json:"Image" bson:"image" validate:"omitempty"`
-	//ImageBase64        string             `json:"ImageBase64" validate:"omitempty"`
-	Verified  bool       `json:"Verified" bson:"is_active"`
-	CreatedAt *time.Time `json:"CreatedAt" bson:"CreatedAt,omitempty"`
-	UpdatedAt *time.Time `json:"UpdatedAt" bson:"UpdatedAt,omitempty"`
-	DeletedAt *time.Time `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	ImagePath          string             `json:"Image" bson:"image" validate:"omitempty"`
+	ImageBase64        string             `json:"ImageBase64" validate:"omitempty"`
+	Verified           bool               `json:"Verified" bson:"is_active"`
+	CreatedAt          *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+	UpdatedAt          *time.Time         `json:"UpdatedAt" bson:"UpdatedAt,omitempty"`
+	DeletedAt          *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
 type (

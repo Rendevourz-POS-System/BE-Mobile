@@ -18,11 +18,31 @@ type Pet struct {
 	IsVaccinated   bool               `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required"`
 	ImagePath      []string           `json:"Image" bson:"image" validate:"omitempty"`
 	ImageBase64    []string           `json:"ImageBase64" validate:"omitempty"`
+	PetDob         *time.Time         `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
 	CreatedAt      *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
 	DeletedAt      *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
 type (
+	// Pet Response Payload
+	PetResponsePayload struct {
+		ID              primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
+		ShelterId       primitive.ObjectID `json:"ShelterId" bson:"shelter_id"`
+		ShelterName     string             `json:"ShelterName" bson:"shelter_name,omitempty"`
+		ShelterLocation string             `json:"ShelterLocation" bson:"shelter_location,omitempty"`
+		Location        string             `json:"Location" bson:"location_name"`
+		PetName         string             `json:"PetName" bson:"pet_name"`
+		PetType         string             `json:"PetType" bson:"pet_type"`
+		PetGender       string             `json:"PetGender" bson:"pet_gender"`
+		PetStatus       bool               `json:"PetStatus" bson:"pet_status"`
+		PetDescription  string             `json:"PetDescription" bson:"pet_description"`
+		IsVaccinated    bool               `json:"IsVaccinated" bson:"is_vaccinated"`
+		ImagePath       []string           `json:"Image" bson:"image"`
+		ImageBase64     []string           `json:"ImageBase64"`
+		PetAge          int                `json:"PetAge" bson:"pet_age"`
+		CreatedAt       *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+		DeletedAt       *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	}
 	// PetCreate Payload
 	PetCreate struct {
 		Files *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`

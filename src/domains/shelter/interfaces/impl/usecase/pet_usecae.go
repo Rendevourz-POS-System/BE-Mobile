@@ -18,7 +18,7 @@ func NewPetUseCase(petRepo interfaces.PetRepository) *petUseCase {
 	return &petUseCase{petRepo}
 }
 
-func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.Pet, err error) {
+func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.PetResponsePayload, err error) {
 	if res, err = u.petRepo.FindAllPets(ctx, search); err != nil {
 		return nil, err
 	}
@@ -47,6 +47,7 @@ func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res *P
 	if pet.Pet.PetGender == "" {
 		pet.Pet.PetGender = "Unknown"
 	}
+	pet.Pet.PetDob = nil
 	pet.Pet.CreatedAt = helpers.GetCurrentTime(nil)
 	if res, err = u.petRepo.StorePets(ctx, &pet.Pet); err != nil {
 		return nil, err
