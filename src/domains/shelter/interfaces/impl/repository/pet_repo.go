@@ -120,7 +120,7 @@ func (r *petRepo) createShelterPipeline(pipeline mongo.Pipeline, search *Pet.Pet
 	}}})
 
 	// Add location filter if specified and make it case insensitive
-	if search.Location != "" {
+	if search.ShelterName != "" {
 		regexPattern := bson.M{"$regex": primitive.Regex{
 			Pattern: "^" + regexp.QuoteMeta(search.ShelterName) + "$", // Exact match, case insensitive
 			Options: "i",                                              // Case-insensitive
