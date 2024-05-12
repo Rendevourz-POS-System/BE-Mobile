@@ -124,16 +124,17 @@ func (h *PetHttp) moveUploadedFile(ctx *gin.Context, tempFilePaths []string, dat
 
 func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 	search := &Pet.PetSearch{
-		Search:   ctx.Query("search"),
-		Page:     helpers.ParseStringToInt(ctx.Query("page")),
-		PageSize: helpers.ParseStringToInt(ctx.Query("page_size")),
-		Gender:   helpers.CheckPetGender(ctx.Query("gender")),
-		Type:     ctx.Query("type"),
-		Sort:     ctx.Query("sort"),
-		OrderBy:  ctx.Query("order_by"),
-		Location: ctx.Query("location"),
-		AgeStart: helpers.ParseStringToInt(ctx.Query("age_start")),
-		AgeEnd:   helpers.ParseStringToInt(ctx.Query("age_end")),
+		Search:      ctx.Query("search"),
+		Page:        helpers.ParseStringToInt(ctx.Query("page")),
+		PageSize:    helpers.ParseStringToInt(ctx.Query("page_size")),
+		Gender:      helpers.CheckPetGender(ctx.Query("gender")),
+		Type:        ctx.Query("type"),
+		Sort:        ctx.Query("sort"),
+		OrderBy:     ctx.Query("order_by"),
+		Location:    ctx.Query("location"),
+		AgeStart:    helpers.ParseStringToInt(ctx.Query("age_start")),
+		AgeEnd:      helpers.ParseStringToInt(ctx.Query("age_end")),
+		ShelterName: ctx.Query("shelter_name"),
 	}
 	data, err := h.petUsecase.GetAllPets(ctx, search)
 	if err != nil {

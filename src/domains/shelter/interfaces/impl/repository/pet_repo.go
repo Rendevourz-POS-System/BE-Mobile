@@ -118,6 +118,15 @@ func (r *petRepo) createShelterPipeline(pipeline mongo.Pipeline, search *Pet.Pet
 		"path":                       "$shelter",
 		"preserveNullAndEmptyArrays": true, // Keeps pets even if the shelter is missing
 	}}})
+
+	// Add location filter if specified and make it case insensitive
+	if search.Location != "" {
+		regexPattern := bson.M{"$regex": primitive.Regex{
+			Pattern: "^" + regexp.QuoteMeta(search.ShelterName) + "$", // Exact match, case insensitive
+			Options: "i",                                              // Case-insensitive
+		}}
+		pipeline = append(pipeline, bson.D{{"$match", bson.M{"shelter.shelter_name": regexPattern}}})
+	}
 	return pipeline
 }
 
