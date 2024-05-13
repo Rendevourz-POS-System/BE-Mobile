@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
 	"main.go/domains/user/mail/controller"
@@ -127,20 +126,11 @@ func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.Use
 	return user, nil
 }
 
-func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfilePayload) (res *User.UpdateProfilePayload, errs []string) {
+func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfilePayload) (res *User.User, errs []string) {
 	var err error
 	validate := helpers.NewValidator()
 	if err = validate.Struct(req); err != nil {
 		errs = helpers.CustomError(err)
-		return nil, errs
-	}
-	findUser, err2 := u.userRepo.FindUserById(ctx, req.ID.Hex())
-	if err2 != nil {
-		errs = append(errs, err2.Error())
-		return nil, errs
-	}
-	if !helpers.ComparePassword(findUser.Password, req.Password) {
-		errs = append(errs, fmt.Sprintf("password or email not valid ! "))
 		return nil, errs
 	}
 	data, err := u.userRepo.PutUser(ctx, u.updateFindUser(req))
@@ -152,21 +142,33 @@ func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfil
 }
 
 func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload) *User.User {
-	StaffSatus := helpers.CheckStaffStatus(user.Role)
 	return &User.User{
 		ID:          user.ID,
 		Nik:         user.Nik,
+		PhoneNumber: user.PhoneNumber,
+		Address:     user.Address,
+		State:       user.State,
+		City:        user.City,
+		Province:    user.Province,
+		District:    user.District,
+		PostalCode:  user.PostalCode,
 		Email:       user.Email,
 		Username:    user.Username,
-		PostalCode:  user.PostalCode,
-		Province:    user.Province,
-		PhoneNumber: user.PhoneNumber,
-		Password:    helpers.HashPassword(user.NewPassword),
-		Address:     user.Address,
-		City:        user.City,
-		District:    user.District,
-		State:       user.State,
-		StaffStatus: StaffSatus,
 		UpdatedAt:   helpers.GetCurrentTime(nil),
+		ImagePath:   user.ImagePath,
 	}
+}
+
+func (u *userUsecase) UpdatePassword(ctx context.Context, req *User.UpdatePasswordPayload) error {
+	findUser, err2 := u.userRepo.FindUserById(ctx, req.Id.Hex())
+	if err2 != nil {
+		return err2
+	}
+	if !helpers.ComparePassword(findUser.Password, req.Password) {
+		return errors.New(fmt.Sprintf("Password Or Email Doest Not Match ! "))
+	}
+	if err := u.userRepo.PutUserPassword(ctx, req); err != nil {
+		return errors.New(fmt.Sprintf("Failed To Update User Password ! "))
+	}
+	return nil
 }

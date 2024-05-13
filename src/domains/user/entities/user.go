@@ -45,17 +45,21 @@ type (
 		PostalCode         int                `json:"PostalCode" bson:"postal_code" validate:"required,number"`
 		Email              string             `json:"Email" bson:"email" validate:"required,email"`
 		Username           string             `json:"Username" bson:"username" validate:"required,min=4"`
-		Password           string             `json:"Password" bson:"password" validate:"required,min=8,alphanum_symbol"`
-		NewPassword        string             `json:"NewPassword" validate:"required,min=8,alphanum_symbol"`
 		StaffStatus        bool               `json:"StaffStatus" bson:"staff_status" default:"false" validate:"omitempty"`
 		ShelterIsActivated bool               `json:"ShelterIsActivated" bson:"shelter_is_activated" default:"false" validate:"omitempty"`
 		Role               string             `json:"Role" bson:"role" validate:"omitempty,required,role" default:"User"`
-		//ImagePath          string             `json:"Image" bson:"image" validate:"omitempty"`
-		//ImageBase64        string             `json:"ImageBase64" validate:"omitempty"`
-		Verified  bool       `json:"Verified" bson:"is_active"`
-		CreatedAt *time.Time `json:"CreatedAt" bson:"CreatedAt,omitempty"`
-		UpdatedAt *time.Time `json:"UpdatedAt" bson:"UpdatedAt,omitempty"`
-		DeletedAt *time.Time `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+		ImagePath          string             `json:"Image" bson:"image" validate:"omitempty"`
+		ImageBase64        string             `json:"ImageBase64" validate:"omitempty"`
+		Verified           bool               `json:"Verified" bson:"is_active"`
+		CreatedAt          *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+		UpdatedAt          *time.Time         `json:"UpdatedAt" bson:"UpdatedAt,omitempty"`
+		DeletedAt          *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	}
+	// Update Password Payload
+	UpdatePasswordPayload struct {
+		Id          primitive.ObjectID `json:"Id"`
+		Password    string             `json:"Password" bson:"password" validate:"required,min=8,alphanum_symbol"`
+		NewPassword string             `json:"NewPassword" validate:"required,min=8,alphanum_symbol"`
 	}
 	// LoginPayload Payload for login
 	LoginPayload struct {

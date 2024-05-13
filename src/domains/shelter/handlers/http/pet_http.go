@@ -104,7 +104,7 @@ func (h *PetHttp) moveUploadedFile(ctx *gin.Context, tempFilePaths []string, dat
 	// Move the uploaded files to their final location with the data.ID in the path
 	for _, tempFilePath := range tempFilePaths {
 		// Construct the final file path
-		finalFilePath := filepath.Join("uploads", data.ID.Hex(), "pets", filepath.Base(tempFilePath))
+		finalFilePath := filepath.Join("uploads", "pets", data.ID.Hex(), filepath.Base(tempFilePath))
 
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {

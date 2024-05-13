@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,7 +23,7 @@ func NewUserRepository(database *mongo.Database) *userRepository {
 }
 
 func (userRepo *userRepository) FindAll(c context.Context) (res []User.User, err error) {
-	data, err := userRepo.collection.Find(c, bson.D{})
+	data, err := userRepo.collection.Find(c, bson.M{"users": res})
 	if err != nil {
 		return nil, err
 	}
@@ -124,13 +125,27 @@ func (userRepo *userRepository) FindUserById(c context.Context, userId string) (
 	return &user, nil
 }
 
-func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.UpdateProfilePayload, err error) {
+func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.User, err error) {
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{"$set": user}
 	// Set the options to return the updated document
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	if err = userRepo.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&res); err != nil {
+	var resData *User.User
+	if err = userRepo.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&resData); err != nil {
 		return nil, err
 	}
-	return res, nil
+	return resData, nil
+}
+
+func (userRepo *userRepository) PutUserPassword(ctx context.Context, req *User.UpdatePasswordPayload) error {
+	filter := bson.M{"_id": req.Id} // Assuming '_id' is used as the identifier.
+	update := bson.M{"$set": bson.M{"password": req.NewPassword}}
+	result, err := userRepo.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return fmt.Errorf("error updating user password: %v", err)
+	}
+	if result.ModifiedCount == 0 {
+		return fmt.Errorf("no user found with ID %s", req.Id)
+	}
+	return nil
 }

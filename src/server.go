@@ -35,9 +35,9 @@ func SetupDatabaseIndexes(db *mongo.Client, dbName string) {
 	}
 	userIndexModel := mongo.IndexModel{
 		Keys: bson.D{
-			{Key: "nik", Value: 1},       // 1 for ascending index
-			{Key: "email", Value: 1},     // 1 for ascending index
-			{Key: "user_name", Value: 1}, // 1 for ascending index
+			{Key: "nik", Value: 1},      // 1 for ascending index
+			{Key: "email", Value: 1},    // 1 for ascending index
+			{Key: "username", Value: 1}, // 1 for ascending index
 		},
 		Options: options.Index().SetUnique(true),
 	}
