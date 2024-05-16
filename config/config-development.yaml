@@ -51,3 +51,13 @@ Domain:
   FrontendPath: /email/verification
   Backend:
   Port: 8080
+
+Image:
+  Folder: uploads
+  PetPath : pets
+  UserPath: user
+  ShelterPath: shelter
+  ProfilePath: profile
+  TempPath: temp
+  UserShelterPath: shelter
+  UserProfilePath: path

@@ -20,6 +20,7 @@ type Config struct {
 	Domain      Domain
 	Proxy       Proxy
 	AccessToken AccessToken
+	Image       Image
 }
 
 type App struct {
@@ -73,6 +74,16 @@ type AccessToken struct {
 
 type Proxy struct {
 	TrustedProxies []string
+}
+
+type Image struct {
+	Folder          string
+	PetPath         string
+	ShelterPath     string
+	UserPath        string
+	TempPath        string
+	UserShelterPath string
+	UserProfilePath string
 }
 
 func loadConfig(environment string) (*viper.Viper, error) {

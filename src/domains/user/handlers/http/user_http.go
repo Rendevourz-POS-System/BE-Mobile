@@ -117,7 +117,7 @@ func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
 	}
 	data.ID = helpers.GetUserId(c)
 	if file != nil {
-		FilePath := filepath.Join("uploads", "user", data.ID.Hex(), file.Filename)
+		FilePath := filepath.Join(app.GetConfig().Image.Folder, app.GetConfig().Image.UserPath, app.GetConfig().Image.UserProfilePath, data.ID.Hex(), file.Filename)
 		// Save the uploaded file with the temporary path
 		if err := c.SaveUploadedFile(file, FilePath); err != nil {
 			c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Upload Image !", Error: err.Error()})

@@ -2,6 +2,7 @@ package entities
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"mime/multipart"
 	"time"
 )
 
@@ -33,5 +34,10 @@ type (
 		Sort      string             `json:"Sort"`
 		ShelterId primitive.ObjectID `json:"ShelterId"`
 		UserId    primitive.ObjectID `json:"UserId"`
+	}
+	// ShelterCreate
+	ShelterCreate struct {
+		Files   *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
+		Shelter Shelter               `form:"Shelter" bson:"Shelter" validate:"required"`
 	}
 )

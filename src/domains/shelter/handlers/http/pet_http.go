@@ -12,11 +12,10 @@ import (
 	"main.go/domains/shelter/interfaces/impl/usecase"
 	"main.go/middlewares"
 	"main.go/shared/helpers"
+	"main.go/shared/helpers/image_helpers"
 	"main.go/shared/message/errors"
-	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
 type PetHttp struct {
@@ -48,12 +47,12 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 	// Get the multipart form data
 	form, _ := ctx.MultipartForm()
 	// Unmarshal the JSON data into the Pet struct
-	jsonData := form.Value["data"]
-	if err := json.Unmarshal([]byte(jsonData[0]), &pet.Pet); err != nil {
+	jsonData := form.Value["data"][0]
+	if err := json.Unmarshal([]byte(jsonData), &pet.Pet); err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return
 	}
-	tempFilePaths, err := h.saveImageToTemp(ctx, form)
+	tempFilePaths, err := image_helpers.SaveImageToTemp(ctx, form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
 	}
@@ -67,7 +66,7 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
 		return
 	}
-	pet, err = h.moveUploadedFile(ctx, tempFilePaths, data, pet)
+	pet, err = image_helpers.MoveUploadedFile(ctx, tempFilePaths, data, pet, app.GetConfig().Image.PetPath)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image Pet ! ", Error: err.Error()})
 	}
@@ -79,47 +78,6 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, data)
-}
-
-func (h *PetHttp) saveImageToTemp(ctx *gin.Context, form *multipart.Form) (res []string, err error) {
-	// Get the uploaded files
-	files := form.File["files"]
-
-	// Save the uploaded files to a temporary directory
-	tempFilePaths := make([]string, len(files))
-	for i, file := range files {
-		// Construct the temporary file path
-		tempFilePath := filepath.Join("uploads", "temp", file.Filename)
-
-		// Save the uploaded file with the temporary path
-		if err := ctx.SaveUploadedFile(file, tempFilePath); err != nil {
-			return nil, err
-		}
-		tempFilePaths[i] = tempFilePath
-	}
-	return tempFilePaths, nil
-}
-
-func (h *PetHttp) moveUploadedFile(ctx *gin.Context, tempFilePaths []string, data *Pet.Pet, pet *Pet.PetCreate) (res *Pet.PetCreate, err error) {
-	// Move the uploaded files to their final location with the data.ID in the path
-	for _, tempFilePath := range tempFilePaths {
-		// Construct the final file path
-		finalFilePath := filepath.Join("uploads", "pets", data.ID.Hex(), filepath.Base(tempFilePath))
-
-		// Create directories if they don't exist
-		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {
-			ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Failed To Create Directories ! ", Errors: err})
-			return
-		}
-		// Move the temporary file to the final location
-		if err = os.Rename(tempFilePath, finalFilePath); err != nil {
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move File ! ", Errors: err})
-			return
-		}
-		// Update the pet's image path
-		pet.Pet.ImagePath = append(pet.Pet.ImagePath, finalFilePath)
-	}
-	return pet, nil
 }
 
 func (h *PetHttp) GetAllPets(ctx *gin.Context) {

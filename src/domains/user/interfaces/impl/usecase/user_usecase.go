@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"main.go/configs/app"
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
 	"main.go/domains/user/mail/controller"
@@ -71,6 +72,7 @@ func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
 		Verified:           false,
 		ShelterIsActivated: false,
 		State:              user.State,
+		ImagePath:          app.GetConfig().Image.Folder,
 		StaffStatus:        StaffSatus,
 		Role:               helpers.GetRole(user.Role),
 		CreatedAt:          helpers.GetCurrentTime(nil),

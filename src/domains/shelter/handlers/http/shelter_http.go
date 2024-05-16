@@ -73,6 +73,14 @@ func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 }
 
 func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
+	// Parse the multipart form with a maximum of 30 MB memory
+	if err := c.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
+		return
+	}
+	//form, _ := c.MultipartForm()
+	//Files := form.File["File"]
+	//jsonData := form.Value["Data"][0]
 	shelter := &Shelter.Shelter{}
 	if err := c.ShouldBindJSON(&shelter); err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
