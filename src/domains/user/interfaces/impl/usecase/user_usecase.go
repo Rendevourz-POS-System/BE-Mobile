@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"main.go/configs/app"
@@ -9,6 +10,7 @@ import (
 	"main.go/domains/user/interfaces"
 	"main.go/domains/user/mail/controller"
 	"main.go/shared/helpers"
+	"os"
 )
 
 type userUsecase struct {
@@ -122,6 +124,13 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 
 func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.User, error) {
 	user, err := u.userRepo.FindUserById(ctx, id)
+	if user.ImagePath != "" && len(user.ImagePath) > 0 {
+		file, err2 := os.ReadFile(user.ImagePath)
+		if err2 != nil {
+			return nil, err2
+		}
+		user.ImageBase64 = base64.StdEncoding.EncodeToString(file) // Convert to Base64
+	}
 	if err != nil {
 		return nil, err
 	}
