@@ -152,7 +152,7 @@ func (shelterRepo *shelterRepository) StoreData(c context.Context, shelter *Shel
 	return shelter, nil
 }
 
-func (shelterRepo *shelterRepository) UpdatePet(ctx context.Context, pet *Shelter.Shelter) (res *Shelter.Shelter, err error) {
+func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, pet *Shelter.Shelter) (res *Shelter.Shelter, err error) {
 	filter := bson.D{{Key: "_id", Value: pet.ID}}
 	update := bson.D{{Key: "$set", Value: pet}}
 	// Perform the update operation

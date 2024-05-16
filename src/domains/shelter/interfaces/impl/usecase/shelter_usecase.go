@@ -65,9 +65,9 @@ func (u *shelterUsecase) GetOneDataByUserId(ctx context.Context, search *Shelter
 	return data, nil
 }
 
-func (u *shelterUsecase) UpdatePetById(ctx context.Context, Id *primitive.ObjectID, shelter *Shelter.Shelter) (res *Shelter.Shelter, err error) {
+func (u *shelterUsecase) UpdateShelterById(ctx context.Context, Id *primitive.ObjectID, shelter *Shelter.Shelter) (res *Shelter.Shelter, err error) {
 	shelter.ID = *Id
-	data, errs := u.shelterRepo.UpdatePet(ctx, shelter)
+	data, errs := u.shelterRepo.UpdateOneShelter(ctx, shelter)
 	if errs != nil {
 		return nil, errs
 	}
