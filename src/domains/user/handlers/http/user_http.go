@@ -139,6 +139,7 @@ func (userHttp *UserHttp) UpdatePassword(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Password ! ", Error: err.Error()})
 		return
 	}
+	data.Id = helpers.GetUserId(c)
 	err := userHttp.userUsecase.UpdatePassword(c, data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Password ! ", Error: err.Error()})

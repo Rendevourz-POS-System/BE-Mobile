@@ -176,6 +176,11 @@ func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload, userDB *Us
 }
 
 func (u *userUsecase) UpdatePassword(ctx context.Context, req *User.UpdatePasswordPayload) error {
+	validate := helpers.NewValidator()
+	if err := validate.Struct(req); err != nil {
+		errs := helpers.CustomError(err)
+		return errors.New(errs[0])
+	}
 	findUser, err2 := u.userRepo.FindUserById(ctx, req.Id.Hex())
 	if err2 != nil {
 		return err2
@@ -183,6 +188,7 @@ func (u *userUsecase) UpdatePassword(ctx context.Context, req *User.UpdatePasswo
 	if !helpers.ComparePassword(findUser.Password, req.Password) {
 		return errors.New(fmt.Sprintf("Password Or Email Doest Not Match ! "))
 	}
+	req.NewPassword = helpers.HashPassword(req.NewPassword)
 	if err := u.userRepo.PutUserPassword(ctx, req); err != nil {
 		return errors.New(fmt.Sprintf("Failed To Update User Password ! "))
 	}

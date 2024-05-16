@@ -57,9 +57,10 @@ type (
 	}
 	// Update Password Payload
 	UpdatePasswordPayload struct {
-		Id          primitive.ObjectID `json:"Id"`
-		Password    string             `json:"Password" bson:"password" validate:"required,min=8,alphanum_symbol"`
-		NewPassword string             `json:"NewPassword" validate:"required,min=8,alphanum_symbol"`
+		Id              primitive.ObjectID `json:"Id"`
+		Password        string             `json:"Password" bson:"password" validate:"required,min=8,alphanum_symbol"`
+		NewPassword     string             `json:"NewPassword" validate:"required,min=8,alphanum_symbol"`
+		ConfirmPassword string             `json:"ConfirmPassword" validate:"required,eqfield=NewPassword"`
 	}
 	// LoginPayload Payload for login
 	LoginPayload struct {
