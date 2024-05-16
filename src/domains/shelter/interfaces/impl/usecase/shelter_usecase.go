@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	Shelter "main.go/domains/shelter/entities"
 	"main.go/domains/shelter/interfaces"
 	"main.go/domains/shelter/presistence"
@@ -60,6 +61,15 @@ func (u *shelterUsecase) GetOneDataByUserId(ctx context.Context, search *Shelter
 	data, err := u.shelterRepo.FindOneDataByUserId(ctx, &search.ShelterId)
 	if err != nil {
 		return nil, err
+	}
+	return data, nil
+}
+
+func (u *shelterUsecase) UpdatePetById(ctx context.Context, Id *primitive.ObjectID, shelter *Shelter.Shelter) (res *Shelter.Shelter, err error) {
+	shelter.ID = *Id
+	data, errs := u.shelterRepo.UpdatePet(ctx, shelter)
+	if errs != nil {
+		return nil, errs
 	}
 	return data, nil
 }

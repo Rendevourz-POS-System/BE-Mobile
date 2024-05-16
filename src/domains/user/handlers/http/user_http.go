@@ -98,14 +98,14 @@ func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
 		return
 	}
 	// Retrieve the file from the multipart form
-	file, errFile := c.FormFile("File")
+	file, errFile := c.FormFile("file")
 	if errFile != nil {
 		if errFile != http.ErrMissingFile {
 			c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to get file", Error: errFile.Error()})
 			return
 		}
 	}
-	req, errs := c.GetPostForm("Data")
+	req, errs := c.GetPostForm("data")
 	if !errs {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update User Bad Request"})
 		return
@@ -117,7 +117,7 @@ func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
 	}
 	data.ID = helpers.GetUserId(c)
 	if file != nil {
-		FilePath := filepath.Join(app.GetConfig().Image.Folder, app.GetConfig().Image.UserPath, app.GetConfig().Image.UserProfilePath, data.ID.Hex(), file.Filename)
+		FilePath := filepath.Join(app.GetConfig().Image.Folder, app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, data.ID.Hex(), file.Filename)
 		// Save the uploaded file with the temporary path
 		if err := c.SaveUploadedFile(file, FilePath); err != nil {
 			c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Upload Image !", Error: err.Error()})

@@ -35,7 +35,7 @@ func MoveUploadedFile(ctx *gin.Context, tempFilePaths []string, data *Pet.Pet, p
 	// Move the uploaded files to their final location with the data.ID in the path
 	for _, tempFilePath := range tempFilePaths {
 		// Construct the final file path
-		finalFilePath := filepath.Join(helpers.ToString(path), app.GetConfig().Image.Folder, data.ID.Hex(), filepath.Base(tempFilePath))
+		finalFilePath := filepath.Join(app.GetConfig().Image.Folder, helpers.ToString(path), data.ID.Hex(), filepath.Base(tempFilePath))
 
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {
@@ -51,4 +51,26 @@ func MoveUploadedFile(ctx *gin.Context, tempFilePaths []string, data *Pet.Pet, p
 		pet.Pet.ImagePath = append(pet.Pet.ImagePath, finalFilePath)
 	}
 	return pet, nil
+}
+
+func MoveUploadedShelterFile(ctx *gin.Context, tempFilePaths []string, data *Pet.Shelter, shelter *Pet.ShelterCreate, path string) (res *Pet.ShelterCreate, err error) {
+	// Move the uploaded files to their final location with the data.ID in the path
+	for _, tempFilePath := range tempFilePaths {
+		// Construct the final file path
+		finalFilePath := filepath.Join(app.GetConfig().Image.Folder, app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, data.ID.Hex(), filepath.Base(tempFilePath))
+
+		// Create directories if they don't exist
+		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Failed To Create Directories ! ", Errors: err})
+			return
+		}
+		// Move the temporary file to the final location
+		if err = os.Rename(tempFilePath, finalFilePath); err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move File ! ", Errors: err})
+			return
+		}
+		// Update the pet's image path
+		shelter.Shelter.ImagePath = append(shelter.Shelter.ImagePath, finalFilePath)
+	}
+	return shelter, nil
 }

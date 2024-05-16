@@ -77,13 +77,12 @@ type Proxy struct {
 }
 
 type Image struct {
-	Folder          string
-	PetPath         string
-	ShelterPath     string
-	UserPath        string
-	TempPath        string
-	UserShelterPath string
-	UserProfilePath string
+	Folder      string
+	PetPath     string
+	ShelterPath string
+	UserPath    string
+	ProfilePath string
+	TempPath    string
 }
 
 func loadConfig(environment string) (*viper.Viper, error) {

@@ -7,7 +7,7 @@ import (
 )
 
 type Shelter struct {
-	ID                   string             `json:"Id" bson:"_id,omitempty"`
+	ID                   primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
 	UserId               primitive.ObjectID `json:"UserId" bson:"user_id"`
 	ShelterLocation      primitive.ObjectID `json:"ShelterLocation" bson:"shelter_location" validate:"required"`
 	ShelterName          string             `json:"ShelterName" bson:"shelter_name" validate:"required"`

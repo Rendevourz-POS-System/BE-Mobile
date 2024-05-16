@@ -145,9 +145,28 @@ func (shelterRepo *shelterRepository) StoreData(c context.Context, shelter *Shel
 	if err != nil {
 		return nil, err
 	}
-	shelter.ID = insertResult.InsertedID.(primitive.ObjectID).Hex()
+	shelter.ID = insertResult.InsertedID.(primitive.ObjectID)
 	if _, err = shelterRepo.database.Collection(collections.UserCollectionName).UpdateOne(c, bson.M{"_id": shelter.UserId}, bson.M{"$set": bson.M{"shelter_is_activated": true}}); err != nil {
 		return nil, err
 	}
 	return shelter, nil
+}
+
+func (shelterRepo *shelterRepository) UpdatePet(ctx context.Context, pet *Shelter.Shelter) (res *Shelter.Shelter, err error) {
+	filter := bson.D{{Key: "_id", Value: pet.ID}}
+	update := bson.D{{Key: "$set", Value: pet}}
+	// Perform the update operation
+	result, err := shelterRepo.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	if result.MatchedCount == 0 {
+		return nil, mongo.ErrNoDocuments
+	}
+	// Optionally, you can retrieve the updated document
+	err = shelterRepo.collection.FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }

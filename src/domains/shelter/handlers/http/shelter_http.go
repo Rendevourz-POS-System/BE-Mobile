@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
@@ -12,8 +13,10 @@ import (
 	"main.go/domains/shelter/interfaces/impl/usecase"
 	"main.go/middlewares"
 	"main.go/shared/helpers"
+	"main.go/shared/helpers/image_helpers"
 	"main.go/shared/message/errors"
 	"net/http"
+	"os"
 )
 
 type ShelterHttp struct {
@@ -73,20 +76,28 @@ func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 }
 
 func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
+	shelterCreate := &Shelter.ShelterCreate{}
 	// Parse the multipart form with a maximum of 30 MB memory
 	if err := c.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
 		return
 	}
-	//form, _ := c.MultipartForm()
-	//Files := form.File["File"]
-	//jsonData := form.Value["Data"][0]
+	form, _ := c.MultipartForm()
+	jsonData := form.Value["data"][0]
 	shelter := &Shelter.Shelter{}
-	if err := c.ShouldBindJSON(&shelter); err != nil {
+	if err := json.Unmarshal([]byte(jsonData), &shelter); err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return
 	}
 	shelter.UserId = helpers.GetUserId(c)
+	tempFilePaths, errs := image_helpers.SaveImageToTemp(c, form)
+	if errs != nil {
+		// Delete temporary files if pet creation fails
+		for _, tempFilePath := range tempFilePaths {
+			_ = os.Remove(tempFilePath)
+		}
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: errs.Error()})
+	}
 	res, err := shelterHttp.shelterUsecase.RegisterShelter(c, shelter)
 	if err != nil {
 		if res != nil {
@@ -96,6 +107,9 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Register Shelter ! ", ErrorS: err})
 		return
 	}
+	shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, app.GetConfig().Image.ShelterPath)
+	shelter.ImagePath = shelterCreate.Shelter.ImagePath
+	shelter, _ = shelterHttp.shelterUsecase.UpdatePetById(c, &shelter.ID, shelter)
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Register Shelter", Data: res})
 }
 
