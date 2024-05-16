@@ -133,7 +133,12 @@ func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfil
 		errs = helpers.CustomError(err)
 		return nil, errs
 	}
-	data, err := u.userRepo.PutUser(ctx, u.updateFindUser(req))
+	userDB, err := u.GetUserByUserId(ctx, req.ID.Hex())
+	if err != nil {
+		errs = append(errs, err.Error())
+		return nil, errs
+	}
+	data, err := u.userRepo.PutUser(ctx, u.updateFindUser(req, userDB))
 	if err != nil {
 		errs = append(errs, err.Error())
 		return nil, errs
@@ -141,21 +146,32 @@ func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfil
 	return data, nil
 }
 
-func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload) *User.User {
+func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload, userDB *User.User) *User.User {
+	var userImage = userDB.ImagePath
+	if user.ImagePath != "" {
+		userImage = user.ImagePath
+	}
 	return &User.User{
-		ID:          user.ID,
-		Nik:         user.Nik,
-		PhoneNumber: user.PhoneNumber,
-		Address:     user.Address,
-		State:       user.State,
-		City:        user.City,
-		Province:    user.Province,
-		District:    user.District,
-		PostalCode:  user.PostalCode,
-		Email:       user.Email,
-		Username:    user.Username,
-		UpdatedAt:   helpers.GetCurrentTime(nil),
-		ImagePath:   user.ImagePath,
+		ID:                 user.ID,
+		Nik:                user.Nik,
+		PhoneNumber:        user.PhoneNumber,
+		Address:            user.Address,
+		State:              user.State,
+		City:               user.City,
+		Province:           user.Province,
+		District:           user.District,
+		PostalCode:         user.PostalCode,
+		Email:              user.Email,
+		Username:           user.Username,
+		Password:           userDB.Password,
+		StaffStatus:        userDB.StaffStatus,
+		ShelterIsActivated: userDB.ShelterIsActivated,
+		Role:               userDB.Role,
+		ImagePath:          userImage,
+		Verified:           userDB.Verified,
+		CreatedAt:          userDB.CreatedAt,
+		UpdatedAt:          helpers.GetCurrentTime(nil),
+		DeletedAt:          nil,
 	}
 }
 
