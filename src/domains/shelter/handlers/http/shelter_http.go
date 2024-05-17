@@ -114,7 +114,7 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 	shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, app.GetConfig().Image.ShelterPath)
 
 	shelter.ImagePath = shelterCreate.Shelter.ImagePath
-	shelter, _ = shelterHttp.shelterUsecase.UpdatePetById(c, &shelter.ID, shelter)
+	shelter, _ = shelterHttp.shelterUsecase.UpdateShelterById(c, &shelter.ID, shelter)
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Register Shelter", Data: res})
 }
 
