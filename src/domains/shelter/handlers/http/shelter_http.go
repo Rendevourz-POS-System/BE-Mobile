@@ -61,11 +61,12 @@ func (shelterHttp *ShelterHttp) FindAllFavorite(c *gin.Context) {
 
 func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 	search := &Shelter.ShelterSearch{
-		Search:   c.Query("search"),
-		Page:     helpers.ParseStringToInt(c.Query("page")),
-		PageSize: helpers.ParseStringToInt(c.Query("page_size")),
-		Sort:     c.Query("sort"),
-		OrderBy:  c.Query("order_by"),
+		Search:              c.Query("search"),
+		Page:                helpers.ParseStringToInt(c.Query("page")),
+		PageSize:            helpers.ParseStringToInt(c.Query("page_size")),
+		Sort:                c.Query("sort"),
+		ShelterLocationName: c.Query("shelter_name"),
+		OrderBy:             c.Query("order_by"),
 	}
 	data, err := shelterHttp.shelterUsecase.GetAllData(c, search)
 	if err != nil {
@@ -87,7 +88,7 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 	jsonData := form.Value["data"][0]
 	shelter := &Shelter.Shelter{}
 	if err := json.Unmarshal([]byte(jsonData), &shelter); err != nil {
-		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Request ! ", Error: err.Error()})
 		return
 	}
 
@@ -111,7 +112,9 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 		return
 	}
 
-	shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, app.GetConfig().Image.ShelterPath)
+	if tempFilePaths != nil {
+		shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, app.GetConfig().Image.ShelterPath)
+	}
 
 	shelter.ImagePath = shelterCreate.Shelter.ImagePath
 	shelter, _ = shelterHttp.shelterUsecase.UpdateShelterById(c, &shelter.ID, shelter)

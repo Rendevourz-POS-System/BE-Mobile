@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/shared/collections"
-	"regexp"
+	"main.go/shared/helpers"
 )
 
 type petRepo struct {
@@ -121,10 +121,7 @@ func (r *petRepo) createShelterPipeline(pipeline mongo.Pipeline, search *Pet.Pet
 
 	// Add location filter if specified and make it case insensitive
 	if search.ShelterName != "" {
-		regexPattern := bson.M{"$regex": primitive.Regex{
-			Pattern: "^" + regexp.QuoteMeta(search.ShelterName) + "$", // Exact match, case insensitive
-			Options: "i",                                              // Case-insensitive
-		}}
+		regexPattern := helpers.RegexPattern(search.ShelterName)
 		pipeline = append(pipeline, bson.D{{"$match", bson.M{"shelter.shelter_name": regexPattern}}})
 	}
 	return pipeline
@@ -149,10 +146,7 @@ func (r *petRepo) createLocationPipeline(pipeline mongo.Pipeline, search *Pet.Pe
 
 	// Add location filter if specified and make it case insensitive
 	if search.Location != "" {
-		regexPattern := bson.M{"$regex": primitive.Regex{
-			Pattern: "^" + regexp.QuoteMeta(search.Location) + "$", // Exact match, case insensitive
-			Options: "i",                                           // Case-insensitive
-		}}
+		regexPattern := helpers.RegexPattern(search.ShelterName)
 		pipeline = append(pipeline, bson.D{{"$match", bson.M{"location.location_name": regexPattern}}})
 	}
 	return pipeline

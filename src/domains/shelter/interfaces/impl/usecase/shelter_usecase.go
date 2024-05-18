@@ -17,7 +17,7 @@ func NewShelterUsecase(shelterRepo interfaces.ShelterRepository) *shelterUsecase
 	return &shelterUsecase{shelterRepo}
 }
 
-func (u *shelterUsecase) GetAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.Shelter, error) {
+func (u *shelterUsecase) GetAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.ShelterResponsePayload, error) {
 	if search.Sort == "" {
 		search.Sort = "Desc"
 	}

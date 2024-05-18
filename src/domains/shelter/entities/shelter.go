@@ -26,18 +26,42 @@ type Shelter struct {
 }
 
 type (
+	// ShelterSearch
 	ShelterSearch struct {
-		Search    string             `json:"Search"`
-		Page      int                `json:"Page"`
-		PageSize  int                `json:"PageSize"`
-		OrderBy   string             `json:"OrderBy"`
-		Sort      string             `json:"Sort"`
-		ShelterId primitive.ObjectID `json:"ShelterId"`
-		UserId    primitive.ObjectID `json:"UserId"`
+		Search              string             `json:"Search"`
+		Page                int                `json:"Page"`
+		PageSize            int                `json:"PageSize"`
+		OrderBy             string             `json:"OrderBy"`
+		Sort                string             `json:"Sort"`
+		ShelterLocationName string             `json:"ShelterLocationName"`
+		ShelterId           primitive.ObjectID `json:"ShelterId"`
+		UserId              primitive.ObjectID `json:"UserId"`
 	}
+
 	// ShelterCreate
 	ShelterCreate struct {
 		Files   *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
 		Shelter Shelter               `form:"Shelter" bson:"Shelter" validate:"required"`
+	}
+
+	// ShelterResponsePayload
+	ShelterResponsePayload struct {
+		ID                   primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
+		UserId               primitive.ObjectID `json:"UserId" bson:"user_id"`
+		ShelterLocation      primitive.ObjectID `json:"ShelterLocation" bson:"shelter_location"`
+		ShelterLocationName  string             `json:"ShelterLocationName" json:"shelter_location_name"`
+		ShelterName          string             `json:"ShelterName" bson:"shelter_name"`
+		ShelterAddress       string             `json:"ShelterAddress" bson:"shelter_address"`
+		ShelterCapacity      int                `json:"ShelterCapacity" bson:"shelter_capacity"`
+		ShelterContactNumber string             `json:"ShelterContactNumber" bson:"shelter_contact_number"`
+		ShelterDescription   string             `json:"ShelterDescription,omitempty" bson:"shelter_description"`
+		TotalPet             int                `json:"TotalPet" bson:"total_pet" default:"0"`
+		BankAccountNumber    string             `json:"BankAccountNumber" bson:"bank_account_number"`
+		PetTypeAccepted      []string           `json:"PetTypeAccepted" bson:"pet_type_accepted"`
+		ImagePath            []string           `json:"ImagePath" bson:"image"`
+		Pin                  string             `json:"Pin" bson:"pin"`
+		ShelterVerified      bool               `json:"ShelterVerified" bson:"shelter_verified"`
+		CreatedAt            *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+		DeletedAt            *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 	}
 )

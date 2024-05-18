@@ -85,7 +85,7 @@ func (shelterRepo *shelterRepository) getAllFavoriteShelters(c context.Context, 
 	return shelterIDs, nil
 }
 
-func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *Shelter.ShelterSearch) (res []Shelter.Shelter, err error) {
+func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *Shelter.ShelterSearch) (res []Shelter.ShelterResponsePayload, err error) {
 	filter := shelterRepo.filterShelter(search)          // Filter
 	findOptions := shelterRepo.paginationShelter(search) // Pagination
 	if search.UserId != primitive.NilObjectID {
@@ -99,7 +99,7 @@ func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *She
 				Value: bson.M{"$in": favoriteShelterIDs},
 			})
 		} else {
-			return []Shelter.Shelter{}, nil
+			return []Shelter.ShelterResponsePayload{}, nil
 		}
 	}
 	data, err := shelterRepo.collection.Find(c, filter, findOptions)

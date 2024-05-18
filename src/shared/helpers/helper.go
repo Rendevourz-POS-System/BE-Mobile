@@ -3,12 +3,14 @@ package helpers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
 	ShelterPresistence "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
 	"math/rand"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -120,4 +122,11 @@ func CheckPetGender(value string) string {
 
 func GenerateFileName(filename string) string {
 	return GenerateRandomString(10) + "_" + filename
+}
+
+func RegexPattern(pattern interface{}) *bson.M {
+	return &bson.M{"$regex": primitive.Regex{
+		Pattern: "^" + regexp.QuoteMeta(ToString(pattern)) + "$", // Exact match, case insensitive
+		Options: "i",                                             // Case-insensitive
+	}}
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type ShelterRepository interface {
-	FindAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.Shelter, error)
+	FindAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.ShelterResponsePayload, error)
 	StoreData(ctx context.Context, shelter *Shelter.Shelter) (*Shelter.Shelter, error)
 	FindOneDataById(c context.Context, search *primitive.ObjectID) (res *Shelter.Shelter, err error)
 	FindOneDataByUserId(c context.Context, search *primitive.ObjectID) (res *Shelter.Shelter, err error)
@@ -15,7 +15,7 @@ type ShelterRepository interface {
 }
 
 type ShelterUsecase interface {
-	GetAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.Shelter, error)
+	GetAllData(ctx context.Context, search *Shelter.ShelterSearch) ([]Shelter.ShelterResponsePayload, error)
 	RegisterShelter(ctx context.Context, shelter *Shelter.Shelter) (*Shelter.Shelter, []string)
 	GetOneDataById(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error)
 	GetOneDataByUserId(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error)

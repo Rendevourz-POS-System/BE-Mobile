@@ -15,7 +15,9 @@ import (
 func SaveImageToTemp(ctx *gin.Context, form *multipart.Form) (res []string, err error) {
 	// Get the uploaded files
 	files := form.File["files"]
-
+	if len(files) <= 0 {
+		return nil, nil
+	}
 	// Save the uploaded files to a temporary directory
 	tempFilePaths := make([]string, len(files))
 	for i, file := range files {
