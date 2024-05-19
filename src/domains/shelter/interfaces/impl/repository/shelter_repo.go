@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	Shelter "main.go/domains/shelter/entities"
 	"main.go/shared/collections"
+	"main.go/shared/helpers"
 )
 
 type shelterRepository struct {
@@ -67,6 +68,81 @@ func (shelterRepo *shelterRepository) filterShelter(search *Shelter.ShelterSearc
 	return filter
 }
 
+//func (shelterRepo *shelterRepository) createFavoritesShelterPipeline(pipeline mongo.Pipeline, []primitive.ObjectID) mongo.Pipeline {
+//
+//	return nil
+//}
+
+func (shelterRepo *shelterRepository) createLocationPipeline(pipeline mongo.Pipeline, search *Shelter.ShelterSearch) mongo.Pipeline {
+	// Lookup to fetch the corresponding shelter
+	pipeline = append(pipeline, bson.D{{
+		"$lookup", bson.M{
+			"from":         "shelter_locations",
+			"localField":   "shelter_location",
+			"foreignField": "_id",
+			"as":           "location_details",
+		}},
+	})
+	// Unwind the result to simplify processing (consider handling missing shelters)
+	pipeline = append(pipeline, bson.D{{"$unwind", bson.M{
+		"path":                       "$location_details",
+		"preserveNullAndEmptyArrays": true, // Keeps pets even if the shelter is missing
+	}}})
+
+	if search.ShelterLocationName != "" {
+		regexPattern := helpers.RegexPattern(search.ShelterLocationName)
+		pipeline = append(pipeline, bson.D{{"$match", bson.M{"location_details.location_name": regexPattern}}})
+	}
+	return pipeline
+}
+
+func (shelterRepo *shelterRepository) createPetsPipeline(pipeline mongo.Pipeline, search *Shelter.ShelterSearch) mongo.Pipeline {
+	pipeline = append(pipeline, bson.D{{
+		"$lookup", bson.M{
+			"from":         "pet_types",
+			"localField":   "pet_type_accepted",
+			"foreignField": "_id",
+			"as":           "pet_type_details",
+		}},
+	})
+	// Unwind the result to simplify processing (consider handling missing shelters)
+	pipeline = append(pipeline, bson.D{{"$unwind", bson.M{
+		"path":                       "$pet_type_details",
+		"preserveNullAndEmptyArrays": true, // Keeps pets even if the shelter is missing
+	}}})
+
+	if search.PetType != "" {
+		regexPattern := helpers.RegexPattern(search.PetType)
+		pipeline = append(pipeline, bson.D{{"$match", bson.M{"pet_type_details.type": regexPattern}}})
+	}
+	return pipeline
+}
+
+func (shelterRepo *shelterRepository) createPipeline(filter bson.D, search *Shelter.ShelterSearch) mongo.Pipeline {
+	pipeline := mongo.Pipeline{
+		{{"$match", filter}}, // Apply search filters
+	}
+	pipeline = shelterRepo.createLocationPipeline(pipeline, search)
+	pipeline = shelterRepo.createPetsPipeline(pipeline, search)
+
+	// Here we adjust fields
+	// Here we add extra fields and assume all other pet fields should be included
+	pipeline = append(pipeline, bson.D{{"$addFields", bson.M{
+		"shelter_location_name": "$location_details.location_name",
+		//"pet_type_accepted":     "$pet_type_details.type",
+	}}})
+	return pipeline
+}
+
+func (shelterRepo *shelterRepository) createPaginationPipeline(pipeline mongo.Pipeline, search *Shelter.ShelterSearch) mongo.Pipeline {
+	// Pagination can be added here if required
+	if search.Page > 0 && search.PageSize > 0 {
+		skip := (search.Page - 1) * search.PageSize
+		pipeline = append(pipeline, bson.D{{"$skip", skip}}, bson.D{{"$limit", search.PageSize}})
+	}
+	return pipeline
+}
+
 func (shelterRepo *shelterRepository) getAllFavoriteShelters(c context.Context, userID *primitive.ObjectID) (shelterIDs []primitive.ObjectID, err error) {
 	cursor, errs := shelterRepo.database.Collection(collections.ShelterFavoriteName).Find(c, bson.M{"user_id": userID})
 	if errs != nil {
@@ -86,8 +162,7 @@ func (shelterRepo *shelterRepository) getAllFavoriteShelters(c context.Context, 
 }
 
 func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *Shelter.ShelterSearch) (res []Shelter.ShelterResponsePayload, err error) {
-	filter := shelterRepo.filterShelter(search)          // Filter
-	findOptions := shelterRepo.paginationShelter(search) // Pagination
+	filter := shelterRepo.filterShelter(search) // Filter
 	if search.UserId != primitive.NilObjectID {
 		favoriteShelterIDs, errs := shelterRepo.getAllFavoriteShelters(c, &search.UserId)
 		if errs != nil {
@@ -102,7 +177,10 @@ func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *She
 			return []Shelter.ShelterResponsePayload{}, nil
 		}
 	}
-	data, err := shelterRepo.collection.Find(c, filter, findOptions)
+	pipeline := shelterRepo.createPipeline(filter, search)
+	//findOptions := shelterRepo.paginationShelter(search) // Pagination
+	//pipeline = shelterRepo.createPaginationPipeline(pipeline, search) // Create pagination pipeline
+	data, err := shelterRepo.collection.Aggregate(c, pipeline)
 	if err != nil {
 		return nil, err
 	}
