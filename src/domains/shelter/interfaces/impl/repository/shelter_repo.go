@@ -123,13 +123,13 @@ func (shelterRepo *shelterRepository) createPipeline(filter bson.D, search *Shel
 		{{"$match", filter}}, // Apply search filters
 	}
 	pipeline = shelterRepo.createLocationPipeline(pipeline, search)
-	pipeline = shelterRepo.createPetsPipeline(pipeline, search)
+	//pipeline = shelterRepo.createPetsPipeline(pipeline, search)
 
 	// Here we adjust fields
 	// Here we add extra fields and assume all other pet fields should be included
 	pipeline = append(pipeline, bson.D{{"$addFields", bson.M{
 		"shelter_location_name": "$location_details.location_name",
-		//"pet_type_accepted":     "$pet_type_details.type",
+		//"pet_type_accepted_name": bson.M{"$match": "$pet_type_details.type"},
 	}}})
 	return pipeline
 }
