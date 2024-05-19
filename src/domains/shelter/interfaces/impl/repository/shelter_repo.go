@@ -68,11 +68,6 @@ func (shelterRepo *shelterRepository) filterShelter(search *Shelter.ShelterSearc
 	return filter
 }
 
-//func (shelterRepo *shelterRepository) createFavoritesShelterPipeline(pipeline mongo.Pipeline, []primitive.ObjectID) mongo.Pipeline {
-//
-//	return nil
-//}
-
 func (shelterRepo *shelterRepository) createLocationPipeline(pipeline mongo.Pipeline, search *Shelter.ShelterSearch) mongo.Pipeline {
 	// Lookup to fetch the corresponding shelter
 	pipeline = append(pipeline, bson.D{{

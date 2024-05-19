@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
@@ -81,9 +80,7 @@ func (userHttp *UserHttp) RegisterUsers(c *gin.Context) {
 }
 
 func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
-	userId := helpers.ToString(c.MustGet("x-user-id"))
-	fmt.Println("UserId: ", userId)
-	data, err := userHttp.userUsecase.GetUserByUserId(c, userId)
+	data, err := userHttp.userUsecase.GetUserByUserId(c, helpers.ToString(c.MustGet("x-user-id")))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
