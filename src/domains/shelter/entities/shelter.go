@@ -61,6 +61,7 @@ type (
 		PetTypeAccepted      []string           `json:"PetTypeAccepted" bson:"pet_type_accepted"`
 		PetTypeAcceptedName  []string           `json:"PetTypeAcceptedName" bson:"pet_type_accepted_name"`
 		ImagePath            []string           `json:"ImagePath" bson:"image"`
+		ImageBase64          []string           `json:"ImageBase64"`
 		Pin                  string             `json:"Pin" bson:"pin"`
 		ShelterVerified      bool               `json:"ShelterVerified" bson:"shelter_verified"`
 		CreatedAt            *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`

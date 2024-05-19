@@ -115,7 +115,6 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 	if tempFilePaths != nil {
 		shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, app.GetConfig().Image.ShelterPath)
 	}
-
 	shelter.ImagePath = shelterCreate.Shelter.ImagePath
 	shelter, _ = shelterHttp.shelterUsecase.UpdateShelterById(c, &shelter.ID, shelter)
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Register Shelter", Data: res})
