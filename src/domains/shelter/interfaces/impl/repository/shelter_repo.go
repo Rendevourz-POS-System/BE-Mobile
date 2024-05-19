@@ -85,7 +85,7 @@ func (shelterRepo *shelterRepository) createLocationPipeline(pipeline mongo.Pipe
 	}}})
 
 	if search.ShelterLocationName != "" {
-		regexPattern := helpers.RegexPattern(search.ShelterLocationName)
+		regexPattern := helpers.RegexCaseInsensitivePattern(search.ShelterLocationName)
 		pipeline = append(pipeline, bson.D{{"$match", bson.M{"location_details.location_name": regexPattern}}})
 	}
 	return pipeline
@@ -107,7 +107,7 @@ func (shelterRepo *shelterRepository) createPetsPipeline(pipeline mongo.Pipeline
 	}}})
 
 	if search.PetType != "" {
-		regexPattern := helpers.RegexPattern(search.PetType)
+		regexPattern := helpers.RegexCaseInsensitivePattern(search.PetType)
 		pipeline = append(pipeline, bson.D{{"$match", bson.M{"pet_type_details.type": regexPattern}}})
 	}
 	return pipeline

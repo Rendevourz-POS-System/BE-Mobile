@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -116,6 +117,7 @@ func ParseObjectIdToString(value primitive.ObjectID) string {
 }
 
 func CheckPetGender(value string) string {
+	value = strings.ToLower(value)
 	if value == ShelterPresistence.PetGenderMale || value == ShelterPresistence.PetGenderFemale {
 		return value
 	}
@@ -126,9 +128,14 @@ func GenerateFileName(filename string) string {
 	return GenerateRandomString(10) + "_" + filename
 }
 
-func RegexPattern(pattern interface{}) *bson.M {
+func RegexCaseInsensitivePattern(pattern interface{}) *bson.M {
+	// Convert the input to a string, escaping any special regex characters to avoid issues in pattern matching
+	safePattern := regexp.QuoteMeta(ToString(pattern))
+	// Adjust the pattern to match any part of the string (i.e., contains, not just starts with or exact match)
+	regexPattern := ".*" + safePattern + ".*"
+
 	return &bson.M{"$regex": primitive.Regex{
-		Pattern: "^" + regexp.QuoteMeta(ToString(pattern)) + "$", // Exact match, case insensitive
-		Options: "i",                                             // Case-insensitive
+		Pattern: regexPattern,
+		Options: "i", // Case-insensitive
 	}}
 }

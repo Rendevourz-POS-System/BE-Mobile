@@ -54,10 +54,16 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) *bson.D {
 			},
 		})
 	}
+	if search.Gender != "" {
+		filter = append(filter, bson.E{
+			Key:   "pet_gender",
+			Value: helpers.RegexCaseInsensitivePattern(search.Gender),
+		})
+	}
 	if search.Type != "" {
 		filter = append(filter, bson.E{
 			Key:   "pet_type",
-			Value: search.Type,
+			Value: helpers.RegexCaseInsensitivePattern(search.Type),
 		})
 	}
 	return &filter
@@ -96,9 +102,9 @@ func (r *petRepo) createPipeline(filter *bson.D, search *Pet.PetSearch) mongo.Pi
 	// Adjusting the $project stage
 	// Here we add extra fields and assume all other pet fields should be included
 	pipeline = append(pipeline, bson.D{{"$addFields", bson.M{
-		"shelter_name":     "$shelter.shelter_name",   // Adds shelter_name field
-		"location_name":    "$location.location_name", // Adds location_name field
-		"shelter_location": "$location.location_name", // Adds shelter_location field
+		"shelter_name":          "$shelter.shelter_name",   // Adds shelter_name field
+		"shelter_location":      "$location.location_name", // Adds location_name field
+		"shelter_location_name": "$location.location_name", // Adds shelter_location field
 	}}})
 	return pipeline
 }
@@ -121,7 +127,7 @@ func (r *petRepo) createShelterPipeline(pipeline mongo.Pipeline, search *Pet.Pet
 
 	// Add location filter if specified and make it case insensitive
 	if search.ShelterName != "" {
-		regexPattern := helpers.RegexPattern(search.ShelterName)
+		regexPattern := helpers.RegexCaseInsensitivePattern(search.ShelterName)
 		pipeline = append(pipeline, bson.D{{"$match", bson.M{"shelter.shelter_name": regexPattern}}})
 	}
 	return pipeline
@@ -131,7 +137,7 @@ func (r *petRepo) createLocationPipeline(pipeline mongo.Pipeline, search *Pet.Pe
 	// Additional lookup to fetch the location from the shelter
 	pipeline = append(pipeline, bson.D{{
 		"$lookup", bson.M{
-			"from":         "shelter_location",
+			"from":         "shelter_locations",
 			"localField":   "shelter.shelter_location",
 			"foreignField": "_id",
 			"as":           "location",
@@ -146,7 +152,7 @@ func (r *petRepo) createLocationPipeline(pipeline mongo.Pipeline, search *Pet.Pe
 
 	// Add location filter if specified and make it case insensitive
 	if search.Location != "" {
-		regexPattern := helpers.RegexPattern(search.ShelterName)
+		regexPattern := helpers.RegexCaseInsensitivePattern(search.Location)
 		pipeline = append(pipeline, bson.D{{"$match", bson.M{"location.location_name": regexPattern}}})
 	}
 	return pipeline

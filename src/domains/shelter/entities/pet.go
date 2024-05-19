@@ -28,9 +28,9 @@ type (
 	PetResponsePayload struct {
 		ID              primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
 		ShelterId       primitive.ObjectID `json:"ShelterId" bson:"shelter_id"`
-		ShelterName     string             `json:"ShelterName" bson:"shelter_name,omitempty"`
-		ShelterLocation string             `json:"ShelterLocation" bson:"shelter_location,omitempty"`
-		Location        string             `json:"Location" bson:"location_name"`
+		ShelterName     string             `json:"ShelterName" bson:"shelter_name"`
+		ShelterLocation string             `json:"ShelterLocation" bson:"shelter_location"`
+		Location        string             `json:"Location" bson:"shelter_location_name"`
 		PetName         string             `json:"PetName" bson:"pet_name"`
 		PetType         string             `json:"PetType" bson:"pet_type"`
 		PetGender       string             `json:"PetGender" bson:"pet_gender"`
