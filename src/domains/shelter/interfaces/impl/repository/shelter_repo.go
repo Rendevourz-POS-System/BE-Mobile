@@ -179,7 +179,7 @@ func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *She
 	}
 	pipeline := shelterRepo.createPipeline(filter, search)
 	//findOptions := shelterRepo.paginationShelter(search) // Pagination
-	//pipeline = shelterRepo.createPaginationPipeline(pipeline, search) // Create pagination pipeline
+	pipeline = shelterRepo.createPaginationPipeline(pipeline, search) // Create pagination pipeline
 	data, err := shelterRepo.collection.Aggregate(c, pipeline)
 	if err != nil {
 		return nil, err
