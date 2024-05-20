@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -97,7 +96,6 @@ func ParseStringToInt(value string) int {
 func GetUserId(c *gin.Context) primitive.ObjectID {
 	userId, _ := c.MustGet("x-user-id").(string)
 	userID, err := primitive.ObjectIDFromHex(userId)
-	fmt.Println(userID)
 	if err != nil {
 		panic("Failed to get user id from middlewares !")
 	}

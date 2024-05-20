@@ -16,7 +16,7 @@ type Pet struct {
 	PetStatus      bool               `json:"PetStatus" bson:"pet_status" validate:"omitempty" default:"false"`
 	PetDescription string             `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
 	IsVaccinated   bool               `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required"`
-	ImagePath      []string           `json:"Image" bson:"image" validate:"omitempty"`
+	Image          []string           `json:"Image" bson:"image" validate:"omitempty"`
 	ImageBase64    []string           `json:"ImageBase64" validate:"omitempty"`
 	PetDob         *time.Time         `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
 	CreatedAt      *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
@@ -37,7 +37,7 @@ type (
 		PetStatus       bool               `json:"PetStatus" bson:"pet_status"`
 		PetDescription  string             `json:"PetDescription" bson:"pet_description"`
 		IsVaccinated    bool               `json:"IsVaccinated" bson:"is_vaccinated"`
-		ImagePath       []string           `json:"Image" bson:"image"`
+		Image           []string           `json:"Image" bson:"image"`
 		ImageBase64     []string           `json:"ImageBase64"`
 		PetAge          int                `json:"PetAge" bson:"pet_age"`
 		CreatedAt       *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`

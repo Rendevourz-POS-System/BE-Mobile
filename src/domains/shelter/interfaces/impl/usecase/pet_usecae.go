@@ -24,7 +24,7 @@ func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res
 	}
 	for i, pet := range res {
 		var base64Images []string
-		for _, imagePath := range pet.ImagePath {
+		for _, imagePath := range pet.Image {
 			imageData, err := os.ReadFile(imagePath) // Read the image file
 			if err != nil {
 				return nil, err // Handle error (perhaps just log and continue with other images?)

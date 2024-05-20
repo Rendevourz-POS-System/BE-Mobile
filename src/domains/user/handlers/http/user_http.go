@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
@@ -12,9 +13,9 @@ import (
 	"main.go/domains/user/interfaces/impl/usecase"
 	"main.go/middlewares"
 	"main.go/shared/helpers"
+	"main.go/shared/helpers/image_helpers"
 	"main.go/shared/message/errors"
 	"net/http"
-	"path/filepath"
 )
 
 type UserHttp struct {
@@ -80,7 +81,9 @@ func (userHttp *UserHttp) RegisterUsers(c *gin.Context) {
 }
 
 func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
-	data, err := userHttp.userUsecase.GetUserByUserId(c, helpers.ToString(c.MustGet("x-user-id")))
+	userId := helpers.GetUserId(c)
+	fmt.Println("UID: ", userId)
+	data, err := userHttp.userUsecase.GetUserByUserId(c, userId.Hex())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
@@ -114,13 +117,7 @@ func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
 	}
 	data.ID = helpers.GetUserId(c)
 	if file != nil {
-		FilePath := filepath.Join(app.GetConfig().Image.Folder, app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, data.ID.Hex(), file.Filename)
-		// Save the uploaded file with the temporary path
-		if err := c.SaveUploadedFile(file, FilePath); err != nil {
-			c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Upload Image !", Error: err.Error()})
-			return
-		}
-		data.ImagePath = FilePath
+		data, _ = image_helpers.UploadProfile(c, file, data)
 	}
 	res, err := userHttp.userUsecase.UpdateUserData(c, data)
 	if err != nil {
@@ -128,6 +125,7 @@ func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+	return
 }
 
 func (userHttp *UserHttp) UpdatePassword(c *gin.Context) {

@@ -10,6 +10,7 @@ import (
 	"main.go/domains/user/interfaces"
 	"main.go/domains/user/mail/controller"
 	"main.go/shared/helpers"
+	"main.go/shared/helpers/image_helpers"
 	"os"
 )
 
@@ -74,7 +75,7 @@ func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
 		Verified:           false,
 		ShelterIsActivated: false,
 		State:              user.State,
-		ImagePath:          app.GetConfig().Image.Folder,
+		Image:              "",
 		StaffStatus:        StaffSatus,
 		Role:               helpers.GetRole(user.Role),
 		CreatedAt:          helpers.GetCurrentTime(nil),
@@ -124,8 +125,28 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 
 func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.User, error) {
 	user, err := u.userRepo.FindUserById(ctx, id)
-	if user.ImagePath != "" && len(user.ImagePath) > 0 {
-		file, err2 := os.ReadFile(user.ImagePath)
+	if user.Image != "" && len(user.Image) > 0 {
+		file, err2 := os.ReadFile(image_helpers.GenerateImagePath(
+			app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, user.ID.Hex(), user.Image))
+		if err2 != nil {
+			return nil, err2
+		}
+		user.ImageBase64 = base64.StdEncoding.EncodeToString(file) // Convert to Base64
+	}
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u *userUsecase) GetUserByUserIdForUpdate(ctx context.Context, id string, newImage *string) (*User.User, error) {
+	user, err := u.userRepo.FindUserById(ctx, id)
+	if user.Image != "" && len(user.Image) > 0 {
+		if newImage != nil {
+			user.Image = *newImage
+		}
+		file, err2 := os.ReadFile(image_helpers.GenerateImagePath(
+			app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, id, user.Image))
 		if err2 != nil {
 			return nil, err2
 		}
@@ -139,12 +160,16 @@ func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.Use
 
 func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfilePayload) (res *User.User, errs []string) {
 	var err error
+	var newImage *string = nil
 	validate := helpers.NewValidator()
 	if err = validate.Struct(req); err != nil {
 		errs = helpers.CustomError(err)
 		return nil, errs
 	}
-	userDB, err := u.GetUserByUserId(ctx, req.ID.Hex())
+	if req.Image != "" && len(req.Image) > 0 {
+		newImage = &req.Image
+	}
+	userDB, err := u.GetUserByUserIdForUpdate(ctx, req.ID.Hex(), newImage)
 	if err != nil {
 		errs = append(errs, err.Error())
 		return nil, errs
@@ -158,9 +183,9 @@ func (u *userUsecase) UpdateUserData(ctx context.Context, req *User.UpdateProfil
 }
 
 func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload, userDB *User.User) *User.User {
-	var userImage = userDB.ImagePath
-	if user.ImagePath != "" {
-		userImage = user.ImagePath
+	var userImage = userDB.Image
+	if user.Image != "" {
+		userImage = user.Image
 	}
 	return &User.User{
 		ID:                 user.ID,
@@ -178,7 +203,7 @@ func (u *userUsecase) updateFindUser(user *User.UpdateProfilePayload, userDB *Us
 		StaffStatus:        userDB.StaffStatus,
 		ShelterIsActivated: userDB.ShelterIsActivated,
 		Role:               userDB.Role,
-		ImagePath:          userImage,
+		Image:              userImage,
 		Verified:           userDB.Verified,
 		CreatedAt:          userDB.CreatedAt,
 		UpdatedAt:          helpers.GetCurrentTime(nil),

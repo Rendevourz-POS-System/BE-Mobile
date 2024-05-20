@@ -32,7 +32,7 @@ func (u *shelterUsecase) GetAllData(ctx context.Context, search *Shelter.Shelter
 	}
 	for i, item := range res {
 		var base64Images []string
-		for _, imagePath := range item.ImagePath {
+		for _, imagePath := range item.Image {
 			imageData, err := os.ReadFile(imagePath) // Read the image file
 			if err != nil {
 				return nil, err // Handle error (perhaps just log and continue with other images?)

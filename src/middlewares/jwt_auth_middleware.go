@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	"main.go/shared/helpers"
@@ -24,6 +25,8 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 					return
 				}
 				c.Set("x-user-id", userID)
+				fmt.Println("Auth token --> ", authorized)
+				fmt.Println("User ID --> ", userID)
 				c.Next()
 				return
 			}

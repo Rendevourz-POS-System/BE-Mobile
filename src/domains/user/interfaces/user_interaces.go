@@ -22,6 +22,7 @@ type UserUsecase interface {
 	LoginUser(ctx context.Context, userReq *User.LoginPayload) (*User.LoginResponse, error)
 	SendEmailVerification(ctx context.Context, data *User.User, secretCode string) (res *User.User, err error)
 	GetUserByUserId(ctx context.Context, token string) (*User.User, error)
+	GetUserByUserIdForUpdate(ctx context.Context, id string, newImage *string) (*User.User, error)
 	UpdateUserData(ctx context.Context, user *User.UpdateProfilePayload) (*User.User, []string)
 	UpdatePassword(ctx context.Context, user *User.UpdatePasswordPayload) error
 }

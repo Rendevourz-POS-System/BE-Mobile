@@ -15,7 +15,6 @@ import (
 	"main.go/shared/helpers/image_helpers"
 	"main.go/shared/message/errors"
 	"net/http"
-	"os"
 )
 
 type PetHttp struct {
@@ -52,7 +51,7 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return
 	}
-	tempFilePaths, err := image_helpers.SaveImageToTemp(ctx, form)
+	filesName, err := image_helpers.SaveImageToTemp(ctx, form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
 	}
@@ -60,17 +59,15 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 	data, errs := h.petUsecase.CreatePets(ctx, pet)
 	if errs != nil {
 		// Delete temporary files if pet creation fails
-		for _, tempFilePath := range tempFilePaths {
-			_ = os.Remove(tempFilePath)
-		}
+		image_helpers.RemoveTempImagePath(filesName)
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
 		return
 	}
-	pet, err = image_helpers.MoveUploadedFile(ctx, tempFilePaths, data, pet, app.GetConfig().Image.PetPath)
+	pet, err = image_helpers.MoveUploadedFile(ctx, filesName, data, pet, app.GetConfig().Image.PetPath)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image Pet ! ", Error: err.Error()})
 	}
-	data.ImagePath = pet.Pet.ImagePath
+	data.Image = pet.Pet.Image
 	// Update the pet entity with the image paths
 	_, err = h.petUsecase.UpdatePet(ctx, &data.ID, data)
 	if err != nil {
