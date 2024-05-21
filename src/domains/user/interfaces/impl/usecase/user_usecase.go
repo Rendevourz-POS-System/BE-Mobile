@@ -37,8 +37,8 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 		errs = helpers.CustomError(err)
 		return nil, errs
 	}
-	datas := u.setDefaultUserData(user)
-	resData, checkUserData, err2 := u.userRepo.StoreOne(ctx, datas)
+	data := u.setDefaultUserData(user)
+	resData, checkUserData, err2 := u.userRepo.StoreOne(ctx, data)
 	if err2 != nil {
 		errs = append(errs, err2.Error())
 		return nil, errs
@@ -76,6 +76,7 @@ func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
 		ShelterIsActivated: false,
 		State:              user.State,
 		Image:              "",
+		ImageBase64:        "",
 		StaffStatus:        StaffSatus,
 		Role:               helpers.GetRole(user.Role),
 		CreatedAt:          helpers.GetCurrentTime(nil),

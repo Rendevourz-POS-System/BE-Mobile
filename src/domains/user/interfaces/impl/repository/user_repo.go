@@ -47,7 +47,6 @@ func (userRepo *userRepository) StoreOne(c context.Context, user *User.User) (*U
 		// An actual error occurred while trying to find the user, other than "no documents found"
 		return nil, false, err
 	}
-
 	// Proceed with insertion if no existing user was found
 	insertResult, err := userRepo.collection.InsertOne(c, user)
 	if err != nil {
