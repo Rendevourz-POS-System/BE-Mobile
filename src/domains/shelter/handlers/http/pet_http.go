@@ -63,7 +63,13 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
 		return
 	}
-	pet, err = image_helpers.MoveUploadedFile(ctx, filesName, data, pet, app.GetConfig().Image.PetPath)
+	if filesName != nil {
+		if pet.Pet.ShelterId.Hex() == "" {
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, data, pet, app.GetConfig().Image.PetPath)
+		} else {
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, data, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.PetPath, helpers.GetUserId(ctx).Hex())
+		}
+	}
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image Pet ! ", Error: err.Error()})
 	}

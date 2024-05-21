@@ -8,7 +8,7 @@ import (
 
 type Pet struct {
 	ID             primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-	ShelterId      primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required"`
+	ShelterId      primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required,omitempty"`
 	PetName        string             `json:"PetName" bson:"pet_name" validate:"required"`
 	PetType        string             `json:"PetType" bson:"pet_type" validate:"required"`
 	PetAge         int                `json:"PetAge" bson:"pet_age" validate:"required,number,pet-age"`

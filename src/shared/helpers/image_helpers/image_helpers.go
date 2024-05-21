@@ -46,12 +46,13 @@ func SaveImageToTemp(ctx *gin.Context, form *multipart.Form) (res []string, err 
 	return tempFilePaths, nil
 }
 
-func MoveUploadedFile(ctx *gin.Context, filesName []string, data *Pet.Pet, pet *Pet.PetCreate, path string) (res *Pet.PetCreate, err error) {
+func MoveUploadedFile(ctx *gin.Context, filesName []string, findPet *Pet.Pet, pet *Pet.PetCreate, data ...string) (res *Pet.PetCreate, err error) {
 	// Move the uploaded files to their final location with the data.ID in the path
 	for _, RealFileName := range filesName {
 		// Construct the final file path
-		finalFilePath := GenerateImagePath(app.GetConfig().Image.PetPath, data.ID.Hex(), RealFileName)
-
+		newData := data
+		newData = append(newData, RealFileName)
+		finalFilePath := GenerateImagePath(newData...)
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Failed To Create Directories ! ", Errors: err})
