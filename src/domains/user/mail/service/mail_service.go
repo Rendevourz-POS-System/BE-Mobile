@@ -69,3 +69,35 @@ func (service *GmailSender) ExecuteSendEmail(subject, content string, to, cc, bc
 	}
 	return nil
 }
+
+//func (service *GmailSender) HtmlExampleExecuteSendEmail(subject, content string, to, cc, bcc []string, attach string) error {
+//	dialer := gomail.NewDialer(
+//		service.Host,
+//		service.Port,
+//		service.FromEmailAddress,
+//		service.FromEmailPassword,
+//	)
+//	htmlFile, err := os.ReadFile(attach)
+//	htmlString := string(htmlFile)
+//	htmlString = strings.Replace(htmlString, "linkhere", content, -1)
+//	fmt.Println(htmlString)
+//	mailer := gomail.NewMessage()
+//	mailer.SetHeader("From", service.FromEmailAddress)
+//	mailer.SetHeader("To", to...)
+//	mailer.SetHeader("Cc", cc...)
+//	mailer.SetHeader("Bcc", bcc...)
+//	mailer.SetHeader("Subject", subject)
+//	mailer.SetBody("text/html", htmlString)
+//	if attach != "" {
+//		mailer.Attach(attach)
+//	}
+//	err = dialer.DialAndSend(mailer)
+//	if err != nil {
+//		a, _ := os.Getwd()
+//		fmt.Println("Dir Attach : ", attach)
+//		fmt.Println("DIR Config : ", app.GetConfig().Email.File)
+//		fmt.Println("Dir : ", a)
+//		log.Fatal(err.Error())
+//	}
+//	return nil
+//}

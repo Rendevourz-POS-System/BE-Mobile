@@ -91,7 +91,7 @@ func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User
 		Content: helpers.GetVerifiedUrl(secretCode, data.Email),
 		Cc:      "",
 		Bcc:     "",
-		Attach:  "readme.txt",
+		Attach:  app.GetConfig().Email.Attachments,
 	})
 	if ok != nil {
 		return nil, fmt.Errorf("failed to send email verification ! ")

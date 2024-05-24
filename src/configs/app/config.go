@@ -51,6 +51,7 @@ type Email struct {
 	SenderEmailName     string
 	SenderEmailAddress  string
 	SenderEmailPassword string
+	Attachments         string
 }
 
 type Domain struct {

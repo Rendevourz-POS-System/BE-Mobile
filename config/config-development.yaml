@@ -44,10 +44,12 @@ Email:
   SenderEmailName: Shelter Apps
   SenderEmailAddress: reagentreagent4@gmail.com
   SenderEmailPassword: dwqwziohlopnfurk
+  Attachments: readme.txt
+  Type: email
 
 Domain:
   Name: 192.168.43.15
-  Protocol: exp
+  Protocol: https
   FrontendPath: /email/verification
   Backend:
   Port: 8081
