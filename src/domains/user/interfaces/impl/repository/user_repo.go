@@ -82,7 +82,7 @@ func (userRepo *userRepository) FindByEmail(c context.Context, email string) (*U
 }
 
 func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId primitive.ObjectID, email string) (string, error) {
-	minute := 30
+	minute := 15
 	userToken := &User.UserToken{
 		UserId:    userId,
 		Token:     helpers.GenerateRandomString(32),
@@ -126,6 +126,7 @@ func (userRepo *userRepository) FindUserById(c context.Context, userId string) (
 
 func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.User, err error) {
 	filter := bson.M{"_id": user.ID}
+	user.UpdatedAt = helpers.GetCurrentTime(nil)
 	update := bson.M{"$set": user}
 	// Set the options to return the updated document
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
@@ -138,7 +139,7 @@ func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (r
 
 func (userRepo *userRepository) PutUserPassword(ctx context.Context, req *User.UpdatePasswordPayload) error {
 	filter := bson.M{"_id": req.Id} // Assuming '_id' is used as the identifier.
-	update := bson.M{"$set": bson.M{"password": req.NewPassword}}
+	update := bson.M{"$set": bson.M{"password": req.NewPassword, "UpdatedAt": helpers.GetCurrentTime(nil)}}
 	result, err := userRepo.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return fmt.Errorf("error updating user password: %v", err)
@@ -147,4 +148,25 @@ func (userRepo *userRepository) PutUserPassword(ctx context.Context, req *User.U
 		return fmt.Errorf("no user found with ID %s", req.Id)
 	}
 	return nil
+}
+
+func (userRepo *userRepository) VerifiedUserEmail(ctx context.Context, Id *primitive.ObjectID) (*User.User, error) {
+	// Define the filter to find the user by _id
+	filter := bson.M{"_id": Id}
+	// Define the update operation to set is_active to true
+	update := bson.M{
+		"$set": bson.M{
+			"is_active": true,
+			"UpdatedAt": helpers.GetCurrentTime(nil),
+		},
+	}
+	// Define the options to return the updated document
+	option := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	// Perform the update and return the updated document
+	var updatedUser User.User
+	err := userRepo.collection.FindOneAndUpdate(ctx, filter, update, option).Decode(&updatedUser)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedUser, nil
 }

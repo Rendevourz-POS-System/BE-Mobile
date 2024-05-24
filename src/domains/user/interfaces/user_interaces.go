@@ -14,6 +14,7 @@ type UserRepository interface {
 	FindUserById(ctx context.Context, userId string) (*User.User, error)
 	PutUser(ctx context.Context, user *User.User) (*User.User, error)
 	PutUserPassword(ctx context.Context, user *User.UpdatePasswordPayload) error
+	VerifiedUserEmail(ctx context.Context, Id *primitive.ObjectID) (res *User.User, err error)
 }
 
 type UserUsecase interface {
@@ -21,6 +22,7 @@ type UserUsecase interface {
 	RegisterUser(ctx context.Context, user *User.User) (*User.User, []string)
 	LoginUser(ctx context.Context, userReq *User.LoginPayload) (*User.LoginResponse, error)
 	SendEmailVerification(ctx context.Context, data *User.User, secretCode string) (res *User.User, err error)
+	VerifyEmailVerification(ctx context.Context, data *User.EmailVerifiedPayload, userTokenUsecase UserTokenUsecase) (res *User.User, err []string)
 	GetUserByUserId(ctx context.Context, token string) (*User.User, error)
 	GetUserByUserIdForUpdate(ctx context.Context, id string, newImage *string) (*User.User, error)
 	UpdateUserData(ctx context.Context, user *User.UpdateProfilePayload) (*User.User, []string)

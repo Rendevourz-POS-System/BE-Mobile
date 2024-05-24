@@ -1,6 +1,11 @@
 package usecase
 
-import "main.go/domains/user/interfaces"
+import (
+	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	JwtEmailClaims "main.go/domains/user/entities"
+	"main.go/domains/user/interfaces"
+)
 
 type userTokenUsecase struct {
 	userTokenRepo interfaces.UserTokenRepository
@@ -12,4 +17,12 @@ func NewUserTokenUsecase(userTokenRepo interfaces.UserTokenRepository) *userToke
 
 func (u *userTokenUsecase) GenerateToken() (string, error) {
 	return "", nil
+}
+
+func (u *userTokenUsecase) FindValidToken(ctx context.Context, claims *JwtEmailClaims.JwtEmailClaims) (*primitive.ObjectID, error) {
+	userId, err := u.userTokenRepo.FindOneUserTokenByNonce(ctx, claims)
+	if err != nil {
+		return nil, err
+	}
+	return userId, nil
 }

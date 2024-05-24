@@ -9,7 +9,9 @@ import (
 	"os"
 )
 
-var sender mail.Service
+var (
+	sender mail.Service
+)
 
 type (
 	// GmailSender Config for mail sender (Sender Payload Data) And Entity

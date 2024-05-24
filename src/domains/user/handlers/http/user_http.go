@@ -19,19 +19,22 @@ import (
 )
 
 type UserHttp struct {
-	userUsecase interfaces.UserUsecase
+	userUsecase   interfaces.UserUsecase
+	userTokenHttp *UserTokenHttp
 }
 
-func NewUserHttp(router *gin.Engine) *UserHttp {
+func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 	handler := &UserHttp{
 		userUsecase: usecase.NewUserUsecase(repository.NewUserRepository(
 			database.GetDatabase(_const.DB_SHELTER_APP))),
+		userTokenHttp: tokenHttp,
 	}
 	guest := router.Group("/user")
 	{
 		guest.GET("/", handler.FindAll)
 		guest.POST("/register", handler.RegisterUsers)
 		guest.POST("/login", handler.LoginUsers)
+		guest.POST("/verify-email", handler.VerifyEmail)
 	}
 	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
@@ -141,4 +144,23 @@ func (userHttp *UserHttp) UpdatePassword(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Update Password ! "})
+	return
+}
+
+func (userHttp *UserHttp) VerifyEmail(c *gin.Context) {
+	data := &User.EmailVerifiedPayload{}
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Invalid Data Or Bad Request ! ", ErrorS: []string{err.Error()}})
+		return
+	}
+	res, err := userHttp.userUsecase.VerifyEmailVerification(c, data, userHttp.userTokenHttp.userTokenRepo)
+	if err != nil {
+		if res != nil {
+			c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Email Verified Already ! ", Data: res})
+			return
+		}
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Invalid To Verified Email, Token Is Not Valid ! ", ErrorS: err})
+		return
+	}
+	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Verify Email ! ", Data: res})
 }

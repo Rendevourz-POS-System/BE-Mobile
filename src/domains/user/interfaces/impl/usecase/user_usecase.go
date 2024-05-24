@@ -231,3 +231,36 @@ func (u *userUsecase) UpdatePassword(ctx context.Context, req *User.UpdatePasswo
 	}
 	return nil
 }
+
+func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.EmailVerifiedPayload, userTokenUsecase interfaces.UserTokenUsecase) (res *User.User, err []string) {
+	validate := helpers.NewValidator()
+	if errs := validate.Struct(req); errs != nil {
+		err = helpers.CustomError(errs)
+		return nil, err
+	}
+	claims, errs := helpers.ClaimsJwtTokenForVerificationEmail(req.Token)
+	if errs != nil {
+		err = append(err, errs.Error())
+		return nil, err
+	}
+	userId, errFindToken := userTokenUsecase.FindValidToken(ctx, claims)
+	if errFindToken != nil {
+		err = append(err, errFindToken.Error())
+		return nil, err
+	}
+	findUser, errFindUser := u.userRepo.FindUserById(ctx, userId.Hex())
+	if errFindUser != nil {
+		err = append(err, errFindUser.Error())
+		return nil, err
+	}
+	if findUser.Verified {
+		err = append(err, "Email Verified Already ! ")
+		return findUser, err
+	}
+	res, errVerified := u.userRepo.VerifiedUserEmail(ctx, userId)
+	if errVerified != nil {
+		err = append(err, errVerified.Error())
+		return nil, err
+	}
+	return res, nil
+}

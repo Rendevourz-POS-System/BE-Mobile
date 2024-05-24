@@ -63,6 +63,10 @@ type (
 		NewPassword     string             `json:"NewPassword" validate:"required,min=8,alphanum_symbol"`
 		ConfirmPassword string             `json:"ConfirmPassword" validate:"required,eqfield=NewPassword"`
 	}
+	// Verfied Email Payload
+	EmailVerifiedPayload struct {
+		Token string `json:"Token" validate:"required"`
+	}
 	// LoginPayload Payload for login
 	LoginPayload struct {
 		Email    string `json:"Email" validate:"required,email"`

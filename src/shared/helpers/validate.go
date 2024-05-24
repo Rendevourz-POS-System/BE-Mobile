@@ -2,15 +2,23 @@ package helpers
 
 import (
 	"fmt"
+	emailverifier "github.com/AfterShip/email-verifier"
 	"github.com/go-playground/validator/v10"
+	"log"
 	ShelterConst "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
+	"net"
+	"net/smtp"
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
+	"sync"
 )
 
 var (
+	once     sync.Once
+	verifier *emailverifier.Verifier
 	errorMsg = map[interface{}]string{
 		"required":            "The %s field is required",
 		"email":               "The %s field must be a valid email address",
@@ -23,14 +31,24 @@ var (
 		"pet-age":             "The %s field must be a valid number and greater than or equal to 0",
 		"pet-accepted-min":    "The %s field must be a valid and greater than or equal to 0",
 		"min-location-length": "The %s field must be at least %s characters",
+		//"valid-email":         "The %s field must be a valid email address, %s",
+		//"valid-domain":        "The %s field must be a valid domain",
 	}
 	validate *validator.Validate
 )
 
 func NewValidator() *validator.Validate {
-	if validate == nil {
+	//if validate == nil {
+	//	validate = validator.New()
+	//}
+	//if verifier == nil {
+	//	verifier = emailverifier.NewVerifier()
+	//}
+	once.Do(func() {
 		validate = validator.New()
-	}
+		verifier = emailverifier.NewVerifier()
+		// This block will only be executed once, regardless of how many times NewValidator is called
+	})
 	if err := validate.RegisterValidation("alphanum_symbol", isAlphanumericAndSymbol); err != nil {
 		panic(err)
 	}
@@ -49,6 +67,12 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("min-location-length", shelterLocationMinLength); err != nil {
 		panic(err)
 	}
+	//if err := validate.RegisterValidation("valid-email", checkEmailReachable); err != nil {
+	//	panic(err)
+	//}
+	//if err := validate.RegisterValidation("valid-domain", checkDomainValid); err != nil {
+	//	panic(err)
+	//}
 	return validate
 }
 
@@ -96,6 +120,60 @@ func isAlphanumericAndSymbol(fl validator.FieldLevel) bool {
 	hasAlphaNumeric := regexp.MustCompile(`[a-zA-Z0-9]`).MatchString(field)
 	hasSymbol := regexp.MustCompile(`[^a-zA-Z0-9\s]`).MatchString(field) // \s allows spaces; remove \s if spaces should count as symbols
 	return hasAlphaNumeric && hasSymbol
+}
+
+func checkDomainValid(fl validator.FieldLevel) bool {
+	email := fl.Field().String()
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return false
+	}
+	domain := parts[1]
+	mxRecords, err := net.LookupMX(domain)
+	if err != nil || len(mxRecords) == 0 {
+		return false
+	}
+	return true
+}
+
+func checkEmailReachable(fl validator.FieldLevel) bool {
+	email := fl.Field().String()
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return false
+	}
+	domain := parts[1]
+
+	mxRecords, err := net.LookupMX(domain)
+	if err != nil || len(mxRecords) == 0 {
+		return false
+	}
+
+	client, err := smtp.Dial(mxRecords[0].Host + ":25")
+	if err != nil {
+		return false
+	}
+	defer func(client *smtp.Client) {
+		err := client.Close()
+		if err != nil {
+			log.Fatalf("error closing")
+		}
+	}(client)
+
+	err = client.Hello("localhost")
+	if err != nil {
+		return false
+	}
+	err = client.Mail("test@example.com")
+	if err != nil {
+		return false
+	}
+	err = client.Rcpt(email)
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 func CustomError(err error) (errsMsg []string) {

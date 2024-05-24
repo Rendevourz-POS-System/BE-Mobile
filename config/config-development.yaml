@@ -46,11 +46,11 @@ Email:
   SenderEmailPassword: dwqwziohlopnfurk
 
 Domain:
-  Name: shelter-apps.com
-  Protocol: https
+  Name: 192.168.43.15
+  Protocol: exp
   FrontendPath: /email/verification
   Backend:
-  Port: 8080
+  Port: 8081
 
 Image:
   Folder: uploads
@@ -59,3 +59,7 @@ Image:
   ShelterPath: shelter
   ProfilePath: profile
   TempPath: temp
+
+Midtrans:
+  ServerKey:
+  Environment:

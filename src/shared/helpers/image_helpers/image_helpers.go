@@ -46,7 +46,7 @@ func SaveImageToTemp(ctx *gin.Context, form *multipart.Form) (res []string, err 
 	return tempFilePaths, nil
 }
 
-func MoveUploadedFile(ctx *gin.Context, filesName []string, findPet *Pet.Pet, pet *Pet.PetCreate, data ...string) (res *Pet.PetCreate, err error) {
+func MoveUploadedFile(ctx *gin.Context, filesName []string, pet *Pet.PetCreate, data ...string) (res *Pet.PetCreate, err error) {
 	// Move the uploaded files to their final location with the data.ID in the path
 	for _, RealFileName := range filesName {
 		// Construct the final file path
