@@ -3,6 +3,9 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
@@ -15,8 +18,6 @@ import (
 	"main.go/shared/helpers"
 	"main.go/shared/helpers/image_helpers"
 	"main.go/shared/message/errors"
-	"net/http"
-	"os"
 )
 
 type ShelterHttp struct {
@@ -126,7 +127,7 @@ func (shelterHttp *ShelterHttp) FindOneByUserId(c *gin.Context) {
 	}
 	data, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, search)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Get Shelter ! ", Error: err.Error()})
+		c.JSON(http.StatusOK, errors.ErrorWrapper{Message: "Failed To Get Shelter ! ", Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Get Shelter By User Id ! ", Data: data})
