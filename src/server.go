@@ -134,8 +134,8 @@ func RegisterRoutes(router *gin.Engine) {
 			"message": "Hello World!",
 		})
 	})
-	UserHttp.NewUserHttp(router)
-	UserHttp.NewUserTokenHttp(router)
+	userTokenHttp := UserHttp.NewUserTokenHttp(router)
+	UserHttp.NewUserHttp(router, userTokenHttp)
 	Shelter.NewShelterHttp(router)
 	Shelter.NewPetHttp(router)
 	Shelter.NewShelterFavoriteHttp(router)

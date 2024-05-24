@@ -24,6 +24,28 @@ type Pet struct {
 }
 
 type (
+	// PetSearch struct
+	PetSearch struct {
+		Search      string             `json:"Search"`
+		Page        int                `json:"Page"`
+		PageSize    int                `json:"PageSize"`
+		OrderBy     string             `json:"OrderBy"`
+		Sort        string             `json:"Sort"`
+		ShelterId   primitive.ObjectID `json:"ShelterId"`
+		ShelterName string             `json:"ShelterName"`
+		Location    string             `json:"Location"`
+		Gender      string             `json:"Gender"`
+		AgeStart    int                `json:"AgeStart"`
+		AgeEnd      int                `json:"AgeEnd"`
+		Type        string             `json:"Type"`
+	}
+
+	// PetCreate Payload
+	PetCreate struct {
+		Files *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
+		Pet   Pet                   `form:"Pet" bson:"Pet" validate:"required"`
+	}
+
 	// Pet Response Payload
 	PetResponsePayload struct {
 		ID              primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
@@ -42,25 +64,5 @@ type (
 		PetAge          int                `json:"PetAge" bson:"pet_age"`
 		CreatedAt       *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
 		DeletedAt       *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
-	}
-	// PetCreate Payload
-	PetCreate struct {
-		Files *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
-		Pet   Pet                   `form:"Pet" bson:"Pet" validate:"required"`
-	}
-	// PetSearch struct
-	PetSearch struct {
-		Search      string             `json:"Search"`
-		Page        int                `json:"Page"`
-		PageSize    int                `json:"PageSize"`
-		OrderBy     string             `json:"OrderBy"`
-		Sort        string             `json:"Sort"`
-		ShelterId   primitive.ObjectID `json:"ShelterId"`
-		ShelterName string             `json:"ShelterName"`
-		Location    string             `json:"Location"`
-		Gender      string             `json:"Gender"`
-		AgeStart    int                `json:"AgeStart"`
-		AgeEnd      int                `json:"AgeEnd"`
-		Type        string             `json:"Type"`
 	}
 )

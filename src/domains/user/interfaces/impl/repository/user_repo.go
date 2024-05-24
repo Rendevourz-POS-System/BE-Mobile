@@ -82,7 +82,7 @@ func (userRepo *userRepository) FindByEmail(c context.Context, email string) (*U
 }
 
 func (userRepo *userRepository) GenerateAndStoreToken(c context.Context, userId primitive.ObjectID, email string) (string, error) {
-	minute := 30
+	minute := 15
 	userToken := &User.UserToken{
 		UserId:    userId,
 		Token:     helpers.GenerateRandomString(32),
@@ -147,4 +147,24 @@ func (userRepo *userRepository) PutUserPassword(ctx context.Context, req *User.U
 		return fmt.Errorf("no user found with ID %s", req.Id)
 	}
 	return nil
+}
+
+func (userRepo *userRepository) VerifiedUserEmail(ctx context.Context, Id *primitive.ObjectID) (*User.User, error) {
+	// Define the filter to find the user by _id
+	filter := bson.M{"_id": Id}
+	// Define the update operation to set is_active to true
+	update := bson.M{
+		"$set": bson.M{
+			"is_active": true,
+		},
+	}
+	// Define the options to return the updated document
+	option := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	// Perform the update and return the updated document
+	var updatedUser User.User
+	err := userRepo.collection.FindOneAndUpdate(ctx, filter, update, option).Decode(&updatedUser)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedUser, nil
 }

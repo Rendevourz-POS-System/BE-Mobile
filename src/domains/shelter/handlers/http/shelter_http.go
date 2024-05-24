@@ -38,6 +38,7 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 		user.GET("/:id", handler.FindOneById)
 		user.POST("/register", handler.RegisterShelter)
 		user.GET("/favorite", handler.FindAllFavorite)
+		user.PUT("/update")
 	}
 	return handler
 }
@@ -143,4 +144,8 @@ func (shelterHttp *ShelterHttp) FindOneById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Get Shelter By Id ! ", Data: data})
+}
+
+func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
+
 }

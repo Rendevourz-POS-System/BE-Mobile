@@ -62,7 +62,7 @@ func GetCurrentTime(minute *int) *time.Time {
 }
 
 func GenerateRandomString(length int) string {
-	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]byte, length)
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
