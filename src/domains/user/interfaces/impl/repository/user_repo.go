@@ -126,6 +126,7 @@ func (userRepo *userRepository) FindUserById(c context.Context, userId string) (
 
 func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (res *User.User, err error) {
 	filter := bson.M{"_id": user.ID}
+	user.UpdatedAt = helpers.GetCurrentTime(nil)
 	update := bson.M{"$set": user}
 	// Set the options to return the updated document
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
@@ -138,7 +139,7 @@ func (userRepo *userRepository) PutUser(ctx context.Context, user *User.User) (r
 
 func (userRepo *userRepository) PutUserPassword(ctx context.Context, req *User.UpdatePasswordPayload) error {
 	filter := bson.M{"_id": req.Id} // Assuming '_id' is used as the identifier.
-	update := bson.M{"$set": bson.M{"password": req.NewPassword}}
+	update := bson.M{"$set": bson.M{"password": req.NewPassword, "UpdatedAt": helpers.GetCurrentTime(nil)}}
 	result, err := userRepo.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return fmt.Errorf("error updating user password: %v", err)
@@ -156,6 +157,7 @@ func (userRepo *userRepository) VerifiedUserEmail(ctx context.Context, Id *primi
 	update := bson.M{
 		"$set": bson.M{
 			"is_active": true,
+			"UpdatedAt": helpers.GetCurrentTime(nil),
 		},
 	}
 	// Define the options to return the updated document
