@@ -26,3 +26,11 @@ func (u *userTokenUsecase) FindValidToken(ctx context.Context, claims *JwtEmailC
 	}
 	return userId, nil
 }
+
+func (u *userTokenUsecase) FindValidTokenByUserId(ctx context.Context, userId *primitive.ObjectID, Otp *int) (*primitive.ObjectID, error) {
+	findUserId, err := u.userTokenRepo.FindValidTokenByUserId(ctx, userId, Otp)
+	if err != nil {
+		return nil, err
+	}
+	return findUserId, nil
+}

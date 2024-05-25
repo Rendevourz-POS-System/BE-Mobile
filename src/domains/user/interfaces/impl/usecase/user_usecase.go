@@ -44,12 +44,12 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 		return nil, errs
 	}
 	if resData != nil && !checkUserData {
-		secretCode, err := u.userRepo.GenerateAndStoreToken(ctx, resData.ID, resData.Email)
+		secretCode, Otp, err := u.userRepo.GenerateAndStoreToken(ctx, resData.ID, resData.Email)
 		if err != nil {
 			errs = append(errs, err.Error())
 			return nil, errs
 		}
-		_, SendEmailVerification := u.SendEmailVerification(ctx, user, secretCode)
+		_, SendEmailVerification := u.SendEmailVerification(ctx, user, secretCode, Otp)
 		if SendEmailVerification != nil {
 			errs = append(errs, SendEmailVerification.Error())
 			return nil, errs
@@ -83,12 +83,12 @@ func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
 	}
 }
 
-func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User, secretCode string) (res *User.User, err error) {
+func (u *userUsecase) SendEmailVerification(ctx context.Context, data *User.User, secretCode string, Otp *int) (res *User.User, err error) {
 	// send email verification
 	ok := controller.SendEmail(&User.MailSend{
 		To:      data.Email,
 		Subject: "Email Verification",
-		Content: helpers.GetVerifiedUrl(secretCode, data.Email),
+		Content: helpers.ParsePointerIntToString(Otp),
 		Cc:      "",
 		Bcc:     "",
 		Attach:  app.GetConfig().Email.Attachments,
@@ -113,7 +113,8 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 		return nil, errors.New("password or email doesn't match ! ")
 	}
 	if !user.Verified {
-		return nil, errors.New("user is not active ! ")
+		res.User = *user
+		return res, errors.New("user is not active ! ")
 	}
 	token, err := helpers.GenerateToken(user)
 	if err != nil {
@@ -238,17 +239,20 @@ func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.Ema
 		err = helpers.CustomError(errs)
 		return nil, err
 	}
-	claims, errs := helpers.ClaimsJwtTokenForVerificationEmail(req.Token)
-	if errs != nil {
-		err = append(err, errs.Error())
-		return nil, err
-	}
-	userId, errFindToken := userTokenUsecase.FindValidToken(ctx, claims)
+	//claims, errs := helpers.ClaimsJwtTokenForVerificationEmail(req.Token)
+	//if errs != nil {
+	//	err = append(err, errs.Error())
+	//	return nil, err
+	//}
+	userId, errFindToken := userTokenUsecase.FindValidTokenByUserId(ctx, &req.UserId, req.Otp)
 	if errFindToken != nil {
 		err = append(err, errFindToken.Error())
 		return nil, err
 	}
-	findUser, errFindUser := u.userRepo.FindUserById(ctx, userId.Hex())
+	if *userId != req.UserId {
+
+	}
+	findUser, errFindUser := u.userRepo.FindUserById(ctx, req.UserId.Hex())
 	if errFindUser != nil {
 		err = append(err, errFindUser.Error())
 		return nil, err
@@ -257,7 +261,7 @@ func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.Ema
 		err = append(err, "Email Verified Already ! ")
 		return findUser, err
 	}
-	res, errVerified := u.userRepo.VerifiedUserEmail(ctx, userId)
+	res, errVerified := u.userRepo.VerifiedUserEmail(ctx, &req.UserId)
 	if errVerified != nil {
 		err = append(err, errVerified.Error())
 		return nil, err

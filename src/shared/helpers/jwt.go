@@ -99,10 +99,11 @@ func ExtractIDFromToken(requestToken, secret string) (string, error) {
 	return claims["Id"].(string), nil
 }
 
-func GenerateJwtTokenForVerificationEmail(id, email, secretCode string) (string, error) {
+func GenerateJwtTokenForVerificationEmail(Otp *int, id, email, secretCode string) (string, error) {
 	claims := &User.JwtEmailClaims{
 		ID:    id,
 		Email: email,
+		Otp:   Otp,
 		Nonce: secretCode,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: generateTokenTimeMinute(appConfig.GetConfig().AccessToken.VerificationTokenExpireHour),

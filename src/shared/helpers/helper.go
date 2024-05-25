@@ -3,6 +3,7 @@ package helpers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
+	"github.com/nanorand/nanorand"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/configs/app"
@@ -48,7 +49,7 @@ func ComparePassword(hashedPassword, password string) bool {
 	return ok
 }
 
-func GetVerifiedUrl(secretCode, email string) string {
+func GetVerifiedUrl(secretCode string, Otp *int) string {
 	return app.GetConfig().Domain.Protocol + "://exp" + app.GetConfig().Domain.Name + ":" + app.GetConfig().Domain.Port + "/--" + app.GetConfig().Domain.FrontendPath + "/" + secretCode
 }
 
@@ -70,8 +71,21 @@ func GenerateRandomString(length int) string {
 	return string(b)
 }
 
+func GenerateOTP(length int) *int {
+	code, err := nanorand.Gen(length)
+	if err != nil {
+		return nil
+	}
+	codes, _ := strconv.Atoi(code)
+	return &codes
+}
+
 func ToString(value interface{}) string {
 	return value.(string)
+}
+
+func ParsePointerIntToString(value *int) string {
+	return strconv.Itoa(*value)
 }
 
 func CheckStaffStatus(value string) bool {

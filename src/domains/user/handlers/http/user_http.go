@@ -34,7 +34,7 @@ func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 		guest.GET("/", handler.FindAll)
 		guest.POST("/register", handler.RegisterUsers)
 		guest.POST("/login", handler.LoginUsers)
-		guest.POST("/verify-email", handler.VerifyEmail)
+		guest.POST("/verify-email", handler.AccountVerification)
 	}
 	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
@@ -63,6 +63,10 @@ func (userHttp *UserHttp) LoginUsers(c *gin.Context) {
 	}
 	res, err := userHttp.userUsecase.LoginUser(c, user)
 	if err != nil {
+		if res != nil {
+			c.JSON(http.StatusOK, errors.ErrorWrapper{Message: "Please Activated Your Account ! ", Error: err.Error(), Data: res.User.ID})
+			return
+		}
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Login ! ", Error: err.Error()})
 		return
 	}
@@ -147,7 +151,7 @@ func (userHttp *UserHttp) UpdatePassword(c *gin.Context) {
 	return
 }
 
-func (userHttp *UserHttp) VerifyEmail(c *gin.Context) {
+func (userHttp *UserHttp) AccountVerification(c *gin.Context) {
 	data := &User.EmailVerifiedPayload{}
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Invalid Data Or Bad Request ! ", ErrorS: []string{err.Error()}})

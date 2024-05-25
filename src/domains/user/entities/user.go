@@ -65,7 +65,9 @@ type (
 	}
 	// Verfied Email Payload
 	EmailVerifiedPayload struct {
-		Token string `json:"Token" validate:"required"`
+		Token  string             `json:"Token"`
+		UserId primitive.ObjectID `json:"UserId" validate:"required"`
+		Otp    *int               `json:"Otp" validate:"required"`
 	}
 	// LoginPayload Payload for login
 	LoginPayload struct {
@@ -75,6 +77,7 @@ type (
 	}
 	// LoginResponse Response for login
 	LoginResponse struct {
+		User     User   `json:"User,omitempty"`
 		Username string `json:"Username"`
 		Token    string `json:"Token"`
 	}
@@ -82,6 +85,7 @@ type (
 	JwtCustomClaims struct {
 		ID       string `json:"Id"`
 		Email    string `json:"Email"`
+		Otp      *int   `json:"Otp"`
 		Username string `json:"Username"`
 		jwt.RegisteredClaims
 	}
@@ -94,6 +98,7 @@ type (
 	JwtEmailClaims struct {
 		ID    string `json:"Id"`
 		Email string `json:"Email"`
+		Otp   *int   `json:"Otp"`
 		Nonce string `json:"Nonce"`
 		jwt.RegisteredClaims
 	}
