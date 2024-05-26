@@ -18,6 +18,7 @@ type Shelter struct {
 	TotalPet             int                  `json:"TotalPet" bson:"total_pet" default:"0"`
 	BankAccountNumber    string               `json:"BankAccountNumber" bson:"bank_account_number" validate:"omitempty,required,min=10"`
 	PetTypeAccepted      []primitive.ObjectID `json:"PetTypeAccepted" bson:"pet_type_accepted" validate:"required,pet-accepted-min"`
+	IsVaccinated         bool                 `json:"IsVaccinated,omitempty" bson:"is_vaccinated" validate:"omitempty,is-vaccinated"`
 	Image                []string             `json:"ImagePath" bson:"image" validate:"omitempty"`
 	Pin                  string               `json:"Pin" bson:"pin" validate:"omitempty,required,min=6,max=8"`
 	ShelterVerified      bool                 `json:"ShelterVerified" bson:"shelter_verified" default:"false"`

@@ -250,7 +250,8 @@ func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.Ema
 		return nil, err
 	}
 	if *userId != req.UserId {
-
+		err = append(err, errors.New("Invalid User Id ! ").Error())
+		return nil, err
 	}
 	findUser, errFindUser := u.userRepo.FindUserById(ctx, req.UserId.Hex())
 	if errFindUser != nil {

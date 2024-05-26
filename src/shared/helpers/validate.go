@@ -31,6 +31,7 @@ var (
 		"pet-age":             "The %s field must be a valid number and greater than or equal to 0",
 		"pet-accepted-min":    "The %s field must be a valid and greater than or equal to 0",
 		"min-location-length": "The %s field must be at least %s characters",
+		"is-vaccinated":       "The %s field must be Vaccinated Or Not Vaccinated !",
 		//"valid-email":         "The %s field must be a valid email address, %s",
 		//"valid-domain":        "The %s field must be a valid domain",
 	}
@@ -67,6 +68,10 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("min-location-length", shelterLocationMinLength); err != nil {
 		panic(err)
 	}
+	if err := validate.RegisterValidation("is-vaccinated", petVaccinated); err != nil {
+		panic(err)
+	}
+
 	//if err := validate.RegisterValidation("valid-email", checkEmailReachable); err != nil {
 	//	panic(err)
 	//}
@@ -98,6 +103,11 @@ func petTypeAcceptedMin(fl validator.FieldLevel) bool {
 	}
 	// If it's not a slice or array, the validation does not apply
 	return false
+}
+
+func petVaccinated(fl validator.FieldLevel) bool {
+	data := fl.Field().String()
+	return data == "Vaccinated" || data == "Not Vaccinated"
 }
 
 func petAgeValidation(fl validator.FieldLevel) bool {
