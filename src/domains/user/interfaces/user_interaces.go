@@ -27,4 +27,5 @@ type UserUsecase interface {
 	GetUserByUserIdForUpdate(ctx context.Context, id string, newImage *string) (*User.User, error)
 	UpdateUserData(ctx context.Context, user *User.UpdateProfilePayload) (*User.User, []string)
 	UpdatePassword(ctx context.Context, user *User.UpdatePasswordPayload) error
+	ResendVerificationRequest(ctx context.Context, userReq *User.ResendVerificationPayload) (res *User.User, errs []string)
 }

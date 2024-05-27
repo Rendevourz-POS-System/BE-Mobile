@@ -69,6 +69,11 @@ type (
 		UserId *primitive.ObjectID `json:"UserId" validate:"required"`
 		Otp    *int                `json:"Otp" validate:"required"`
 	}
+	// Resend Verification Otp
+	ResendVerificationPayload struct {
+		UserId *primitive.ObjectID `json:"UserId,omitempty" validate:"required"`
+		Email  string              `json:"Email"`
+	}
 	// LoginPayload Payload for login
 	LoginPayload struct {
 		Email    string `json:"Email" validate:"required,email"`

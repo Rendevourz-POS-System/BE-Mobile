@@ -12,6 +12,7 @@ import (
 	"main.go/shared/helpers"
 	"main.go/shared/helpers/image_helpers"
 	"os"
+	"sync"
 )
 
 type userUsecase struct {
@@ -49,6 +50,10 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 			errs = append(errs, err.Error())
 			return nil, errs
 		}
+		//errs = u.executeConcurrentTasks(ctx, user, resData, secretCode, Otp)
+		//if len(errs) > 0 {
+		//	return nil, errs
+		//}
 		_, SendEmailVerification := u.SendEmailVerification(ctx, user, secretCode, Otp)
 		if SendEmailVerification != nil {
 			errs = append(errs, SendEmailVerification.Error())
@@ -57,6 +62,30 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 		return resData, nil
 	}
 	return resData, nil
+}
+
+func (u *userUsecase) executeConcurrentTasks(ctx context.Context, user *User.User, resData *User.User, secretCode string, Otp *int) (errs []string) {
+	var wg sync.WaitGroup
+	errChan := make(chan error, 1) // buffered channel to avoid blocking
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if _, err := u.SendEmailVerification(ctx, user, secretCode, Otp); err != nil {
+			errChan <- err
+		}
+	}()
+	// Close the error channel when all goroutines have finished
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+	// Collect errors from the error channel
+	for err := range errChan {
+		if err != nil {
+			errs = append(errs, err.Error())
+		}
+	}
+	return errs
 }
 
 func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
@@ -234,7 +263,6 @@ func (u *userUsecase) UpdatePassword(ctx context.Context, req *User.UpdatePasswo
 }
 
 func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.EmailVerifiedPayload, userTokenUsecase interfaces.UserTokenUsecase) (res *User.User, err []string) {
-	fmt.Println("Id --> ", req.UserId.Hex())
 	validate := helpers.NewValidator()
 	if errs := validate.Struct(req); errs != nil {
 		err = helpers.CustomError(errs)
@@ -269,4 +297,24 @@ func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.Ema
 		return nil, err
 	}
 	return res, nil
+}
+
+func (u *userUsecase) ResendVerificationRequest(ctx context.Context, req *User.ResendVerificationPayload) (res *User.User, errs []string) {
+	validate := helpers.NewValidator()
+	if err := validate.Struct(req); err != nil {
+		err := helpers.CustomError(err)
+		return nil, err
+	}
+	findUser, err := u.userRepo.FindUserById(ctx, req.UserId.Hex())
+	secretCode, Otp, err := u.userRepo.GenerateAndStoreToken(ctx, findUser.ID, findUser.Email)
+	if err != nil {
+		errs = append(errs, err.Error())
+		return nil, errs
+	}
+	_, SendEmailVerification := u.SendEmailVerification(ctx, findUser, secretCode, Otp)
+	if SendEmailVerification != nil {
+		errs = append(errs, SendEmailVerification.Error())
+		return nil, errs
+	}
+	return findUser, nil
 }

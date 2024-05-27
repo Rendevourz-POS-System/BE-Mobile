@@ -67,13 +67,24 @@ func (repo *userTokenRepo) FindValidTokenByUserId(ctx context.Context, userId *p
 		},
 	}
 	filter := bson.M{
-		"userId": userId,
+		"UserId": userId,
 		"Otp":    Otp,
 	}
 	// Perform the update
 	_, err := repo.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
+	}
+	// Perform the Delete operation
+	deleteFilter := bson.M{
+		"UserId": userId,
+		"IsUsed": false,
+	}
+	_, err = repo.collection.DeleteMany(ctx, deleteFilter)
+	if err != nil {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, errors.New("Failed To Delete Res Data ! ")
+		}
 	}
 	return &userToken.UserId, nil
 }

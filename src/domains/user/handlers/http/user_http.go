@@ -35,6 +35,7 @@ func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 		guest.POST("/register", handler.RegisterUsers)
 		guest.POST("/login", handler.LoginUsers)
 		guest.POST("/verify-email", handler.AccountVerification)
+		guest.POST("/resend-otp", handler.ResendVerificationOtp)
 	}
 	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
@@ -167,4 +168,18 @@ func (userHttp *UserHttp) AccountVerification(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Verify Email ! ", Data: res})
+}
+
+func (userHttp *UserHttp) ResendVerificationOtp(c *gin.Context) {
+	req := &User.ResendVerificationPayload{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Bad Data Request ! ", Error: err.Error()})
+		return
+	}
+	data, err := userHttp.userUsecase.ResendVerificationRequest(c, req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Invalid To Resend Otp ! ", ErrorS: err})
+		return
+	}
+	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Resend Otp ! ", Data: data})
 }
