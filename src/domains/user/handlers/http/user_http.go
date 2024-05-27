@@ -163,7 +163,7 @@ func (userHttp *UserHttp) AccountVerification(c *gin.Context) {
 			c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Email Verified Already ! ", Data: res})
 			return
 		}
-		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Invalid To Verified Email, Token Is Not Valid ! ", ErrorS: err})
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Invalid To Verified Email, Otp Is Not Valid ! ", ErrorS: err})
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Verify Email ! ", Data: res})

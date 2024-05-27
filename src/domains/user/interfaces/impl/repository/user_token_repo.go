@@ -53,7 +53,7 @@ func (repo *userTokenRepo) FindOneUserTokenByNonce(ctx context.Context, claims *
 }
 func (repo *userTokenRepo) FindValidTokenByUserId(ctx context.Context, userId *primitive.ObjectID, Otp *int) (*primitive.ObjectID, error) {
 	userToken := &JwtEmailClaims.UserToken{}
-	if err := repo.collection.FindOne(ctx, bson.M{"userId": userId, "Otp": Otp, "IsUsed": false}).Decode(&userToken); err != nil {
+	if err := repo.collection.FindOne(ctx, bson.M{"UserId": userId, "Otp": *Otp, "IsUsed": false}).Decode(&userToken); err != nil {
 		return nil, err
 	}
 	// Check if the token is expired

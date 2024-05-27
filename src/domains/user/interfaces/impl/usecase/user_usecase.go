@@ -234,6 +234,7 @@ func (u *userUsecase) UpdatePassword(ctx context.Context, req *User.UpdatePasswo
 }
 
 func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.EmailVerifiedPayload, userTokenUsecase interfaces.UserTokenUsecase) (res *User.User, err []string) {
+	fmt.Println("Id --> ", req.UserId.Hex())
 	validate := helpers.NewValidator()
 	if errs := validate.Struct(req); errs != nil {
 		err = helpers.CustomError(errs)
@@ -244,12 +245,12 @@ func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.Ema
 	//	err = append(err, errs.Error())
 	//	return nil, err
 	//}
-	userId, errFindToken := userTokenUsecase.FindValidTokenByUserId(ctx, &req.UserId, req.Otp)
+	userId, errFindToken := userTokenUsecase.FindValidTokenByUserId(ctx, req.UserId, req.Otp)
 	if errFindToken != nil {
 		err = append(err, errFindToken.Error())
 		return nil, err
 	}
-	if *userId != req.UserId {
+	if *userId != *req.UserId {
 		err = append(err, errors.New("Invalid User Id ! ").Error())
 		return nil, err
 	}
@@ -262,7 +263,7 @@ func (u *userUsecase) VerifyEmailVerification(ctx context.Context, req *User.Ema
 		err = append(err, "Email Verified Already ! ")
 		return findUser, err
 	}
-	res, errVerified := u.userRepo.VerifiedUserEmail(ctx, &req.UserId)
+	res, errVerified := u.userRepo.VerifiedUserEmail(ctx, req.UserId)
 	if errVerified != nil {
 		err = append(err, errVerified.Error())
 		return nil, err

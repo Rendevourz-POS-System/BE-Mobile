@@ -53,6 +53,7 @@ func (service *GmailSender) ExecuteSendEmail(subject, content string, to, cc, bc
 	mailer.SetBody("text/html",
 		"Hello, <b>have a nice day </b>\n"+
 			"<strong href='"+content+"'> Otp Code Here ! </strong>\n"+
+			"<strong> This Otp Active For 15 Minutes ! </strong>"+
 			"\n\n<h1>"+content+"</h1>"+
 			"\n\n\n\nThank You For Using Shelter-Apps"+
 			"Regards,\n Admin")

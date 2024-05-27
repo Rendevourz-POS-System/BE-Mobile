@@ -65,9 +65,9 @@ type (
 	}
 	// Verfied Email Payload
 	EmailVerifiedPayload struct {
-		Token  string             `json:"Token,omitempty"`
-		UserId primitive.ObjectID `json:"UserId" validate:"required"`
-		Otp    *int               `json:"Otp" validate:"required"`
+		Token  string              `json:"Token,omitempty"`
+		UserId *primitive.ObjectID `json:"UserId" validate:"required"`
+		Otp    *int                `json:"Otp" validate:"required"`
 	}
 	// LoginPayload Payload for login
 	LoginPayload struct {
