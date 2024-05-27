@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/base64"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"main.go/configs/app"
 	Shelter "main.go/domains/shelter/entities"
 	"main.go/domains/shelter/interfaces"
 	"main.go/domains/shelter/presistence"
 	"main.go/shared/helpers"
+	"main.go/shared/helpers/image_helpers"
 	"os"
 )
 
@@ -33,7 +35,8 @@ func (u *shelterUsecase) GetAllData(ctx context.Context, search *Shelter.Shelter
 	for i, item := range res {
 		var base64Images []string
 		for _, imagePath := range item.Image {
-			imageData, err := os.ReadFile(imagePath) // Read the image file
+			imageData, err := os.ReadFile(image_helpers.GenerateImagePath(
+				app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, res[i].ID.Hex(), imagePath)) // Read the image file
 			if err != nil {
 				return nil, err // Handle error (perhaps just log and continue with other images?)
 			}
@@ -72,7 +75,7 @@ func (u *shelterUsecase) GetOneDataById(ctx context.Context, search *Shelter.She
 }
 
 func (u *shelterUsecase) GetOneDataByUserId(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error) {
-	data, err := u.shelterRepo.FindOneDataByUserId(ctx, &search.ShelterId)
+	data, err := u.shelterRepo.FindOneDataByUserId(ctx, &search.UserId)
 	if err != nil {
 		return nil, err
 	}

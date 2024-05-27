@@ -39,7 +39,7 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 		user.GET("/:id", handler.FindOneById)
 		user.POST("/register", handler.RegisterShelter)
 		user.GET("/favorite", handler.FindAllFavorite)
-		user.PUT("/update")
+		user.PUT("/update", handler.UpdateShelter)
 	}
 	return handler
 }
@@ -124,7 +124,7 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 
 func (shelterHttp *ShelterHttp) FindOneByUserId(c *gin.Context) {
 	search := &Shelter.ShelterSearch{
-		ShelterId: helpers.GetUserId(c),
+		UserId: helpers.GetUserId(c),
 	}
 	data, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, search)
 	if err != nil {
@@ -148,5 +148,36 @@ func (shelterHttp *ShelterHttp) FindOneById(c *gin.Context) {
 }
 
 func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
-
+	shelterReq := &Shelter.ShelterUpdate{}
+	// Parse the multipart form with a maximum of 30 MB memory
+	if err := c.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
+		return
+	}
+	form, _ := c.MultipartForm()
+	jsonData := form.Value["data"][0]
+	shelter := &Shelter.Shelter{}
+	if err := json.Unmarshal([]byte(jsonData), &shelter); err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Shelter Update Request ! ", Error: err.Error()})
+		return
+	}
+	shelter.UserId = helpers.GetUserId(c)
+	shelterReq.Shelter = shelter
+	findShelter, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, &Shelter.ShelterSearch{
+		UserId: shelter.UserId,
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Get Shelter Data ! ", Error: err.Error()})
+		return
+	}
+	shelterReq.Shelter.ID = findShelter.ID
+	if form.File != nil {
+		shelterReq, _ = image_helpers.UploadShelter(c, form, shelterReq)
+	}
+	res, err := shelterHttp.shelterUsecase.UpdateShelterById(c, &findShelter.ID, shelterReq.Shelter)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update Shelter ! ", Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Shelter updated successfully ! ", Data: res})
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/configs/app"
 	User "main.go/domains/user/entities"
 	"main.go/domains/user/interfaces"
@@ -306,6 +307,12 @@ func (u *userUsecase) ResendVerificationRequest(ctx context.Context, req *User.R
 		return nil, err
 	}
 	findUser, err := u.userRepo.FindUserById(ctx, req.UserId.Hex())
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			errs = append(errs, errors.New("user Not Valid ! ").Error())
+			return nil, errs
+		}
+	}
 	secretCode, Otp, err := u.userRepo.GenerateAndStoreToken(ctx, findUser.ID, findUser.Email)
 	if err != nil {
 		errs = append(errs, err.Error())

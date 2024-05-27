@@ -22,7 +22,9 @@ type Shelter struct {
 	Image                []string             `json:"ImagePath" bson:"image" validate:"omitempty"`
 	Pin                  string               `json:"Pin" bson:"pin" validate:"omitempty,required,min=6,max=8"`
 	ShelterVerified      bool                 `json:"ShelterVerified" bson:"shelter_verified" default:"false"`
+	OldImage             []string             `json:"OldImagePath,omitempty"`
 	CreatedAt            *time.Time           `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+	UpdatedAt            *time.Time           `json:"UpdatedAt" bson:"UpdatedAt,omitempty"`
 	DeletedAt            *time.Time           `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
@@ -46,6 +48,10 @@ type (
 		Shelter Shelter               `form:"Shelter" bson:"Shelter" validate:"required"`
 	}
 
+	// SehlterUpdate
+	ShelterUpdate struct {
+		Shelter *Shelter `form:"Shelter" bson:"Shelter" validate:"required"`
+	}
 	// ShelterResponsePayload
 	ShelterResponsePayload struct {
 		ID                   primitive.ObjectID `json:"Id" bson:"_id,omitempty"`

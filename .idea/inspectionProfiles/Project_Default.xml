@@ -9,6 +9,7 @@
         <method importPath="go.mongodb.org/mongo-driver/mongo" receiver="*Collection" name="Find" />
         <method importPath="main.go/domains/shelter/handlers/http" receiver="*PetHttp" name="moveUploadedFile" />
         <method importPath="main.go/domains/user/interfaces" receiver="UserRepository" name="FindUserById" />
+        <method importPath="main.go/domains/shelter/interfaces" receiver="ShelterUsecase" name="GetOneDataByUserId" />
       </methods>
     </inspection_tool>
   </profile>

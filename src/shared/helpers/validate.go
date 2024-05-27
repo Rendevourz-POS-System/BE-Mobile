@@ -117,11 +117,13 @@ func petAgeValidation(fl validator.FieldLevel) bool {
 
 func petGenderValidation(fl validator.FieldLevel) bool {
 	gender := fl.Field().String()
+	gender = strings.ToLower(gender)
 	return gender == ShelterConst.PetGenderMale || gender == ShelterConst.PetGenderFemale || gender == ShelterConst.PetGenderUnknown
 }
 
 func roleValidation(fl validator.FieldLevel) bool {
 	role := fl.Field().String()
+	role = strings.ToLower(role)
 	return role == presistence.StaffRole || role == presistence.UserRole || role == ""
 }
 

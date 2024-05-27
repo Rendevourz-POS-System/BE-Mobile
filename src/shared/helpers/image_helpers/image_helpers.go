@@ -74,7 +74,7 @@ func MoveUploadedShelterFile(ctx *gin.Context, filesName []string, data *Pet.She
 	for _, RealFileName := range filesName {
 		// Construct the final file path
 		tempPath := GenerateImagePath(app.GetConfig().Image.TempPath, RealFileName)
-		finalFilePath := GenerateImagePath(app.GetConfig().Image.Folder, app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, data.ID.Hex(), RealFileName)
+		finalFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, data.ID.Hex(), RealFileName)
 
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {
@@ -123,4 +123,48 @@ func UploadProfile(ctx *gin.Context, file *multipart.FileHeader, data *entities.
 	}
 	data.Image = file.Filename
 	return data, nil
+}
+
+func UploadShelter(ctx *gin.Context, form *multipart.Form, shelterUpdate *Pet.ShelterUpdate) (res *Pet.ShelterUpdate, err error) {
+	// Get the uploaded files
+	files := form.File["files"]
+	if shelterUpdate.Shelter.OldImage != nil && len(shelterUpdate.Shelter.OldImage) > 0 {
+		// Move the uploaded files to their final location with the data.ID in the path
+		for _, RealFileName := range shelterUpdate.Shelter.OldImage {
+			// Construct the final file path
+			OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), RealFileName)
+			// Check if a file already exists at the FilePath
+			if _, err = os.Stat(OldFilePath); err == nil {
+				// File exists, attempt to remove it
+				if err = os.Remove(OldFilePath); err != nil {
+					log.Printf("Failed to remove file: %s, error: %v", OldFilePath, err) // More detailed logging
+					ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Remove Existing File!", Error: err.Error()})
+					return nil, err
+				}
+			} else if !os.IsNotExist(err) {
+				// An error other than "not existing" occurred
+				log.Printf("Error checking file: %s, error: %v", OldFilePath, err) // Log unexpected errors
+				ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Error Checking Existing File!", Error: err.Error()})
+				return nil, err
+			}
+		}
+	}
+	if files == nil || len(files) <= 0 {
+		return shelterUpdate, nil
+	}
+	for _, File := range files {
+		FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), File.Filename)
+		// Create directories if they don't exist
+		if err = os.MkdirAll(filepath.Dir(FilePath), 0755); err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Failed To Create Directories ! ", Errors: err})
+			return
+		}
+		// Save the uploaded file with the temporary path
+		if err = ctx.SaveUploadedFile(File, FilePath); err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Upload Image !", Error: err.Error()})
+			return
+		}
+		shelterUpdate.Shelter.Image = append(shelterUpdate.Shelter.Image, File.Filename)
+	}
+	return shelterUpdate, nil
 }

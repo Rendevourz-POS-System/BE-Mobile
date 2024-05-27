@@ -225,9 +225,9 @@ func (shelterRepo *shelterRepository) StoreData(c context.Context, shelter *Shel
 	return shelter, nil
 }
 
-func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, pet *Shelter.Shelter) (res *Shelter.Shelter, err error) {
-	filter := bson.D{{Key: "_id", Value: pet.ID}}
-	update := bson.D{{Key: "$set", Value: pet}}
+func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, shelter *Shelter.Shelter) (res *Shelter.Shelter, err error) {
+	filter := bson.D{{Key: "_id", Value: shelter.ID}}
+	update := bson.D{{Key: "$set", Value: shelter}}
 	// Perform the update operation
 	result, err := shelterRepo.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -241,5 +241,5 @@ func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, pet 
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return res, nil
 }

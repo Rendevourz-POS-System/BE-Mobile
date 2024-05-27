@@ -39,7 +39,7 @@ func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 	}
 	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
-		user.GET("data", handler.FindUserByToken)
+		user.GET("/data", handler.FindUserByToken)
 		user.PUT("/update", handler.UpdateUser)
 		user.PUT("/update-pw", handler.UpdatePassword)
 	}
@@ -97,6 +97,7 @@ func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, data)
+	return
 }
 
 func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
@@ -168,6 +169,7 @@ func (userHttp *UserHttp) AccountVerification(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Verify Email ! ", Data: res})
+	return
 }
 
 func (userHttp *UserHttp) ResendVerificationOtp(c *gin.Context) {
@@ -182,4 +184,5 @@ func (userHttp *UserHttp) ResendVerificationOtp(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Resend Otp ! ", Data: data})
+	return
 }
