@@ -113,7 +113,7 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 		return nil, errors.New("password or email doesn't match ! ")
 	}
 	if !user.Verified {
-		res.User = *user
+		res.User = user
 		return res, errors.New("user is not active ! ")
 	}
 	token, err := helpers.GenerateToken(user)

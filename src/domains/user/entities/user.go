@@ -77,7 +77,7 @@ type (
 	}
 	// LoginResponse Response for login
 	LoginResponse struct {
-		User     User   `json:"User,omitempty"`
+		User     *User  `json:"User,omitempty"`
 		Username string `json:"Username"`
 		Token    string `json:"Token"`
 	}
