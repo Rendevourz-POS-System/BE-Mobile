@@ -63,3 +63,11 @@ func (u *petUseCase) UpdatePet(ctx context.Context, Id *primitive.ObjectID, pet 
 	}
 	return data, nil
 }
+
+func (u *petUseCase) GetPetById(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
+	res, err = u.petRepo.FindPetById(ctx, Id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

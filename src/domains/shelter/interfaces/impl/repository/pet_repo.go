@@ -214,3 +214,11 @@ func (r *petRepo) UpdatePet(ctx context.Context, pet *Pet.Pet) (res *Pet.Pet, er
 	}
 	return res, nil
 }
+
+func (r *petRepo) FindPetById(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
+	err = r.collection.FindOne(ctx, bson.M{"_id": Id}).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

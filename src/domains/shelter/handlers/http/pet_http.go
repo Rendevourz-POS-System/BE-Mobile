@@ -28,6 +28,7 @@ func NewPetHttp(router *gin.Engine) *PetHttp {
 	guest := router.Group("/pet")
 	{
 		guest.GET("", handler.GetAllPets)
+		guest.GET("/:id", handler.FindPetById)
 	}
 	user := router.Group("/pet", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
 	{
@@ -104,4 +105,14 @@ func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, data)
+}
+
+func (h *PetHttp) FindPetById(ctx *gin.Context) {
+	Id := helpers.ParseStringToObjectId(ctx.Param("id"))
+	data, err := h.petUsecase.GetPetById(ctx, &Id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data})
 }
