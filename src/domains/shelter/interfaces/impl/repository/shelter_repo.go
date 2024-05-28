@@ -57,13 +57,6 @@ func (shelterRepo *shelterRepository) filterShelter(search *Shelter.ShelterSearc
 			},
 		})
 	}
-	// Filter by Shelter Id
-	if &search.ShelterId != nil {
-		filter = append(filter, bson.E{
-			Key:   "$match",
-			Value: bson.M{"shelter_id": search.ShelterId},
-		})
-	}
 	// Filter for non-deleted (soft delete check) records.
 	filter = append(filter, bson.E{
 		Key: "$or",
