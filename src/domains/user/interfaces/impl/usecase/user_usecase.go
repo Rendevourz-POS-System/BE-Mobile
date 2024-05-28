@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/configs/app"
 	User "main.go/domains/user/entities"
@@ -13,7 +14,7 @@ import (
 	"main.go/shared/helpers"
 	"main.go/shared/helpers/image_helpers"
 	"os"
-	"sync"
+	"time"
 )
 
 type userUsecase struct {
@@ -51,42 +52,21 @@ func (u *userUsecase) RegisterUser(ctx context.Context, user *User.User) (res *U
 			errs = append(errs, err.Error())
 			return nil, errs
 		}
-		//errs = u.executeConcurrentTasks(ctx, user, resData, secretCode, Otp)
-		//if len(errs) > 0 {
-		//	return nil, errs
-		//}
-		_, SendEmailVerification := u.SendEmailVerification(ctx, user, secretCode, Otp)
-		if SendEmailVerification != nil {
-			errs = append(errs, SendEmailVerification.Error())
-			return nil, errs
-		}
+		go u.executeConcurrentSendEmail(ctx, user, secretCode, Otp)
 		return resData, nil
 	}
 	return resData, nil
 }
 
-func (u *userUsecase) executeConcurrentTasks(ctx context.Context, user *User.User, resData *User.User, secretCode string, Otp *int) (errs []string) {
-	var wg sync.WaitGroup
-	errChan := make(chan error, 1) // buffered channel to avoid blocking
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if _, err := u.SendEmailVerification(ctx, user, secretCode, Otp); err != nil {
-			errChan <- err
-		}
-	}()
-	// Close the error channel when all goroutines have finished
-	go func() {
-		wg.Wait()
-		close(errChan)
-	}()
-	// Collect errors from the error channel
-	for err := range errChan {
-		if err != nil {
-			errs = append(errs, err.Error())
-		}
+func (u *userUsecase) executeConcurrentSendEmail(ctx context.Context, user *User.User, secretCode string, Otp *int) {
+	emailCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, sendEmailErr := u.SendEmailVerification(emailCtx, user, secretCode, Otp)
+	if sendEmailErr != nil {
+		// Log the error
+		logrus.Warnf("Error sending email verification: %v", sendEmailErr)
 	}
-	return errs
 }
 
 func (u *userUsecase) setDefaultUserData(user *User.User) *User.User {
@@ -318,10 +298,6 @@ func (u *userUsecase) ResendVerificationRequest(ctx context.Context, req *User.R
 		errs = append(errs, err.Error())
 		return nil, errs
 	}
-	_, SendEmailVerification := u.SendEmailVerification(ctx, findUser, secretCode, Otp)
-	if SendEmailVerification != nil {
-		errs = append(errs, SendEmailVerification.Error())
-		return nil, errs
-	}
+	go u.executeConcurrentSendEmail(ctx, findUser, secretCode, Otp)
 	return findUser, nil
 }

@@ -9,4 +9,7 @@ const (
 	ShelterFavoriteName     = "shelter_favorites"
 	PetTypeName             = "pet_types"
 	ShelterLocationName     = "shelter_locations"
+	RequestName             = "requests"
+	DonationShelterName     = "donation_shelters"
+	AdoptionPetName         = "adoptions"
 )

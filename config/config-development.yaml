@@ -63,5 +63,7 @@ Image:
   TempPath: temp
 
 Midtrans:
-  ServerKey:
-  Environment:
+  ServerKey: SB-Mid-server-SWiGKHYzirEL2weHkG3reuXS
+  Environment: 1
+  Url: https://api.sandbox.midtrans.com
+# - Sandbox :
