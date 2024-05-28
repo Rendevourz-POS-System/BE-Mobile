@@ -96,6 +96,7 @@ func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 		AgeStart:    helpers.ParseStringToInt(ctx.Query("age_start")),
 		AgeEnd:      helpers.ParseStringToInt(ctx.Query("age_end")),
 		ShelterName: ctx.Query("shelter_name"),
+		ShelterId:   helpers.ParseStringToObjectId(ctx.Query("shelter_id")),
 	}
 	data, err := h.petUsecase.GetAllPets(ctx, search)
 	if err != nil {
