@@ -39,6 +39,7 @@ type (
 		ShelterLocationName string             `json:"ShelterLocationName"`
 		PetType             string             `json:"PetType"`
 		ShelterId           primitive.ObjectID `json:"ShelterId"`
+		SearchByUserId      primitive.ObjectID `json:"SearchByUserId"`
 		UserId              primitive.ObjectID `json:"UserId"`
 	}
 
