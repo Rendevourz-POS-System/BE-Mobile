@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
 	"github.com/nanorand/nanorand"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/configs/app"
@@ -119,7 +120,7 @@ func GetUserId(c *gin.Context) primitive.ObjectID {
 func ParseStringToObjectId(value string) primitive.ObjectID {
 	objectId, err := primitive.ObjectIDFromHex(value)
 	if err != nil {
-		panic("Failed to parse string to object id !")
+		logrus.Warnf("Failed to parse string to object id !")
 	}
 	return objectId
 }

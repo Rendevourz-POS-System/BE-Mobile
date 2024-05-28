@@ -26,18 +26,18 @@ type Pet struct {
 type (
 	// PetSearch struct
 	PetSearch struct {
-		Search      string             `json:"Search"`
-		Page        int                `json:"Page"`
-		PageSize    int                `json:"PageSize"`
-		OrderBy     string             `json:"OrderBy"`
-		Sort        string             `json:"Sort"`
-		ShelterId   primitive.ObjectID `json:"ShelterId"`
-		ShelterName string             `json:"ShelterName"`
-		Location    string             `json:"Location"`
-		Gender      string             `json:"Gender"`
-		AgeStart    int                `json:"AgeStart"`
-		AgeEnd      int                `json:"AgeEnd"`
-		Type        string             `json:"Type"`
+		Search      string `json:"Search"`
+		Page        int    `json:"Page"`
+		PageSize    int    `json:"PageSize"`
+		OrderBy     string `json:"OrderBy"`
+		Sort        string `json:"Sort"`
+		ShelterId   string `json:"ShelterId,omitempty"`
+		ShelterName string `json:"ShelterName"`
+		Location    string `json:"Location"`
+		Gender      string `json:"Gender"`
+		AgeStart    int    `json:"AgeStart"`
+		AgeEnd      int    `json:"AgeEnd"`
+		Type        string `json:"Type"`
 	}
 
 	// PetCreate Payload

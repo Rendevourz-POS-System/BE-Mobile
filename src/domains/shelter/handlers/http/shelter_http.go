@@ -68,8 +68,6 @@ func (shelterHttp *ShelterHttp) FindAll(c *gin.Context) {
 		PageSize:            helpers.ParseStringToInt(c.Query("page_size")),
 		Sort:                c.Query("sort"),
 		ShelterLocationName: c.Query("location_name"),
-		ShelterId:           helpers.ParseStringToObjectId(c.Query("shelter_id")),
-		SearchByUserId:      helpers.ParseStringToObjectId(c.Query("user_id")),
 		OrderBy:             c.Query("order_by"),
 	}
 	data, err := shelterHttp.shelterUsecase.GetAllData(c, search)

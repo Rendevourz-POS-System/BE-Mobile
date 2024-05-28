@@ -36,10 +36,10 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) *bson.D {
 			},
 		})
 	}
-	if search.ShelterId != primitive.NilObjectID {
+	if search.ShelterId != "" {
 		filter = append(filter, bson.E{
 			Key:   "shelter_id",
-			Value: search.ShelterId,
+			Value: helpers.ParseStringToObjectId(search.ShelterId),
 		})
 	}
 	if search.AgeEnd <= 0 {
