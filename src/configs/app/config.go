@@ -89,6 +89,7 @@ type Image struct {
 
 type Payment struct {
 	ServerKey   string
+	ClientKey   string
 	Environment string
 	Url         string
 }

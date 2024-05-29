@@ -4,7 +4,9 @@ import (
 	"fmt"
 	emailverifier "github.com/AfterShip/email-verifier"
 	"github.com/go-playground/validator/v10"
+	"github.com/midtrans/midtrans-go/coreapi"
 	"log"
+	RequestPersistence "main.go/domains/request/presistence"
 	ShelterConst "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
 	"net"
@@ -32,6 +34,8 @@ var (
 		"pet-accepted-min":    "The %s field must be a valid and greater than or equal to 0",
 		"min-location-length": "The %s field must be at least %s characters",
 		"is-vaccinated":       "The %s field must be Vaccinated Or Not Vaccinated !",
+		"request-type":        "The %s field must be [adoption, donation, publish, rescue], but got '%s'",
+		"payment_type":        "The %s field must be [gopay, shopeepay, bank_transfer,qris]",
 		//"valid-email":         "The %s field must be a valid email address, %s",
 		//"valid-domain":        "The %s field must be a valid domain",
 	}
@@ -71,6 +75,12 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("is-vaccinated", petVaccinated); err != nil {
 		panic(err)
 	}
+	if err := validate.RegisterValidation("request-type", requestTypeValidation); err != nil {
+		panic(err)
+	}
+	if err := validate.RegisterValidation("payment_type", paymentTypeValidation); err != nil {
+		panic(err)
+	}
 
 	//if err := validate.RegisterValidation("valid-email", checkEmailReachable); err != nil {
 	//	panic(err)
@@ -79,6 +89,26 @@ func NewValidator() *validator.Validate {
 	//	panic(err)
 	//}
 	return validate
+}
+
+func paymentTypeValidation(fl validator.FieldLevel) bool {
+	reqType := coreapi.CoreapiPaymentType(strings.ToLower(fl.Field().String()))
+	switch reqType {
+	case coreapi.PaymentTypeBankTransfer, coreapi.PaymentTypeGopay, coreapi.PaymentTypeShopeepay, coreapi.PaymentTypeQris:
+		return true
+	default:
+		return false
+	}
+}
+
+func requestTypeValidation(fl validator.FieldLevel) bool {
+	reqType := RequestPersistence.Type(strings.ToLower(fl.Field().String()))
+	switch reqType {
+	case RequestPersistence.Adoption, RequestPersistence.Donation, RequestPersistence.Rescue, RequestPersistence.Monitoring, RequestPersistence.Publish:
+		return true
+	default:
+		return false
+	}
 }
 
 func shelterLocationMinLength(fl validator.FieldLevel) bool {
@@ -195,7 +225,9 @@ func CustomError(err error) (errsMsg []string) {
 	}
 	for _, e := range validationErrors {
 		if errMsg, ok := errorMsg[e.Tag()]; ok {
-			if e.Param() != "" {
+			if e.Tag() == "request-type" {
+				errsMsg = append(errsMsg, fmt.Sprintf(errMsg, e.Field(), e.Value()))
+			} else if e.Param() != "" {
 				errsMsg = append(errsMsg, fmt.Sprintf(errMsg, e.Field(), e.Param()))
 			} else {
 				errsMsg = append(errsMsg, fmt.Sprintf(errMsg, e.Field()))

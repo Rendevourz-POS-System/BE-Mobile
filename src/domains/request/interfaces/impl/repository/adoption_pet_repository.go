@@ -11,5 +11,5 @@ type adoptionPetRepo struct {
 }
 
 func NewAdoptionPetRepository(database *mongo.Database) *adoptionPetRepo {
-	return &adoptionPetRepo{database: database, collection: database.Collection(collections.AdoptionPetName)}
+	return &adoptionPetRepo{database: database, collection: database.Collection(collections.Adoption)}
 }
