@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/midtrans/midtrans-go/example"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,6 +12,9 @@ import (
 	"main.go/configs/app"
 	"main.go/configs/database"
 	Master "main.go/domains/master/handlers/http"
+	"main.go/domains/payment/interfaces/impl/repository"
+	"main.go/domains/payment/interfaces/impl/usecase"
+	Request "main.go/domains/request/handlers/http"
 	Shelter "main.go/domains/shelter/handlers/http"
 	UserHttp "main.go/domains/user/handlers/http"
 	"main.go/middlewares"
@@ -137,11 +142,18 @@ func RegisterRoutes(router *gin.Engine) {
 			"message": "Hello World!",
 		})
 	})
+	midtransUsecase := usecase.NewMidtransUsecase(repository.NewMidtrans())
 	userTokenHttp := UserHttp.NewUserTokenHttp(router)
+	fmt.Println("Example Core Param --> ", example.CoreParam())
+	fmt.Println("Example Client Radndom --> ", example.Random())
 	UserHttp.NewUserHttp(router, userTokenHttp)
 	Shelter.NewShelterHttp(router)
 	Shelter.NewPetHttp(router)
 	Shelter.NewShelterFavoriteHttp(router)
 	Master.NewPetTypeHttp(router)
 	Master.NewShelterLocationHttp(router)
+	Request.NewRequestHttp(router, midtransUsecase)
+	Request.NewDonationShelterHttp(router)
+	Request.NewAdoptionShelterHttp(router)
+
 }

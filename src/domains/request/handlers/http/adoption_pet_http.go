@@ -14,8 +14,12 @@ type AdoptionShelterHttp struct {
 }
 
 func NewAdoptionShelterHttp(router *gin.Engine) *AdoptionShelterHttp {
-	hanlders := &AdoptionShelterHttp{
+	handlers := &AdoptionShelterHttp{
 		adoptionShelterUsecase: usecase.NewAdoptionPetUsecase(repository.NewAdoptionPetRepository(database.GetDatabase(_const.DB_SHELTER_APP))),
 	}
-	return hanlders
+	guest := router.Group("/adoption")
+	{
+		guest.GET("/")
+	}
+	return handlers
 }

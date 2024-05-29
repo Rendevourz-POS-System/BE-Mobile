@@ -17,5 +17,9 @@ func NewDonationShelterHttp(router *gin.Engine) *DonationShelterHttp {
 	handlers := &DonationShelterHttp{
 		donationShelterUsecase: usecase.NewDonationShelterUsecase(repository.NewDonationShelterRepository(database.GetDatabase(_const.DB_SHELTER_APP))),
 	}
+	guest := router.Group("/donation")
+	{
+		guest.GET("/")
+	}
 	return handlers
 }

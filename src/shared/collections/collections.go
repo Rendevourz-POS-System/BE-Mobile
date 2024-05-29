@@ -11,5 +11,5 @@ const (
 	ShelterLocationName     = "shelter_locations"
 	RequestName             = "requests"
 	DonationShelterName     = "donation_shelters"
-	AdoptionPetName         = "adoptions"
+	Adoption                = "adoptions"
 )
