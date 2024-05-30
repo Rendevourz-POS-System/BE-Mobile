@@ -2,12 +2,9 @@ package usecase
 
 import (
 	"context"
-	"fmt"
-	"github.com/midtrans/midtrans-go/coreapi"
 	Midtrans "main.go/domains/payment/interfaces"
 	Request "main.go/domains/request/entities"
 	"main.go/domains/request/interfaces"
-	"main.go/domains/request/presistence"
 	"main.go/shared/helpers"
 )
 
@@ -33,7 +30,7 @@ func (u *requestUsecase) CreateRequest(ctx context.Context, req *Request.Request
 	return res, nil
 }
 
-func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request.DonationPayload, midtranValidator Midtrans.MidtransUsecase) (res *Request.Request, err []string) {
+func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request.DonationPayload) (response *Request.RequestResponse, err []string) {
 	validate := helpers.NewValidator()
 	if errs := validate.Struct(req); errs != nil {
 		err = helpers.CustomError(errs)
@@ -47,23 +44,13 @@ func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request
 		Reason:      req.Reason,
 		RequestedAt: helpers.GetCurrentTime(nil),
 	})
+	response.Request = res
+	response.DonationPayload = req
 	if failedSendReq != nil {
 		err = append(err, failedSendReq.Error())
 		return nil, err
 	}
-
-	if presistence.Type(req.Type) == presistence.Donation {
-		chargeReq := &coreapi.ChargeReq{
-			PaymentType: coreapi.CoreapiPaymentType(req.PaymentType),
-		}
-		midtransResponse, midtransErr := midtranValidator.ChargeRequest(chargeReq)
-		if midtransErr != nil {
-			err = append(err, midtransErr.Error())
-			return nil, err
-		}
-		fmt.Println("Midtrans Response: ", midtransResponse)
-	}
-	return res, nil
+	return response, nil
 }
 
 func (u *requestUsecase) fillDefaultRequest(req *Request.Request) *Request.Request {

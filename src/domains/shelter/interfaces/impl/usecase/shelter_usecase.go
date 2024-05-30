@@ -66,8 +66,16 @@ func (u *shelterUsecase) RegisterShelter(ctx context.Context, shelter *Shelter.S
 	return data, nil
 }
 
-func (u *shelterUsecase) GetOneDataById(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error) {
+func (u *shelterUsecase) GetOneDataById(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.ShelterResponsePayload, error) {
 	data, err := u.shelterRepo.FindOneDataById(ctx, &search.ShelterId)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (u *shelterUsecase) GetOneDataByIdForRequest(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error) {
+	data, err := u.shelterRepo.FindOneDataByIdForRequest(ctx, &search.ShelterId)
 	if err != nil {
 		return nil, err
 	}

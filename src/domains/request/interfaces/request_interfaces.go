@@ -12,5 +12,5 @@ type RequestRepository interface {
 
 type RequestUsecase interface {
 	CreateRequest(ctx context.Context, req *Request.Request, payment interfaces.MidtransUsecase) (res *Request.Request, err []string)
-	CreateDonationRequest(ctx context.Context, req *Request.DonationPayload, payment interfaces.MidtransUsecase) (res *Request.Request, err []string)
+	CreateDonationRequest(ctx context.Context, req *Request.DonationPayload) (res *Request.RequestResponse, err []string)
 }

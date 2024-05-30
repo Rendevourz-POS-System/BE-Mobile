@@ -4,6 +4,7 @@ import (
 	"fmt"
 	emailverifier "github.com/AfterShip/email-verifier"
 	"github.com/go-playground/validator/v10"
+	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 	"log"
 	RequestPersistence "main.go/domains/request/presistence"
@@ -36,6 +37,7 @@ var (
 		"is-vaccinated":       "The %s field must be Vaccinated Or Not Vaccinated !",
 		"request-type":        "The %s field must be [adoption, donation, publish, rescue], but got '%s'",
 		"payment_type":        "The %s field must be [gopay, shopeepay, bank_transfer,qris]",
+		"bank_type":           "The %s field must be [bni, bca, bri, mandiri, cimb, maybank, mega, permata]",
 		//"valid-email":         "The %s field must be a valid email address, %s",
 		//"valid-domain":        "The %s field must be a valid domain",
 	}
@@ -81,6 +83,9 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("payment_type", paymentTypeValidation); err != nil {
 		panic(err)
 	}
+	if err := validate.RegisterValidation("bank_type", bankTypeValidation); err != nil {
+		panic(err)
+	}
 
 	//if err := validate.RegisterValidation("valid-email", checkEmailReachable); err != nil {
 	//	panic(err)
@@ -89,6 +94,16 @@ func NewValidator() *validator.Validate {
 	//	panic(err)
 	//}
 	return validate
+}
+
+func bankTypeValidation(fl validator.FieldLevel) bool {
+	reqType := midtrans.Bank(strings.ToLower(fl.Field().String()))
+	switch reqType {
+	case midtrans.BankBni, midtrans.BankBca, midtrans.BankBri, midtrans.BankMandiri, midtrans.BankCimb, midtrans.BankMaybank, midtrans.BankMega, midtrans.BankPermata:
+		return true
+	default:
+		return false
+	}
 }
 
 func paymentTypeValidation(fl validator.FieldLevel) bool {

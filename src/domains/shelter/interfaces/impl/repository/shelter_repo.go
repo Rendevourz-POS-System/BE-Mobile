@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -83,10 +84,11 @@ func (shelterRepo *shelterRepository) createLocationPipeline(pipeline mongo.Pipe
 		"path":                       "$location_details",
 		"preserveNullAndEmptyArrays": true, // Keeps pets even if the shelter is missing
 	}}})
-
-	if search.ShelterLocationName != "" {
-		regexPattern := helpers.RegexCaseInsensitivePattern(search.ShelterLocationName)
-		pipeline = append(pipeline, bson.D{{"$match", bson.M{"location_details.location_name": regexPattern}}})
+	if search != nil {
+		if search.ShelterLocationName != "" {
+			regexPattern := helpers.RegexCaseInsensitivePattern(search.ShelterLocationName)
+			pipeline = append(pipeline, bson.D{{"$match", bson.M{"location_details.location_name": regexPattern}}})
+		}
 	}
 	return pipeline
 }
@@ -117,7 +119,12 @@ func (shelterRepo *shelterRepository) createPipeline(filter bson.D, search *Shel
 	pipeline := mongo.Pipeline{
 		{{"$match", filter}}, // Apply search filters
 	}
-	pipeline = shelterRepo.createLocationPipeline(pipeline, search)
+	if search != nil {
+		pipeline = shelterRepo.createLocationPipeline(pipeline, search)
+	} else {
+		pipeline = shelterRepo.createLocationPipeline(pipeline, nil)
+	}
+
 	//pipeline = shelterRepo.createPetsPipeline(pipeline, search)
 
 	// Here we adjust fields
@@ -193,7 +200,26 @@ func (shelterRepo *shelterRepository) FindOneDataByUserId(c context.Context, Id 
 	return res, nil
 }
 
-func (shelterRepo *shelterRepository) FindOneDataById(c context.Context, Id *primitive.ObjectID) (res *Shelter.Shelter, err error) {
+func (shelterRepo *shelterRepository) FindOneDataById(c context.Context, Id *primitive.ObjectID) (res *Shelter.ShelterResponsePayload, err error) {
+	pipeline := shelterRepo.createPipeline(bson.D{{"_id", Id}}, nil)
+	data, err := shelterRepo.collection.Aggregate(c, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer data.Close(c)
+	if data.Next(c) {
+		err = data.Decode(&res)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println("Data res --> ", res)
+	} else {
+		return nil, errors.New("User Does Not Have Shelter!")
+	}
+	return res, nil
+}
+
+func (shelterRepo *shelterRepository) FindOneDataByIdForRequest(c context.Context, Id *primitive.ObjectID) (res *Shelter.Shelter, err error) {
 	if err = shelterRepo.collection.FindOne(c, bson.M{"_id": Id}).Decode(&res); err != nil {
 		return nil, errors.New("User Does Not Have Shelter ! ")
 	}

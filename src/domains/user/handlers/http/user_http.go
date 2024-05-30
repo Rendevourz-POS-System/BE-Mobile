@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
 	"main.go/configs/database"
@@ -185,4 +187,14 @@ func (userHttp *UserHttp) ResendVerificationOtp(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success To Resend Otp ! ", Data: data})
 	return
+}
+
+func (userHttp *UserHttp) FindUserByIdForRequest(c *gin.Context, Id primitive.ObjectID) *User.User {
+	userId := Id
+	data, err := userHttp.userUsecase.GetUserByUserId(c, userId.Hex())
+	if err != nil {
+		logrus.Warnf("Failed to retrieve user for request, err : %v", err)
+		return nil
+	}
+	return data
 }

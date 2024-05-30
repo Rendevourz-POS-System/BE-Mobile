@@ -42,7 +42,6 @@ func NewMidtrans() *midtran {
 	return Midtrans
 }
 
-func (s *midtran) CreateChargeRequest(reqMap *coreapi.ChargeReqWithMap) (coreapi.ResponseWithMap, *midtrans.Error) {
-
-	return nil, nil
+func (s *midtran) CreateChargeRequest(req *coreapi.ChargeReq) (*coreapi.ChargeResponse, *midtrans.Error) {
+	return s.CoreApi.ChargeTransaction(req)
 }

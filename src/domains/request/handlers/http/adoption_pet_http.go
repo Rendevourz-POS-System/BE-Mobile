@@ -2,11 +2,13 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"main.go/configs/app"
 	_const "main.go/configs/const"
 	"main.go/configs/database"
 	"main.go/domains/request/interfaces"
 	"main.go/domains/request/interfaces/impl/repository"
 	"main.go/domains/request/interfaces/impl/usecase"
+	"main.go/middlewares"
 )
 
 type AdoptionShelterHttp struct {
@@ -20,6 +22,10 @@ func NewAdoptionShelterHttp(router *gin.Engine) *AdoptionShelterHttp {
 	guest := router.Group("/adoption")
 	{
 		guest.GET("/")
+	}
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	{
+		user.POST("/create")
 	}
 	return handlers
 }

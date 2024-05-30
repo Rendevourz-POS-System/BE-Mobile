@@ -3,6 +3,8 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"os"
 
@@ -180,4 +182,15 @@ func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Shelter updated successfully ! ", Data: res})
+}
+
+func (shelterHttp *ShelterHttp) FindOneByShelterId(c *gin.Context, Id primitive.ObjectID) primitive.ObjectID {
+	search := &Shelter.ShelterSearch{
+		ShelterId: Id,
+	}
+	data, err := shelterHttp.shelterUsecase.GetOneDataByIdForRequest(c, search)
+	if err != nil {
+		logrus.Warnf("Failed to get data shelter for request %v: %v", search.ShelterId, err)
+	}
+	return data.UserId
 }

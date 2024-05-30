@@ -10,22 +10,33 @@ import (
 	"main.go/domains/request/interfaces"
 	"main.go/domains/request/interfaces/impl/repository"
 	"main.go/domains/request/interfaces/impl/usecase"
+	Shelter "main.go/domains/shelter/handlers/http"
+	UserHttp "main.go/domains/user/handlers/http"
 	"main.go/middlewares"
+	"main.go/shared/helpers"
 	"main.go/shared/message/errors"
 	"net/http"
 )
 
 type RequestHttp struct {
-	requestUsecase  interfaces.RequestUsecase
-	midtransUsecase midtrans_interfaces.MidtransUsecase
+	requestUsecase   interfaces.RequestUsecase
+	midtransUsecase  midtrans_interfaces.MidtransUsecase
+	donationHandlers *DonationShelterHttp
+	adoptionHandlers *AdoptionShelterHttp
+	userHandlers     *UserHttp.UserHttp
+	shelterHandler   *Shelter.ShelterHttp
 }
 
-func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUsecase) *RequestHttp {
+func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUsecase, donationHandlers *DonationShelterHttp, adoptionHandlers *AdoptionShelterHttp, userHandlers *UserHttp.UserHttp, shelterHandlers *Shelter.ShelterHttp) *RequestHttp {
 	handlers := &RequestHttp{
 		requestUsecase: usecase.NewRequestUsecase(
 			repository.NewRequestRepository(database.GetDatabase(_const.DB_SHELTER_APP)),
 		),
-		midtransUsecase: midtrans,
+		adoptionHandlers: adoptionHandlers,
+		donationHandlers: donationHandlers,
+		userHandlers:     userHandlers,
+		shelterHandler:   shelterHandlers,
+		midtransUsecase:  midtrans,
 	}
 	guest := router.Group("/request")
 	{
@@ -59,10 +70,17 @@ func (RequestHttp *RequestHttp) CreateDonationRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Bad request Data !", Error: err.Error()})
 		return
 	}
-	data, err := RequestHttp.requestUsecase.CreateDonationRequest(ctx, req, RequestHttp.midtransUsecase)
+	data, err := RequestHttp.requestUsecase.CreateDonationRequest(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data, Message: "Created Request Successfully !"})
+	data.User = RequestHttp.userHandlers.FindUserByIdForRequest(ctx, helpers.GetUserId(ctx))
+	data.UserTarget = RequestHttp.userHandlers.FindUserByIdForRequest(ctx, RequestHttp.shelterHandler.FindOneByShelterId(ctx, req.ShelterId))
+	res, errDonation := RequestHttp.donationHandlers.donationShelterUsecase.CreateDonation(ctx, data, RequestHttp.midtransUsecase)
+	if errDonation != nil {
+		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Donation Request Failed ! ", ErrorS: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: res, Message: "Created Request Successfully !"})
 }
