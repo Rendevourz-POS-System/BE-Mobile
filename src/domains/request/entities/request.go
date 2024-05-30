@@ -9,7 +9,7 @@ import (
 
 type Request struct {
 	Id        primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-	UserId    primitive.ObjectID `json:"UserId" bson:"user_id" validate:"required"`
+	UserId    primitive.ObjectID `json:"UserId" bson:"user_id"`
 	ShelterId primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required"`
 	Type      string             `json:"Type" bson:"type" validate:"required,request-type"`
 	Status    presistence.Status `json:"Status" bson:"status_id" validate:"omitempty" default:"New"`
@@ -28,16 +28,17 @@ type (
 	}
 	DonationPayload struct {
 		Id        primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-		UserId    primitive.ObjectID `json:"UserId" bson:"user_id" validate:"required"`
+		UserId    primitive.ObjectID `json:"UserId" bson:"user_id"`
 		ShelterId primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required"`
 		RequestId primitive.ObjectID `json:"RequestId,omitempty" bson:"request_id"`
-		Type      string             `json:"Type" bson:"type" validate:"required,request-type"`
+		Type      string             `json:"Type" bson:"type" validate:"required,donations"`
 		Status    presistence.Status `json:"Status" bson:"status_id" validate:"omitempty" default:"New"`
 		//Job         string             `json:"Job" bson:"job"`
 		Reason      *string    `json:"Reason,omitempty" bson:"reason"`
-		Amount      float64    `json:"Amount" validate:"omitempty"`
+		Amount      int64      `json:"Amount" validate:"omitempty"`
 		PaymentType string     `json:"PaymentType" bson:"payment_type" validate:"required,payment_type"`
 		BankType    *string    `json:"BankType,omitempty" bson:"bank_type" validate:"omitempty,bank_type"`
+		EWalletType *string    `json:"EWalletType,omitempty" bson:"e_wallet_type" validate:"omitempty,e_wallet"`
 		RequestedAt *time.Time `json:"RequestedAt,omitempty" bson:"RequestedAt,omitempty"`
 		CompletedAt *time.Time `json:"CompletedAt,omitempty" bson:"CompletedAt,omitempty"`
 	}

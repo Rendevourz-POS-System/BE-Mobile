@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	Request "main.go/domains/request/entities"
 	"main.go/shared/collections"
@@ -21,7 +22,7 @@ func (repo *donationShelterRepo) StoreOneDonation(ctx context.Context, req *Requ
 	if errs != nil {
 		return nil, errs
 	}
-	if err = repo.collection.FindOne(ctx, data).Decode(&res); err != nil {
+	if err = repo.collection.FindOne(ctx, bson.M{"_id": data.InsertedID}).Decode(&res); err != nil {
 		return nil, err
 	}
 	return res, nil

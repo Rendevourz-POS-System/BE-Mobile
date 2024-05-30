@@ -64,7 +64,7 @@ Image:
 
 Midtrans:
   ServerKey: SB-Mid-server-SWiGKHYzirEL2weHkG3reuXS
-  Environment: 1
+  Environment: Sandbox
   ClientKey: SB-Mid-client-SlKgM-Ep3GSwX70i
   Url: https://api.sandbox.midtrans.com
 # - Sandbox :

@@ -30,13 +30,13 @@ func (u *requestUsecase) CreateRequest(ctx context.Context, req *Request.Request
 	return res, nil
 }
 
-func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request.DonationPayload) (response *Request.RequestResponse, err []string) {
+func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request.DonationPayload) (res *Request.RequestResponse, err []string) {
 	validate := helpers.NewValidator()
 	if errs := validate.Struct(req); errs != nil {
 		err = helpers.CustomError(errs)
 		return nil, err
 	}
-	res, failedSendReq := u.requestRepo.StoreOneRequest(ctx, &Request.Request{
+	requestRes, failedSendReq := u.requestRepo.StoreOneRequest(ctx, &Request.Request{
 		UserId:      req.UserId,
 		ShelterId:   req.ShelterId,
 		Type:        req.Type,
@@ -44,13 +44,15 @@ func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request
 		Reason:      req.Reason,
 		RequestedAt: helpers.GetCurrentTime(nil),
 	})
-	response.Request = res
-	response.DonationPayload = req
 	if failedSendReq != nil {
 		err = append(err, failedSendReq.Error())
 		return nil, err
 	}
-	return response, nil
+	// Initialize res before using it
+	res = &Request.RequestResponse{}
+	res.Request = requestRes
+	res.DonationPayload = req
+	return res, nil
 }
 
 func (u *requestUsecase) fillDefaultRequest(req *Request.Request) *Request.Request {

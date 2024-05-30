@@ -25,15 +25,19 @@ func NewMidtrans() *midtran {
 			env = midtrans.Sandbox
 		case "production":
 			env = midtrans.Production
+		default:
+			env = midtrans.Sandbox // default to sandbox if not specified
 		}
 		// client
 		client := &coreapi.Client{
-			ServerKey:  app.GetConfig().Midtrans.ServerKey,
-			ClientKey:  app.GetConfig().Midtrans.ClientKey,
-			Env:        env,
-			HttpClient: midtrans.GetHttpClient(env),
-			Options:    &midtrans.ConfigOptions{},
+			//ServerKey:  app.GetConfig().Midtrans.ServerKey,
+			//ClientKey:  app.GetConfig().Midtrans.ClientKey,
+			//Env:        env,
+			//HttpClient: midtrans.GetHttpClient(env),
+			//Options:    &midtrans.ConfigOptions{},
 		}
+		client.New(app.GetConfig().Midtrans.ServerKey, env)
+
 		Midtrans = &midtran{
 			CoreApi: client,
 			Env:     env,

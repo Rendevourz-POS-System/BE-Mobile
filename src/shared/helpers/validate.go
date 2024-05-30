@@ -38,6 +38,8 @@ var (
 		"request-type":        "The %s field must be [adoption, donation, publish, rescue], but got '%s'",
 		"payment_type":        "The %s field must be [gopay, shopeepay, bank_transfer,qris]",
 		"bank_type":           "The %s field must be [bni, bca, bri, mandiri, cimb, maybank, mega, permata]",
+		"e_wallet":            "The %s field must be [gopay, shopeepay]",
+		"donations":           "The %s field must be donation",
 		//"valid-email":         "The %s field must be a valid email address, %s",
 		//"valid-domain":        "The %s field must be a valid domain",
 	}
@@ -80,10 +82,16 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("request-type", requestTypeValidation); err != nil {
 		panic(err)
 	}
+	if err := validate.RegisterValidation("donations", donations); err != nil {
+		panic(err)
+	}
 	if err := validate.RegisterValidation("payment_type", paymentTypeValidation); err != nil {
 		panic(err)
 	}
 	if err := validate.RegisterValidation("bank_type", bankTypeValidation); err != nil {
+		panic(err)
+	}
+	if err := validate.RegisterValidation("e_wallet", eWalletType); err != nil {
 		panic(err)
 	}
 
@@ -94,6 +102,21 @@ func NewValidator() *validator.Validate {
 	//	panic(err)
 	//}
 	return validate
+}
+
+func donations(fl validator.FieldLevel) bool {
+	reqType := RequestPersistence.Type(strings.ToLower(fl.Field().String()))
+	return reqType == RequestPersistence.Donation
+}
+
+func eWalletType(fl validator.FieldLevel) bool {
+	reqType := coreapi.CoreapiPaymentType(strings.ToLower(fl.Field().String()))
+	switch reqType {
+	case coreapi.PaymentTypeGopay, coreapi.PaymentTypeShopeepay, coreapi.PaymentTypeQris:
+		return true
+	default:
+		return false
+	}
 }
 
 func bankTypeValidation(fl validator.FieldLevel) bool {

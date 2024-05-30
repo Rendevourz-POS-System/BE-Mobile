@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -212,7 +211,6 @@ func (shelterRepo *shelterRepository) FindOneDataById(c context.Context, Id *pri
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("Data res --> ", res)
 	} else {
 		return nil, errors.New("User Does Not Have Shelter!")
 	}

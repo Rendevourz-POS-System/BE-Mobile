@@ -71,6 +71,17 @@ func (u *shelterUsecase) GetOneDataById(ctx context.Context, search *Shelter.She
 	if err != nil {
 		return nil, err
 	}
+	var base64Images []string
+	for _, imagePath := range data.Image {
+		imageData, err := os.ReadFile(image_helpers.GenerateImagePath(
+			app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, data.ID.Hex(), imagePath)) // Read the image file
+		if err != nil {
+			return nil, err // Handle error (perhaps just log and continue with other images?)
+		}
+		base64Image := base64.StdEncoding.EncodeToString(imageData) // Convert to Base64
+		base64Images = append(base64Images, base64Image)
+	}
+	data.ImageBase64 = base64Images // Assuming pets have an ImageBase64 field to store the base64 strings
 	return data, nil
 }
 

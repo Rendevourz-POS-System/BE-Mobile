@@ -85,6 +85,10 @@ func ToString(value interface{}) string {
 	return value.(string)
 }
 
+func PartIntToString(value int) string {
+	return strconv.Itoa(value)
+}
+
 func ParsePointerIntToString(value *int) string {
 	return strconv.Itoa(*value)
 }

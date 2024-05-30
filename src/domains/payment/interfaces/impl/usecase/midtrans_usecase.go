@@ -19,8 +19,9 @@ func NewMidtransUsecase(coreServices interfaces.MidtransCoreServices) *midtransU
 }
 
 func (m *midtransUsecase) ChargeRequest(req *Request.RequestResponse) (*coreapi.ChargeResponse, *midtrans.Error) {
+	fmt.Println("Data Req --> ", req.UserTarget.ID, req.UserTarget.Username)
 	chargeReq := &coreapi.ChargeReq{
-		PaymentType: coreapi.CoreapiPaymentType(req.DonationPayload.PaymentType),
+		PaymentType: coreapi.CoreapiPaymentType(strings.ToLower(req.DonationPayload.PaymentType)),
 		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  req.Donation.Id.Hex(),
 			GrossAmt: req.Donation.Amount,
@@ -44,20 +45,20 @@ func (m *midtransUsecase) ChargeRequest(req *Request.RequestResponse) (*coreapi.
 				Phone:       req.User.PhoneNumber,
 				Address:     req.User.Address,
 				City:        req.User.City,
-				Postcode:    helpers.ToString(req.User.PostalCode),
-				CountryCode: "+62",
+				Postcode:    helpers.PartIntToString(req.User.PostalCode),
+				CountryCode: "IDN",
 			},
 			ShipAddr: &midtrans.CustomerAddress{
 				FName:       req.UserTarget.Username,
-				LName:       "",
 				Phone:       req.UserTarget.PhoneNumber,
 				Address:     req.UserTarget.Address,
 				City:        req.UserTarget.City,
-				Postcode:    helpers.ToString(req.UserTarget.PostalCode),
-				CountryCode: "+62",
+				Postcode:    helpers.PartIntToString(req.UserTarget.PostalCode),
+				CountryCode: "IDN",
 			},
 		},
 	}
+	chargeReq, _ = m.paymentTypeSelector(chargeReq, req)
 	midtransResponse, midtransErr := m.midtransCoreServices.CreateChargeRequest(chargeReq)
 	if midtransErr != nil {
 		return nil, midtransErr
@@ -68,8 +69,13 @@ func (m *midtransUsecase) ChargeRequest(req *Request.RequestResponse) (*coreapi.
 
 func (m *midtransUsecase) paymentTypeSelector(chargeReq *coreapi.ChargeReq, req *Request.RequestResponse) (*coreapi.ChargeReq, error) {
 	//, coreapi.PaymentTypeGopay, coreapi.PaymentTypeShopeepay, coreapi.PaymentTypeQris
-	switch coreapi.CoreapiPaymentType(req.DonationPayload.PaymentType) {
+	switch coreapi.CoreapiPaymentType(strings.ToLower(req.DonationPayload.PaymentType)) {
 	case coreapi.PaymentTypeBankTransfer:
+		//chargeReq.CustomExpiry = &coreapi.CustomExpiry{
+		//	OrderTime:      helpers.ToString(req.Donation.CreatedAt),
+		//	ExpiryDuration: 60,
+		//	Unit:           "minutes",
+		//}
 		switch midtrans.Bank(strings.ToLower(*req.DonationPayload.BankType)) {
 		case midtrans.BankBca:
 			BankTransfer := &coreapi.BankTransferDetails{
@@ -120,6 +126,16 @@ func (m *midtransUsecase) paymentTypeSelector(chargeReq *coreapi.ChargeReq, req 
 			chargeReq.BankTransfer = BankTransfer
 			return chargeReq, nil
 		}
+	case coreapi.PaymentTypeGopay:
+		chargeReq.Gopay = &coreapi.GopayDetails{
+			EnableCallback: false,
+			CallbackUrl:    "",
+			PreAuth:        false,
+		}
+		return chargeReq, nil
+	case coreapi.PaymentTypeShopeepay:
+		chargeReq.ShopeePay = &coreapi.ShopeePayDetails{CallbackUrl: ""}
+		return chargeReq, nil
 	}
-	return nil, nil
+	return chargeReq, nil
 }

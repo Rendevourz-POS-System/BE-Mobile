@@ -10,6 +10,7 @@
         <method importPath="main.go/domains/shelter/handlers/http" receiver="*PetHttp" name="moveUploadedFile" />
         <method importPath="main.go/domains/user/interfaces" receiver="UserRepository" name="FindUserById" />
         <method importPath="main.go/domains/shelter/interfaces" receiver="ShelterUsecase" name="GetOneDataByUserId" />
+        <method importPath="main.go/domains/shelter/interfaces" receiver="ShelterRepository" name="FindOneDataById" />
       </methods>
     </inspection_tool>
   </profile>

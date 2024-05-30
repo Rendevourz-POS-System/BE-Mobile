@@ -56,6 +56,7 @@ func (RequestHttp *RequestHttp) CreateRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Bad request Data !", Error: err.Error()})
 		return
 	}
+	req.UserId = helpers.GetUserId(ctx)
 	data, err := RequestHttp.requestUsecase.CreateRequest(ctx, req, RequestHttp.midtransUsecase)
 	if err != nil {
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: err})
@@ -70,12 +71,13 @@ func (RequestHttp *RequestHttp) CreateDonationRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Bad request Data !", Error: err.Error()})
 		return
 	}
+	req.UserId = helpers.GetUserId(ctx)
 	data, err := RequestHttp.requestUsecase.CreateDonationRequest(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: err})
 		return
 	}
-	data.User = RequestHttp.userHandlers.FindUserByIdForRequest(ctx, helpers.GetUserId(ctx))
+	data.User = RequestHttp.userHandlers.FindUserByIdForRequest(ctx, req.UserId)
 	data.UserTarget = RequestHttp.userHandlers.FindUserByIdForRequest(ctx, RequestHttp.shelterHandler.FindOneByShelterId(ctx, req.ShelterId))
 	res, errDonation := RequestHttp.donationHandlers.donationShelterUsecase.CreateDonation(ctx, data, RequestHttp.midtransUsecase)
 	if errDonation != nil {
