@@ -7,20 +7,20 @@ import (
 )
 
 type Pet struct {
-	ID             primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-	ShelterId      primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required,omitempty"`
-	PetName        string             `json:"PetName" bson:"pet_name" validate:"required"`
-	PetType        string             `json:"PetType" bson:"pet_type" validate:"required"`
-	PetAge         int                `json:"PetAge" bson:"pet_age" validate:"required,number,pet-age"`
-	PetGender      string             `json:"PetGender" bson:"pet_gender" validate:"omitempty,required,pet-gender"`
-	PetStatus      bool               `json:"PetStatus" bson:"pet_status" validate:"omitempty" default:"false"`
-	PetDescription string             `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
-	IsVaccinated   bool               `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required,is-vaccinated"`
-	Image          []string           `json:"Image" bson:"image" validate:"omitempty"`
-	ImageBase64    []string           `json:"ImageBase64" validate:"omitempty"`
-	PetDob         *time.Time         `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
-	CreatedAt      *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
-	DeletedAt      *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	ID             primitive.ObjectID  `json:"Id" bson:"_id,omitempty"`
+	ShelterId      *primitive.ObjectID `json:"ShelterId,omitempty" bson:"shelter_id" validate:"omitempty"`
+	PetName        string              `json:"PetName" bson:"pet_name" validate:"required"`
+	PetType        string              `json:"PetType" bson:"pet_type" validate:"required"`
+	PetAge         int                 `json:"PetAge" bson:"pet_age" validate:"required,number,pet-age"`
+	PetGender      string              `json:"PetGender" bson:"pet_gender" validate:"omitempty,required,pet-gender"`
+	PetStatus      bool                `json:"PetStatus" bson:"pet_status" validate:"omitempty" default:"false"`
+	PetDescription string              `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
+	IsVaccinated   bool                `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required,is-vaccinated"`
+	Image          []string            `json:"Image" bson:"image" validate:"omitempty"`
+	ImageBase64    []string            `json:"ImageBase64" validate:"omitempty"`
+	PetDob         *time.Time          `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
+	CreatedAt      *time.Time          `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+	DeletedAt      *time.Time          `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 
 type (
@@ -64,5 +64,12 @@ type (
 		PetAge          int                `json:"PetAge" bson:"pet_age"`
 		CreatedAt       *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
 		DeletedAt       *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+	}
+
+	// Pet Delete Payload
+	PetDeletePayload struct {
+		ShelterId primitive.ObjectID   `json:"ShelterId" validate:"required"`
+		PetsId    []primitive.ObjectID `json:"PetId" validate:"required"`
+		UserId    primitive.ObjectID   `json:"UserId,omitempty"`
 	}
 )

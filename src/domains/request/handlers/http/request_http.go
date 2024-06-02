@@ -42,7 +42,7 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 	{
 		guest.GET("/")
 	}
-	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
 		user.POST("/create", handlers.CreateRequest)
 		user.POST("/donation", handlers.CreateDonationRequest)
@@ -84,5 +84,5 @@ func (RequestHttp *RequestHttp) CreateDonationRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Donation Request Failed ! ", ErrorS: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: res, Message: "Created Request Successfully !"})
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: res, Message: res.StatusMessage})
 }

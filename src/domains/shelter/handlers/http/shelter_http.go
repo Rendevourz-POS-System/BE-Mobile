@@ -35,13 +35,17 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 	{
 		guest.GET("", handler.FindAll)
 	}
-	user := router.Group("/shelter", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
 		user.GET("/my-shelter", handler.FindOneByUserId)
 		user.GET("/:id", handler.FindOneById)
 		user.POST("/register", handler.RegisterShelter)
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.PUT("/update", handler.UpdateShelter)
+	}
+	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
+	{
+		admin.Group("/delete/")
 	}
 	return handler
 }

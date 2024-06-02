@@ -38,6 +38,7 @@ func GenerateToken(user *User.User) (string, error) {
 	claims := &User.JwtCustomClaims{
 		ID:       user.ID.Hex(),
 		Email:    user.Email,
+		Role:     user.Role,
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: expiry,
@@ -84,7 +85,7 @@ func ClaimsTokenData(requestToken, secret string) (interface{}, error) {
 	return token.Claims.(jwt.MapClaims), nil
 }
 
-func ExtractIDFromToken(requestToken, secret string) (string, error) {
+func ExtractIDFromToken(requestToken, secret string) (User.JwtCustomClaims, error) {
 	errResponse := errors.New("sign in to proceed")
 	token, _ := jwt.Parse(requestToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -92,11 +93,19 @@ func ExtractIDFromToken(requestToken, secret string) (string, error) {
 		}
 		return []byte(secret), nil
 	})
+	data := User.JwtCustomClaims{}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return "", errResponse
+		return data, errResponse
 	}
-	return claims["Id"].(string), nil
+	fmt.Println("CLAIMS: ", claims)
+	data = User.JwtCustomClaims{
+		ID:    claims["Id"].(string),
+		Email: claims["Email"].(string),
+		Otp:   nil,
+		Role:  claims["Role"].(string),
+	}
+	return data, nil
 }
 
 func GenerateJwtTokenForVerificationEmail(Otp *int, id, email, secretCode string) (string, error) {

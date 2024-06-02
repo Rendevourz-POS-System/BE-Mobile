@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/configs/app"
 	User "main.go/domains/user/entities"
@@ -300,4 +301,12 @@ func (u *userUsecase) ResendVerificationRequest(ctx context.Context, req *User.R
 	}
 	go u.executeConcurrentSendEmail(ctx, findUser, secretCode, Otp)
 	return findUser, nil
+}
+
+func (u *userUsecase) DeleteUserById(ctx context.Context, Id *primitive.ObjectID) (res *User.User, err error) {
+	res, err = u.userRepo.DestroyUserById(ctx, Id)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
 }

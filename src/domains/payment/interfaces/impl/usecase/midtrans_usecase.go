@@ -69,13 +69,13 @@ func (m *midtransUsecase) ChargeRequest(req *Request.RequestResponse) (*coreapi.
 
 func (m *midtransUsecase) paymentTypeSelector(chargeReq *coreapi.ChargeReq, req *Request.RequestResponse) (*coreapi.ChargeReq, error) {
 	//, coreapi.PaymentTypeGopay, coreapi.PaymentTypeShopeepay, coreapi.PaymentTypeQris
+	chargeReq.CustomExpiry = &coreapi.CustomExpiry{
+		OrderTime:      req.Donation.TransactionDate.Format("2006-01-02 15:04:05 -0700"),
+		ExpiryDuration: 30,
+		Unit:           "minutes",
+	}
 	switch coreapi.CoreapiPaymentType(strings.ToLower(req.DonationPayload.PaymentType)) {
 	case coreapi.PaymentTypeBankTransfer:
-		//chargeReq.CustomExpiry = &coreapi.CustomExpiry{
-		//	OrderTime:      helpers.ToString(req.Donation.CreatedAt),
-		//	ExpiryDuration: 60,
-		//	Unit:           "minutes",
-		//}
 		switch midtrans.Bank(strings.ToLower(*req.DonationPayload.BankType)) {
 		case midtrans.BankBca:
 			BankTransfer := &coreapi.BankTransferDetails{
