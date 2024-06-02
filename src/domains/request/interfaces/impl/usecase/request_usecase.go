@@ -6,6 +6,7 @@ import (
 	Request "main.go/domains/request/entities"
 	"main.go/domains/request/interfaces"
 	"main.go/shared/helpers"
+	"strings"
 )
 
 type requestUsecase struct {
@@ -36,6 +37,7 @@ func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request
 		err = helpers.CustomError(errs)
 		return nil, err
 	}
+	req.Type = strings.ToLower(req.Type)
 	requestRes, failedSendReq := u.requestRepo.StoreOneRequest(ctx, &Request.Request{
 		UserId:      req.UserId,
 		ShelterId:   req.ShelterId,

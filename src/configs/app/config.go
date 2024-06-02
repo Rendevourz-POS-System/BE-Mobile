@@ -127,7 +127,7 @@ func GetConfig() *Config {
 			log.Printf("unable to decode into struct, %v", err)
 			panic(err)
 		}
-		fmt.Println("Config Environment : ", config.Midtrans)
+		//fmt.Println("Config Environment : ", config.Midtrans)
 	}
 	return config
 }

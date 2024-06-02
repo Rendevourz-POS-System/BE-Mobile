@@ -23,7 +23,7 @@ func NewShelterFavoriteHttp(router *gin.Engine) *ShelterFavoriteHttp {
 	handler := &ShelterFavoriteHttp{
 		shelterFavoriteUseCase: usecase.NewShelterFavoriteUseCase(repository.NewShelterFavoriteRepository(database.GetDatabase(_const.DB_SHELTER_APP))),
 	}
-	user := router.Group("/shelter_favorite", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	user := router.Group("/shelter_favorite", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
 		user.POST("update", handler.UpdateData)
 	}

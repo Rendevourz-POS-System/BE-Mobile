@@ -94,17 +94,17 @@ func ParsePointerIntToString(value *int) string {
 }
 
 func CheckStaffStatus(value string) bool {
-	if value == presistence.StaffRole {
+	if presistence.Role(value) == presistence.StaffRole {
 		return true
 	}
 	return false
 }
 
 func GetRole(value string) string {
-	if value == presistence.StaffRole {
-		return presistence.StaffRole
+	if presistence.Role(value) == presistence.StaffRole {
+		return ToString(presistence.StaffRole)
 	}
-	return presistence.UserRole
+	return ToString(presistence.UserRole)
 }
 
 func ParseStringToInt(value string) int {

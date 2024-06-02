@@ -1,7 +1,12 @@
 package presistence
 
+type (
+	Role string
+)
+
 const (
-	StaffRole = "staff"
-	AdminRole = "admin"
-	UserRole  = "user"
+	StaffRole Role = "staff"
+	AdminRole Role = "admin"
+	UserRole  Role = "user"
+	AllRole   Role = "all"
 )

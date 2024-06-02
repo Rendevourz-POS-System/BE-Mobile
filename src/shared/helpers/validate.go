@@ -192,7 +192,7 @@ func petGenderValidation(fl validator.FieldLevel) bool {
 func roleValidation(fl validator.FieldLevel) bool {
 	role := fl.Field().String()
 	role = strings.ToLower(role)
-	return role == presistence.StaffRole || role == presistence.UserRole || role == ""
+	return presistence.Role(role) == presistence.StaffRole || presistence.Role(role) == presistence.UserRole || role == ""
 }
 
 func isAlphanumericAndSymbol(fl validator.FieldLevel) bool {

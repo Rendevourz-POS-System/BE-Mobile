@@ -30,7 +30,7 @@ func NewPetHttp(router *gin.Engine) *PetHttp {
 		guest.GET("", handler.GetAllPets)
 		guest.GET("/:id", handler.FindPetById)
 	}
-	user := router.Group("/pet", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
 		user.POST("/create", handler.CreatePet)
 	}

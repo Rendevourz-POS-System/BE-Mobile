@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	"main.go/shared/helpers"
@@ -10,7 +9,7 @@ import (
 	"strings"
 )
 
-func JwtAuthMiddleware(secret string) gin.HandlerFunc {
+func JwtAuthMiddleware(secret string, role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get(app.GetConfig().AccessToken.AccessTokenHeaderName)
 		t := strings.Split(authHeader, " ")
@@ -18,18 +17,25 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 			authToken := t[1]
 			authorized, err := helpers.VerifyToken(authToken, secret)
 			if authorized {
-				userID, err := helpers.ExtractIDFromToken(authToken, secret)
+				claims, err := helpers.ExtractIDFromToken(authToken, secret)
 				if err != nil {
 					c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: err.Error()})
 					c.Abort()
 					return
 				}
-				c.Set("x-user-id", userID)
-				fmt.Println("Auth token --> ", authorized)
-				fmt.Println("User ID --> ", userID)
+				if len(role) > 0 {
+					if strings.ToLower(claims.Role) != role {
+						c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: err.Error()})
+						c.Abort()
+						return
+					}
+				}
+				c.Set("x-user-id", claims.ID)
 				c.Next()
 				return
 			}
+			//fmt.Println("Auth token --> ", authorized)
+			//fmt.Println("User ID --> ", userID)
 			c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: err.Error()})
 			c.Abort()
 			return

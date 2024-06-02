@@ -91,6 +91,7 @@ type (
 		ID       string `json:"Id"`
 		Email    string `json:"Email"`
 		Otp      *int   `json:"Otp"`
+		Role     string `json:"Role"`
 		Username string `json:"Username"`
 		jwt.RegisteredClaims
 	}

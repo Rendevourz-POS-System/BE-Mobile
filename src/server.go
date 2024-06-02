@@ -133,7 +133,7 @@ func RegisterMiddlewares(router *gin.Engine) {
 }
 
 func RegisterMiddlewares2(router *gin.Engine) {
-	router.Use(middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	router.Use(middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, ""))
 	// Another Middlewares Here ...
 }
 func RegisterRoutes(router *gin.Engine) {

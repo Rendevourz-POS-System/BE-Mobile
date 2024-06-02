@@ -39,8 +39,9 @@ func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 		guest.POST("/verify-email", handler.AccountVerification)
 		guest.POST("/resend-otp", handler.ResendVerificationOtp)
 	}
-	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret))
+	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
+		user.GET("/details/:id", handler.FindUserDetailById)
 		user.GET("/data", handler.FindUserByToken)
 		user.PUT("/update", handler.UpdateUser)
 		user.PUT("/update-pw", handler.UpdatePassword)
@@ -94,6 +95,17 @@ func (userHttp *UserHttp) FindUserByToken(c *gin.Context) {
 	userId := helpers.GetUserId(c)
 	fmt.Println("UID: ", userId)
 	data, err := userHttp.userUsecase.GetUserByUserId(c, userId.Hex())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+	return
+}
+
+func (userHttp *UserHttp) FindUserDetailById(c *gin.Context) {
+	userId := c.Param("id")
+	data, err := userHttp.userUsecase.GetUserByUserId(c, userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
