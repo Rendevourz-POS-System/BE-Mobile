@@ -39,12 +39,16 @@ func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 		guest.POST("/verify-email", handler.AccountVerification)
 		guest.POST("/resend-otp", handler.ResendVerificationOtp)
 	}
-	user := router.Group("/user", middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
 		user.GET("/details/:id", handler.FindUserDetailById)
 		user.GET("/data", handler.FindUserByToken)
 		user.PUT("/update", handler.UpdateUser)
 		user.PUT("/update-pw", handler.UpdatePassword)
+	}
+	admin := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
+	{
+		admin.GET("/details/:id", handler.FindUserDetailById)
 	}
 	return handler
 }
