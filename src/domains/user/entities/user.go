@@ -88,11 +88,12 @@ type (
 	}
 	// JwtCustomClaims Custom claims for JWT
 	JwtCustomClaims struct {
-		ID       string `json:"Id"`
-		Email    string `json:"Email"`
-		Otp      *int   `json:"Otp"`
-		Role     string `json:"Role"`
-		Username string `json:"Username"`
+		ID        string `json:"Id"`
+		Email     string `json:"Email"`
+		Otp       *int   `json:"Otp"`
+		ShelterId string `json:"ShelterId"`
+		Role      string `json:"Role"`
+		Username  string `json:"Username"`
 		jwt.RegisteredClaims
 	}
 	// JwtCustomRefreshClaims Custom claims for JWT Refresh Token

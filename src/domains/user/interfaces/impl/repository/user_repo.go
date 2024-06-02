@@ -171,3 +171,11 @@ func (userRepo *userRepository) VerifiedUserEmail(ctx context.Context, Id *primi
 	}
 	return &updatedUser, nil
 }
+
+func (userRepo *userRepository) DestroyUserById(ctx context.Context, Id *primitive.ObjectID) (res *User.User, err error) {
+	err = userRepo.collection.FindOneAndDelete(ctx, bson.M{"_id": Id}).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

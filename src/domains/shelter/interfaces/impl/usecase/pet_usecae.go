@@ -71,3 +71,24 @@ func (u *petUseCase) GetPetById(ctx context.Context, Id *primitive.ObjectID) (re
 	}
 	return res, nil
 }
+
+func (u *petUseCase) DeletePetByAdmin(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
+	res, err = u.petRepo.DestroyPetByAdmin(ctx, Id)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
+}
+
+func (u *petUseCase) DeletePetByUser(ctx context.Context, pet Pet.PetDeletePayload) (res []Pet.Pet, err []string) {
+	validate := helpers.NewValidator()
+	if errs := validate.Struct(pet); errs != nil {
+		err = helpers.CustomError(errs)
+		return nil, err
+	}
+	res, err = u.petRepo.DestroyPetByUser(ctx, pet)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
+}

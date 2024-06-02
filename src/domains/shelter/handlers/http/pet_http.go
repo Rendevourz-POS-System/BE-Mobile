@@ -30,9 +30,17 @@ func NewPetHttp(router *gin.Engine) *PetHttp {
 		guest.GET("", handler.GetAllPets)
 		guest.GET("/:id", handler.FindPetById)
 	}
+	adminAndUser := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, ""))
+	{
+		adminAndUser.POST("/create", handler.CreatePet)
+	}
 	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
-		user.POST("/create", handler.CreatePet)
+		user.DELETE("/delete", handler.DeletePetByUser)
+	}
+	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
+	{
+		admin.DELETE("/delete/:id", handler.DeletePetByAdmin)
 	}
 	return handler
 }
@@ -65,7 +73,7 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 		return
 	}
 	if filesName != nil {
-		if pet.Pet.ShelterId.Hex() == "" {
+		if pet.Pet.ShelterId == nil {
 			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.PetPath)
 		} else {
 			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.PetPath, helpers.GetUserId(ctx).Hex())
@@ -114,5 +122,30 @@ func (h *PetHttp) FindPetById(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data})
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data, Message: "Success Get Pet Detail ! "})
+}
+
+func (h *PetHttp) DeletePetByAdmin(ctx *gin.Context) {
+	Id := helpers.ParseStringToObjectId(ctx.Param("id"))
+	data, err := h.petUsecase.DeletePetByAdmin(ctx, &Id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data, Message: "Success Get Pet Detail ! "})
+}
+
+func (h *PetHttp) DeletePetByUser(ctx *gin.Context) {
+	userDeleteReq := Pet.PetDeletePayload{}
+	if err := ctx.ShouldBindJSON(&userDeleteReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Bad Request !", ErrorS: []string{err.Error()}})
+		return
+	}
+	userDeleteReq.UserId = helpers.GetUserId(ctx)
+	data, err := h.petUsecase.DeletePetByUser(ctx, userDeleteReq)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", ErrorS: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data, Message: "Success Get Pet Detail ! "})
 }

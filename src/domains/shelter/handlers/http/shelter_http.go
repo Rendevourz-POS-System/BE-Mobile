@@ -43,9 +43,9 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.PUT("/update", handler.UpdateShelter)
 	}
-	admin := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
+	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
 	{
-		admin.Group("")
+		admin.Group("/delete/")
 	}
 	return handler
 }

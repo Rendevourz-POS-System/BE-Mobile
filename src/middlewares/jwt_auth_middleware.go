@@ -23,9 +23,9 @@ func JwtAuthMiddleware(secret string, role string) gin.HandlerFunc {
 					c.Abort()
 					return
 				}
-				if len(role) > 0 {
+				if len(role) > 0 && role != "" {
 					if strings.ToLower(claims.Role) != role {
-						c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: err.Error()})
+						c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: "Only " + role + " Can Access !"})
 						c.Abort()
 						return
 					}

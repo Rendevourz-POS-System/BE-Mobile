@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -218,6 +219,36 @@ func (r *petRepo) UpdatePet(ctx context.Context, pet *Pet.Pet) (res *Pet.Pet, er
 func (r *petRepo) FindPetById(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
 	err = r.collection.FindOne(ctx, bson.M{"_id": Id}).Decode(&res)
 	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (r *petRepo) DestroyPetByAdmin(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
+	err = r.collection.FindOneAndDelete(ctx, bson.M{"_id": Id}).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (r *petRepo) DestroyPetByUser(ctx context.Context, Pets Pet.PetDeletePayload) (res []Pet.Pet, err []string) {
+	var Shelter *Pet.Shelter
+	errFindShelter := r.database.Collection(collections.ShelterCollectionName).FindOne(ctx, bson.M{"_id": Pets.ShelterId, "user_id": "a"}).Decode(&Shelter)
+	logrus.Warnf("Get Shelter", errFindShelter)
+	if errFindShelter != nil {
+		err = append(err, errFindShelter.Error())
+		return nil, err
+	}
+	for _, petId := range Pets.PetsId {
+		var deletedPet Pet.Pet
+		errs := r.collection.FindOneAndDelete(ctx, bson.M{"_id": petId, "shelter_id": Pets.ShelterId}).Decode(&deletedPet)
+		if errs != nil {
+			err = append(err, errs.Error())
+		}
+		res = append(res, deletedPet)
+	}
+	if len(err) > 0 {
 		return nil, err
 	}
 	return res, nil
