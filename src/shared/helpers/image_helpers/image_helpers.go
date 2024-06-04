@@ -93,9 +93,9 @@ func MoveUploadedShelterFile(ctx *gin.Context, filesName []string, shelter *Pet.
 }
 
 func UploadProfile(ctx *gin.Context, file *multipart.FileHeader, data *entities.UpdateProfilePayload) (res *entities.UpdateProfilePayload, err error) {
-	FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, data.ID.Hex(), app.GetConfig().Image.ProfilePath, file.Filename)
+	FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, data.ID.Hex(), file.Filename)
 	if data.OldImageName != "" {
-		OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, data.ID.Hex(), app.GetConfig().Image.ProfilePath, data.OldImageName)
+		OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, data.ID.Hex(), data.OldImageName)
 		// Check if a file already exists at the FilePath
 		if _, err = os.Stat(OldFilePath); err == nil {
 			// File exists, attempt to remove it
