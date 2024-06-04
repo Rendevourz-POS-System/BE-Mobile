@@ -192,9 +192,20 @@ func (shelterRepo *shelterRepository) FindAllData(c context.Context, search *She
 	return res, nil
 }
 
-func (shelterRepo *shelterRepository) FindOneDataByUserId(c context.Context, Id *primitive.ObjectID) (res *Shelter.Shelter, err error) {
-	if err = shelterRepo.collection.FindOne(c, bson.M{"user_id": Id}).Decode(&res); err != nil {
-		return nil, errors.New("User Does Not Have Shelter ! ")
+func (shelterRepo *shelterRepository) FindOneDataByUserId(c context.Context, Id *primitive.ObjectID) (res *Shelter.ShelterResponsePayload, err error) {
+	pipeline := shelterRepo.createPipeline(bson.D{{"user_id", Id}}, nil)
+	data, err := shelterRepo.collection.Aggregate(c, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer data.Close(c)
+	if data.Next(c) {
+		err = data.Decode(&res)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("User Does Not Have Shelter!")
 	}
 	return res, nil
 }

@@ -74,9 +74,9 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 	}
 	if filesName != nil {
 		if pet.Pet.ShelterId == nil {
-			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.PetPath)
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.PetPath, data.ID.Hex())
 		} else {
-			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.PetPath, helpers.GetUserId(ctx).Hex())
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, pet.Pet.ShelterId.Hex(), app.GetConfig().Image.PetPath, data.ID.Hex())
 		}
 	}
 	if err != nil {

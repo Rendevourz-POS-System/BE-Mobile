@@ -69,12 +69,12 @@ func MoveUploadedFile(ctx *gin.Context, filesName []string, pet *Pet.PetCreate, 
 	return pet, nil
 }
 
-func MoveUploadedShelterFile(ctx *gin.Context, filesName []string, data *Pet.Shelter, shelter *Pet.ShelterCreate, path string) (res *Pet.ShelterCreate, err error) {
+func MoveUploadedShelterFile(ctx *gin.Context, filesName []string, shelter *Pet.Shelter, shelterCreate *Pet.ShelterCreate, shelterId string) (res *Pet.ShelterCreate, err error) {
 	// Move the uploaded files to their final location with the data.ID in the path
 	for _, RealFileName := range filesName {
 		// Construct the final file path
 		tempPath := GenerateImagePath(app.GetConfig().Image.TempPath, RealFileName)
-		finalFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, data.ID.Hex(), RealFileName)
+		finalFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterId, RealFileName)
 
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(finalFilePath), 0755); err != nil {
@@ -87,15 +87,15 @@ func MoveUploadedShelterFile(ctx *gin.Context, filesName []string, data *Pet.She
 			return
 		}
 		// Update the pet's image path
-		shelter.Shelter.Image = append(shelter.Shelter.Image, RealFileName)
+		shelterCreate.Shelter.Image = append(shelterCreate.Shelter.Image, RealFileName)
 	}
-	return shelter, nil
+	return shelterCreate, nil
 }
 
 func UploadProfile(ctx *gin.Context, file *multipart.FileHeader, data *entities.UpdateProfilePayload) (res *entities.UpdateProfilePayload, err error) {
-	FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, data.ID.Hex(), file.Filename)
+	FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, data.ID.Hex(), app.GetConfig().Image.ProfilePath, file.Filename)
 	if data.OldImageName != "" {
-		OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, data.ID.Hex(), data.OldImageName)
+		OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, data.ID.Hex(), app.GetConfig().Image.ProfilePath, data.OldImageName)
 		// Check if a file already exists at the FilePath
 		if _, err = os.Stat(OldFilePath); err == nil {
 			// File exists, attempt to remove it
@@ -132,7 +132,7 @@ func UploadShelter(ctx *gin.Context, form *multipart.Form, shelterUpdate *Pet.Sh
 		// Move the uploaded files to their final location with the data.ID in the path
 		for _, RealFileName := range shelterUpdate.Shelter.OldImage {
 			// Construct the final file path
-			OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), RealFileName)
+			OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, shelterUpdate.Shelter.ID.Hex(), app.GetConfig().Image.ShelterPath, RealFileName)
 			// Check if a file already exists at the FilePath
 			if _, err = os.Stat(OldFilePath); err == nil {
 				// File exists, attempt to remove it
@@ -153,7 +153,7 @@ func UploadShelter(ctx *gin.Context, form *multipart.Form, shelterUpdate *Pet.Sh
 		return shelterUpdate, nil
 	}
 	for _, File := range files {
-		FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), File.Filename)
+		FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, shelterUpdate.Shelter.ID.Hex(), app.GetConfig().Image.ShelterPath, File.Filename)
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(FilePath), 0755); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Failed To Create Directories ! ", Errors: err})

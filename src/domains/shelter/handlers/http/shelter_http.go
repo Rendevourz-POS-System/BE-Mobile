@@ -91,7 +91,6 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
 		return
 	}
-
 	form, _ := c.MultipartForm()
 	jsonData := form.Value["data"][0]
 	shelter := &Shelter.Shelter{}
@@ -99,7 +98,6 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Request ! ", Error: err.Error()})
 		return
 	}
-
 	shelter.UserId = helpers.GetUserId(c)
 	tempFilePaths, errs := image_helpers.SaveImageToTemp(c, form)
 	if errs != nil {
@@ -109,7 +107,6 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 		}
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: errs.Error()})
 	}
-
 	res, err := shelterHttp.shelterUsecase.RegisterShelter(c, shelter)
 	if err != nil {
 		if res != nil {
@@ -119,9 +116,8 @@ func (shelterHttp *ShelterHttp) RegisterShelter(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Register Shelter ! ", ErrorS: err})
 		return
 	}
-
 	if tempFilePaths != nil {
-		shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, app.GetConfig().Image.ShelterPath)
+		shelterCreate, _ = image_helpers.MoveUploadedShelterFile(c, tempFilePaths, shelter, shelterCreate, res.ID.Hex())
 	}
 	shelter.Image = shelterCreate.Shelter.Image
 	shelter, _ = shelterHttp.shelterUsecase.UpdateShelterById(c, &shelter.ID, shelter)

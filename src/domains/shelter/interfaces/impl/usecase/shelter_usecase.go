@@ -36,7 +36,7 @@ func (u *shelterUsecase) GetAllData(ctx context.Context, search *Shelter.Shelter
 		var base64Images []string
 		for _, imagePath := range item.Image {
 			imageData, err := os.ReadFile(image_helpers.GenerateImagePath(
-				app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, res[i].ID.Hex(), imagePath)) // Read the image file
+				app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, item.ID.Hex(), imagePath)) // Read the image file
 			if err != nil {
 				return nil, err // Handle error (perhaps just log and continue with other images?)
 			}
@@ -93,10 +93,19 @@ func (u *shelterUsecase) GetOneDataByIdForRequest(ctx context.Context, search *S
 	return data, nil
 }
 
-func (u *shelterUsecase) GetOneDataByUserId(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error) {
+func (u *shelterUsecase) GetOneDataByUserId(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.ShelterResponsePayload, error) {
 	data, err := u.shelterRepo.FindOneDataByUserId(ctx, &search.UserId)
 	if err != nil {
 		return nil, err
+	}
+	for _, imagePath := range data.Image {
+		imageData, err := os.ReadFile(image_helpers.GenerateImagePath(
+			app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, data.ID.Hex(), imagePath)) // Read the image file
+		if err != nil {
+			return nil, err // Handle error (perhaps just log and continue with other images?)
+		}
+		base64Image := base64.StdEncoding.EncodeToString(imageData) // Convert to Base64
+		data.ImageBase64 = append(data.ImageBase64, base64Image)
 	}
 	return data, nil
 }

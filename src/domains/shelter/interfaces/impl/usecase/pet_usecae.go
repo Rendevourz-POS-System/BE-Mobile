@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/base64"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"main.go/configs/app"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/domains/shelter/interfaces"
 	"main.go/shared/helpers"
+	"main.go/shared/helpers/image_helpers"
 	"os"
 )
 
@@ -25,7 +27,13 @@ func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res
 	for i, pet := range res {
 		var base64Images []string
 		for _, imagePath := range pet.Image {
-			imageData, err := os.ReadFile(imagePath) // Read the image file
+			var path string
+			if pet.ShelterId != nil && len(pet.ShelterId.Hex()) > 0 {
+				path = image_helpers.GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, pet.ShelterId.Hex(), app.GetConfig().Image.PetPath, pet.ID.Hex(), imagePath)
+			} else {
+				path = image_helpers.GenerateImagePath(app.GetConfig().Image.PetPath, pet.ID.Hex(), imagePath)
+			}
+			imageData, err := os.ReadFile(path) // Read the image file
 			if err != nil {
 				return nil, err // Handle error (perhaps just log and continue with other images?)
 			}
@@ -68,6 +76,20 @@ func (u *petUseCase) GetPetById(ctx context.Context, Id *primitive.ObjectID) (re
 	res, err = u.petRepo.FindPetById(ctx, Id)
 	if err != nil {
 		return nil, err
+	}
+	for _, imagePath := range res.Image {
+		var path string
+		if res.ShelterId != nil && len(res.ShelterId.Hex()) > 0 {
+			path = image_helpers.GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, res.ShelterId.Hex(), app.GetConfig().Image.PetPath, res.ID.Hex(), imagePath)
+		} else {
+			path = image_helpers.GenerateImagePath(app.GetConfig().Image.PetPath, res.ID.Hex(), imagePath)
+		}
+		imageData, err := os.ReadFile(path) // Read the image file
+		if err != nil {
+			return nil, err // Handle error (perhaps just log and continue with other images?)
+		}
+		base64Image := base64.StdEncoding.EncodeToString(imageData) // Convert to Base64
+		res.ImageBase64 = append(res.ImageBase64, base64Image)
 	}
 	return res, nil
 }

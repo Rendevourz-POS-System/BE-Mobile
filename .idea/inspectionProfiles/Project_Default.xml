@@ -11,6 +11,7 @@
         <method importPath="main.go/domains/user/interfaces" receiver="UserRepository" name="FindUserById" />
         <method importPath="main.go/domains/shelter/interfaces" receiver="ShelterUsecase" name="GetOneDataByUserId" />
         <method importPath="main.go/domains/shelter/interfaces" receiver="ShelterRepository" name="FindOneDataById" />
+        <method importPath="main.go/domains/shelter/interfaces" receiver="ShelterRepository" name="FindOneDataByUserId" />
       </methods>
     </inspection_tool>
   </profile>

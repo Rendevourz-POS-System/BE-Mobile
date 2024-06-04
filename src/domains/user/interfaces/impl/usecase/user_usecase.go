@@ -140,7 +140,7 @@ func (u *userUsecase) GetUserByUserId(ctx context.Context, id string) (*User.Use
 	user, err := u.userRepo.FindUserById(ctx, id)
 	if user.Image != "" && len(user.Image) > 0 {
 		file, err2 := os.ReadFile(image_helpers.GenerateImagePath(
-			app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, user.ID.Hex(), user.Image))
+			app.GetConfig().Image.UserPath, user.ID.Hex(), app.GetConfig().Image.ProfilePath, user.Image))
 		if err2 != nil {
 			return nil, err2
 		}
@@ -159,7 +159,7 @@ func (u *userUsecase) GetUserByUserIdForUpdate(ctx context.Context, id string, n
 			user.Image = *newImage
 		}
 		file, err2 := os.ReadFile(image_helpers.GenerateImagePath(
-			app.GetConfig().Image.UserPath, app.GetConfig().Image.ProfilePath, id, user.Image))
+			app.GetConfig().Image.UserPath, id, app.GetConfig().Image.ProfilePath, user.Image))
 		if err2 != nil {
 			return nil, err2
 		}

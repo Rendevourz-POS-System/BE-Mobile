@@ -48,22 +48,22 @@ type (
 
 	// Pet Response Payload
 	PetResponsePayload struct {
-		ID              primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-		ShelterId       primitive.ObjectID `json:"ShelterId" bson:"shelter_id"`
-		ShelterName     string             `json:"ShelterName" bson:"shelter_name"`
-		ShelterLocation string             `json:"ShelterLocation" bson:"shelter_location"`
-		Location        string             `json:"Location" bson:"shelter_location_name"`
-		PetName         string             `json:"PetName" bson:"pet_name"`
-		PetType         string             `json:"PetType" bson:"pet_type"`
-		PetGender       string             `json:"PetGender" bson:"pet_gender"`
-		PetStatus       bool               `json:"PetStatus" bson:"pet_status"`
-		PetDescription  string             `json:"PetDescription" bson:"pet_description"`
-		IsVaccinated    bool               `json:"IsVaccinated" bson:"is_vaccinated"`
-		Image           []string           `json:"Image" bson:"image"`
-		ImageBase64     []string           `json:"ImageBase64"`
-		PetAge          int                `json:"PetAge" bson:"pet_age"`
-		CreatedAt       *time.Time         `json:"CreatedAt" bson:"CreatedAt,omitempty"`
-		DeletedAt       *time.Time         `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
+		ID              primitive.ObjectID  `json:"Id" bson:"_id,omitempty"`
+		ShelterId       *primitive.ObjectID `json:"ShelterId" bson:"shelter_id"`
+		ShelterName     string              `json:"ShelterName" bson:"shelter_name"`
+		ShelterLocation string              `json:"ShelterLocation" bson:"shelter_location"`
+		Location        string              `json:"Location" bson:"shelter_location_name"`
+		PetName         string              `json:"PetName" bson:"pet_name"`
+		PetType         string              `json:"PetType" bson:"pet_type"`
+		PetGender       string              `json:"PetGender" bson:"pet_gender"`
+		PetStatus       bool                `json:"PetStatus" bson:"pet_status"`
+		PetDescription  string              `json:"PetDescription" bson:"pet_description"`
+		IsVaccinated    bool                `json:"IsVaccinated" bson:"is_vaccinated"`
+		Image           []string            `json:"Image" bson:"image"`
+		ImageBase64     []string            `json:"ImageBase64"`
+		PetAge          int                 `json:"PetAge" bson:"pet_age"`
+		CreatedAt       *time.Time          `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+		DeletedAt       *time.Time          `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 	}
 
 	// Pet Delete Payload
