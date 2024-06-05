@@ -76,9 +76,9 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("min-location-length", shelterLocationMinLength); err != nil {
 		panic(err)
 	}
-	if err := validate.RegisterValidation("is-vaccinated", petVaccinated); err != nil {
-		panic(err)
-	}
+	//if err := validate.RegisterValidation("is-vaccinated", petVaccinated); err != nil {
+	//	panic(err)
+	//}
 	if err := validate.RegisterValidation("request-type", requestTypeValidation); err != nil {
 		panic(err)
 	}

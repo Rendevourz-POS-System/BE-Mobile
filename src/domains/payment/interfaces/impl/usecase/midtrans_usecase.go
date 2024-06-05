@@ -63,7 +63,6 @@ func (m *midtransUsecase) ChargeRequest(req *Request.RequestResponse) (*coreapi.
 	if midtransErr != nil {
 		return nil, midtransErr
 	}
-	fmt.Println("Midtrans Response: ", midtransResponse)
 	return midtransResponse, nil
 }
 
@@ -76,7 +75,7 @@ func (m *midtransUsecase) paymentTypeSelector(chargeReq *coreapi.ChargeReq, req 
 	}
 	switch coreapi.CoreapiPaymentType(strings.ToLower(req.DonationPayload.PaymentType)) {
 	case coreapi.PaymentTypeBankTransfer:
-		switch midtrans.Bank(strings.ToLower(*req.DonationPayload.BankType)) {
+		switch midtrans.Bank(strings.ToLower(*req.DonationPayload.PaymentChannel)) {
 		case midtrans.BankBca:
 			BankTransfer := &coreapi.BankTransferDetails{
 				Bank: midtrans.BankBca,

@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/midtrans/midtrans-go/coreapi"
 	midtrans_interfaces "main.go/domains/payment/interfaces"
 	Request "main.go/domains/request/entities"
@@ -28,22 +27,15 @@ func (u *donationShelterUsecase) CreateDonation(ctx context.Context, req *Reques
 		Amount:            req.DonationPayload.Amount,
 		TransactionDate:   helpers.GetCurrentTime(nil),
 		StatusTransaction: "new",
+		Channel:           *req.DonationPayload.PaymentChannel,
 		PaymentType:       req.DonationPayload.PaymentType,
 		CreatedAt:         helpers.GetCurrentTime(nil),
-	}
-	switch coreapi.CoreapiPaymentType(req.DonationPayload.PaymentType) {
-	case coreapi.PaymentTypeBankTransfer:
-		donation.Channel = *req.DonationPayload.BankType
-		break
-	default:
-		donation.Channel = *req.DonationPayload.EWalletType
 	}
 	res, errs := u.donationShelteRepo.StoreOneDonation(ctx, donation)
 	if errs != nil {
 		return nil, errs
 	}
 	req.Donation = res
-	fmt.Println("PaymentType: ", req.DonationPayload.PaymentType)
 	if presistence.Type(req.DonationPayload.Type) != presistence.Donation {
 		return nil, errors.New("Type must be donation !")
 	}

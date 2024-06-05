@@ -13,5 +13,5 @@ type DonationShelter struct {
 	CreatedAt         *time.Time         `json:"CreatedAt" bson:"CreatedAt" validate:"required"`
 	StatusTransaction string             `json:"StatusTransaction" bson:"status_transactionDate" default:"Ongoing"`
 	PaymentType       string             `json:"PaymentType" bson:"payment_type" validate:"required"`
-	Channel           string             `json:"Channel" bson:"channel" `
+	Channel           string             `json:"Channel" bson:"channel" validate:"required"`
 }

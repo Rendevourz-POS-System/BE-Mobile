@@ -34,13 +34,12 @@ type (
 		Type      string             `json:"Type" bson:"type" validate:"required,donations"`
 		Status    presistence.Status `json:"Status" bson:"status_id" validate:"omitempty" default:"New"`
 		//Job         string             `json:"Job" bson:"job"`
-		Reason      *string    `json:"Reason,omitempty" bson:"reason"`
-		Amount      int64      `json:"Amount" validate:"omitempty"`
-		PaymentType string     `json:"PaymentType" bson:"payment_type" validate:"required,payment_type"`
-		BankType    *string    `json:"BankType,omitempty" bson:"bank_type" validate:"omitempty,bank_type"`
-		EWalletType *string    `json:"EWalletType,omitempty" bson:"e_wallet_type" validate:"omitempty,e_wallet"`
-		RequestedAt *time.Time `json:"RequestedAt,omitempty" bson:"RequestedAt,omitempty"`
-		CompletedAt *time.Time `json:"CompletedAt,omitempty" bson:"CompletedAt,omitempty"`
+		Reason         *string    `json:"Reason,omitempty" bson:"reason"`
+		Amount         int64      `json:"Amount" validate:"omitempty"`
+		PaymentType    string     `json:"PaymentType" bson:"payment_type" validate:"required,payment_type"`
+		PaymentChannel *string    `json:"PaymentChannel,omitempty" bson:"payment_channel" validate:"required"`
+		RequestedAt    *time.Time `json:"RequestedAt,omitempty" bson:"RequestedAt,omitempty"`
+		CompletedAt    *time.Time `json:"CompletedAt,omitempty" bson:"CompletedAt,omitempty"`
 	}
 	RequestResponse struct {
 		Request         *Request         `json:"Request,omitempty"`
