@@ -6,6 +6,7 @@ const (
 	UserTokenCollectionName = "user_tokens"
 	ShelterCollectionName   = "shelters"
 	PetCollectionName       = "pets"
+	PetFavoriteName         = "pet_favorites"
 	ShelterFavoriteName     = "shelter_favorites"
 	PetTypeName             = "pet_types"
 	ShelterLocationName     = "shelter_locations"

@@ -21,7 +21,7 @@ func NewPetRepository(database *mongo.Database) *petRepo {
 	return &petRepo{database, database.Collection(collections.PetCollectionName)}
 }
 
-func (r *petRepo) filterPets(search *Pet.PetSearch) *bson.D {
+func (r *petRepo) filterPets(search *Pet.PetSearch) bson.D {
 	filter := bson.D{}
 	if search.Search != "" {
 		regexFilter := bson.M{"$regex": primitive.Regex{
@@ -67,7 +67,7 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) *bson.D {
 			Value: helpers.RegexCaseInsensitivePattern(search.Type),
 		})
 	}
-	return &filter
+	return filter
 }
 
 func (r *petRepo) paginationPets(search *Pet.PetSearch) *options.FindOptions {
@@ -169,8 +169,22 @@ func (r *petRepo) createPaginationPipeline(pipeline mongo.Pipeline, search *Pet.
 }
 
 func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.PetResponsePayload, err error) {
-	filter := r.filterPets(search)                          // Filter
-	pipeline := r.createPipeline(filter, search)            // Create pipeline
+	filter := r.filterPets(search)
+	if search.UserId != primitive.NilObjectID {
+		favoriteShelterIDs, errs := r.getAllFavoritePets(ctx, &search.UserId)
+		if errs != nil {
+			return nil, errs
+		}
+		if len(favoriteShelterIDs) > 0 {
+			filter = append(filter, bson.E{
+				Key:   "_id",
+				Value: bson.M{"$in": favoriteShelterIDs},
+			})
+		} else {
+			return []Pet.PetResponsePayload{}, nil
+		}
+	} // Filter
+	pipeline := r.createPipeline(&filter, search)           // Create pipeline
 	pipeline = r.createPaginationPipeline(pipeline, search) // Create pagination pipeline
 	data, errs := r.collection.Aggregate(ctx, pipeline)
 	if errs != nil {
@@ -180,6 +194,24 @@ func (r *petRepo) FindAllPets(ctx context.Context, search *Pet.PetSearch) (res [
 		return nil, err
 	}
 	return res, nil
+}
+
+func (r *petRepo) getAllFavoritePets(c context.Context, userID *primitive.ObjectID) (shelterIDs []primitive.ObjectID, err error) {
+	cursor, errs := r.database.Collection(collections.PetFavoriteName).Find(c, bson.M{"user_id": userID})
+	if errs != nil {
+		if errs == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, errs
+	}
+	for cursor.Next(c) {
+		var favorite Pet.PetFavorite
+		if err = cursor.Decode(&favorite); err != nil {
+			return nil, err
+		}
+		shelterIDs = append(shelterIDs, favorite.PetId)
+	}
+	return shelterIDs, nil
 }
 
 func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res *Pet.Pet, err []string) {

@@ -98,7 +98,6 @@ func ExtractIDFromToken(requestToken, secret string) (User.JwtCustomClaims, erro
 	if !ok || !token.Valid {
 		return data, errResponse
 	}
-	fmt.Println("CLAIMS: ", claims)
 	data = User.JwtCustomClaims{
 		ID:    claims["Id"].(string),
 		Email: claims["Email"].(string),

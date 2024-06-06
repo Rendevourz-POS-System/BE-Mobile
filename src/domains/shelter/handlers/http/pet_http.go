@@ -36,6 +36,7 @@ func NewPetHttp(router *gin.Engine) *PetHttp {
 	}
 	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
 	{
+		user.GET("/favorite", handler.FindAllFavorite)
 		user.DELETE("/delete", handler.DeletePetByUser)
 	}
 	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
@@ -113,6 +114,23 @@ func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, data)
+}
+
+func (h *PetHttp) FindAllFavorite(c *gin.Context) {
+	search := &Pet.PetSearch{
+		Search:   c.Query("search"),
+		Page:     helpers.ParseStringToInt(c.Query("page")),
+		PageSize: helpers.ParseStringToInt(c.Query("page_size")),
+		Sort:     c.Query("sort"),
+		OrderBy:  c.Query("order_by"),
+		UserId:   helpers.GetUserId(c),
+	}
+	data, err := h.petUsecase.GetAllPets(c, search)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Get Shelter Data ! ", Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
 }
 
 func (h *PetHttp) FindPetById(ctx *gin.Context) {

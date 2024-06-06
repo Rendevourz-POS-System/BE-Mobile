@@ -150,6 +150,7 @@ func RegisterRoutes(router *gin.Engine) {
 	shelterHttp := Shelter.NewShelterHttp(router)
 	Shelter.NewPetHttp(router)
 	Shelter.NewShelterFavoriteHttp(router)
+	Shelter.NewPetFavoriteHttp(router)
 	Master.NewPetTypeHttp(router)
 	Master.NewShelterLocationHttp(router)
 	donationHandlers := Request.NewDonationShelterHttp(router)
