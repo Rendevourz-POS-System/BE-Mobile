@@ -30,12 +30,9 @@ func NewPetHttp(router *gin.Engine) *PetHttp {
 		guest.GET("", handler.GetAllPets)
 		guest.GET("/:id", handler.FindPetById)
 	}
-	adminAndUser := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, ""))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
 	{
-		adminAndUser.POST("/create", handler.CreatePet)
-	}
-	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
-	{
+		user.POST("/create", handler.CreatePet)
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.DELETE("/delete", handler.DeletePetByUser)
 	}

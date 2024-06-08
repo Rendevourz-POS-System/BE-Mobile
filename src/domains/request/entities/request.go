@@ -10,7 +10,8 @@ import (
 type Request struct {
 	Id        primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
 	UserId    primitive.ObjectID `json:"UserId" bson:"user_id"`
-	ShelterId primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required"`
+	PetId     primitive.ObjectID `json:"PetId" bson:"pet_id"`
+	ShelterId primitive.ObjectID `json:"ShelterId" bson:"shelter_id"`
 	Type      string             `json:"Type" bson:"type" validate:"required,request-type"`
 	Status    presistence.Status `json:"Status" bson:"status_id" validate:"omitempty" default:"New"`
 	//Job         string             `json:"Job" bson:"job"`

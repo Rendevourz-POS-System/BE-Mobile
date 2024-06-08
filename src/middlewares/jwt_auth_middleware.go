@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	"main.go/shared/helpers"
@@ -9,7 +10,7 @@ import (
 	"strings"
 )
 
-func JwtAuthMiddleware(secret string, role string) gin.HandlerFunc {
+func JwtAuthMiddleware(secret string, role ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get(app.GetConfig().AccessToken.AccessTokenHeaderName)
 		t := strings.Split(authHeader, " ")
@@ -23,9 +24,18 @@ func JwtAuthMiddleware(secret string, role string) gin.HandlerFunc {
 					c.Abort()
 					return
 				}
-				if len(role) > 0 && role != "" {
-					if strings.ToLower(claims.Role) != role {
-						c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: "Only " + role + " Can Access !"})
+				if len(role) > 0 && role != nil {
+					flag := false
+					var roles []string
+					for _, r := range role {
+						if strings.ToLower(claims.Role) == r || r == "" {
+							flag = true
+							break
+						}
+						roles = append(roles, r)
+					}
+					if !flag {
+						c.JSON(http.StatusUnauthorized, errors.ErrorWrapper{Message: fmt.Sprintf("Only %v Can Access !", roles)})
 						c.Abort()
 						return
 					}

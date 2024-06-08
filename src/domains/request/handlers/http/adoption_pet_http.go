@@ -23,7 +23,7 @@ func NewAdoptionShelterHttp(router *gin.Engine) *AdoptionShelterHttp {
 	{
 		guest.GET("/")
 	}
-	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "all"))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
 	{
 		user.POST("/create")
 	}

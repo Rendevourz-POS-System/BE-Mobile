@@ -35,16 +35,17 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 	{
 		guest.GET("", handler.FindAll)
 	}
-	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
 	{
-		user.GET("/my-shelter", handler.FindOneByUserId)
 		user.GET("/:id", handler.FindOneById)
+		user.GET("/my-shelter", handler.FindOneByUserId)
 		user.POST("/register", handler.RegisterShelter)
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.PUT("/update", handler.UpdateShelter)
 	}
-	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
+	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
 	{
+		admin.PUT("/update/:id", handler.UpdateShelterByAdmin)
 		admin.Group("/delete/")
 	}
 	return handler
@@ -193,4 +194,39 @@ func (shelterHttp *ShelterHttp) FindOneByShelterId(c *gin.Context, Id primitive.
 		logrus.Warnf("Failed to get data shelter for request %v: %v", search.ShelterId, err)
 	}
 	return data.UserId
+}
+
+func (shelterHttp *ShelterHttp) UpdateShelterByAdmin(c *gin.Context) {
+	shelterReq := &Shelter.ShelterUpdate{}
+	// Parse the multipart form with a maximum of 30 MB memory
+	if err := c.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
+		return
+	}
+	form, _ := c.MultipartForm()
+	jsonData := form.Value["data"][0]
+	shelter := &Shelter.Shelter{}
+	if err := json.Unmarshal([]byte(jsonData), &shelter); err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Shelter Update Request ! ", Error: err.Error()})
+		return
+	}
+	shelter.UserId = helpers.ParseStringToObjectId(c.Param("id"))
+	shelterReq.Shelter = shelter
+	findShelter, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, &Shelter.ShelterSearch{
+		UserId: shelter.UserId,
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Get Shelter Data ! ", Error: err.Error()})
+		return
+	}
+	shelterReq.Shelter.ID = findShelter.ID
+	if form.File != nil {
+		shelterReq, _ = image_helpers.UploadShelter(c, form, shelterReq)
+	}
+	res, err := shelterHttp.shelterUsecase.UpdateShelterById(c, &findShelter.ID, shelterReq.Shelter)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update Shelter ! ", Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Shelter updated successfully ! ", Data: res})
 }

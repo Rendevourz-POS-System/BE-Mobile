@@ -42,7 +42,7 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 	{
 		guest.GET("/")
 	}
-	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user"))
+	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
 	{
 		user.POST("/create", handlers.CreateRequest)
 		user.POST("/donation", handlers.CreateDonationRequest)
