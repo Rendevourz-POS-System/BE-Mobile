@@ -1,6 +1,13 @@
 package helpers
 
 import (
+	"fmt"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
 	"github.com/nanorand/nanorand"
@@ -11,11 +18,6 @@ import (
 	_const "main.go/configs/const"
 	ShelterPresistence "main.go/domains/shelter/presistence"
 	"main.go/domains/user/presistence"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var (
@@ -82,7 +84,7 @@ func GenerateOTP(length int) *int {
 }
 
 func ToString(value interface{}) string {
-	return value.(string)
+	return fmt.Sprintf("%v", value)
 }
 
 func PartIntToString(value int) string {
