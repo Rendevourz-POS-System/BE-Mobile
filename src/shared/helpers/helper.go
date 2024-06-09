@@ -123,6 +123,11 @@ func GetUserId(c *gin.Context) primitive.ObjectID {
 	return userID
 }
 
+func GetRoleFromContext(c *gin.Context) string {
+	userRole, _ := c.MustGet("x-user-role").(string)
+	return userRole
+}
+
 func ParseStringToObjectId(value string) primitive.ObjectID {
 	objectId, err := primitive.ObjectIDFromHex(value)
 	if err != nil {

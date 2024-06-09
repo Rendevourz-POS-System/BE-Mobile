@@ -164,7 +164,9 @@ func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Shelter Update Request ! ", Error: err.Error()})
 		return
 	}
-	shelter.UserId = helpers.GetUserId(c)
+	if helpers.GetRoleFromContext(c) != "admin" {
+		shelter.UserId = helpers.GetUserId(c)
+	}
 	shelterReq.Shelter = shelter
 	findShelter, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, &Shelter.ShelterSearch{
 		UserId: shelter.UserId,

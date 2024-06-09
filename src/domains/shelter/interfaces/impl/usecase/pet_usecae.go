@@ -69,6 +69,22 @@ func (u *petUseCase) UpdatePet(ctx context.Context, Id *primitive.ObjectID, pet 
 	if errs != nil {
 		return nil, errs
 	}
+	if len(data.Image) > 0 {
+		for _, imagePath := range data.Image {
+			var path string
+			if data.ShelterId != nil && len(data.ShelterId.Hex()) > 0 {
+				path = image_helpers.GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, pet.ShelterId.Hex(), app.GetConfig().Image.PetPath, pet.ID.Hex(), imagePath)
+			} else {
+				path = image_helpers.GenerateImagePath(app.GetConfig().Image.PetPath, pet.ID.Hex(), imagePath)
+			}
+			imageData, err := os.ReadFile(path) // Read the image file
+			if err != nil {
+				return nil, err // Handle error (perhaps just log and continue with other images?)
+			}
+			base64Image := base64.StdEncoding.EncodeToString(imageData) // Convert to Base64
+			data.ImageBase64 = append(data.ImageBase64, base64Image)
+		}
+	}
 	return data, nil
 }
 

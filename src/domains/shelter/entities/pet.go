@@ -16,6 +16,7 @@ type Pet struct {
 	PetStatus      bool                `json:"PetStatus" bson:"pet_status" validate:"omitempty" default:"false"`
 	PetDescription string              `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
 	IsVaccinated   bool                `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required"`
+	OldImage       []string            `json:"OldImage,omitempty"`
 	Image          []string            `json:"Image" bson:"image" validate:"omitempty"`
 	ImageBase64    []string            `json:"ImageBase64" validate:"omitempty"`
 	PetDob         *time.Time          `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
@@ -41,6 +42,11 @@ type (
 		UserId      primitive.ObjectID `json:"UserId,omitempty"`
 	}
 
+	// PetUpdate Payload
+	PetUpdatePayload struct {
+		Files *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
+		Pet   Pet                   `form:"Pet" bson:"Pet" validate:"required"`
+	}
 	// PetCreate Payload
 	PetCreate struct {
 		Files *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`

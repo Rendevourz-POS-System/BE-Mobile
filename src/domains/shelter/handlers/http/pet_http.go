@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
@@ -15,15 +16,18 @@ import (
 	"main.go/shared/helpers/image_helpers"
 	"main.go/shared/message/errors"
 	"net/http"
+	"strings"
 )
 
 type PetHttp struct {
-	petUsecase interfaces.PetUseCase
+	petUsecase  interfaces.PetUseCase
+	shelterHttp *ShelterHttp
 }
 
-func NewPetHttp(router *gin.Engine) *PetHttp {
+func NewPetHttp(router *gin.Engine, shelterHttp *ShelterHttp) *PetHttp {
 	handler := &PetHttp{
-		petUsecase: usecase.NewPetUseCase(repository.NewPetRepository(database.GetDatabase(_const.DB_SHELTER_APP))),
+		petUsecase:  usecase.NewPetUseCase(repository.NewPetRepository(database.GetDatabase(_const.DB_SHELTER_APP))),
+		shelterHttp: shelterHttp,
 	}
 	guest := router.Group("/pet")
 	{
@@ -35,6 +39,7 @@ func NewPetHttp(router *gin.Engine) *PetHttp {
 		user.POST("/create", handler.CreatePet)
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.DELETE("/delete", handler.DeletePetByUser)
+		user.PUT("/update", handler.UpdatePet)
 	}
 	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
 	{
@@ -66,7 +71,7 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 	data, errs := h.petUsecase.CreatePets(ctx, pet)
 	if errs != nil {
 		// Delete temporary files if pet creation fails
-		image_helpers.RemoveTempImagePath(filesName)
+		go image_helpers.RemoveTempImagePath(filesName)
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
 		return
 	}
@@ -138,6 +143,50 @@ func (h *PetHttp) FindPetById(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data, Message: "Success Get Pet Detail ! "})
+}
+
+func (h *PetHttp) UpdatePet(ctx *gin.Context) {
+	pet := &Pet.PetUpdatePayload{}
+	// Parse the multipart form with a maximum of 30 MB memory
+	if err := ctx.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
+		return
+	}
+	// Get the multipart form data
+	form, _ := ctx.MultipartForm()
+	// Unmarshal the JSON data into the Pet struct
+	jsonData := form.Value["data"][0]
+	if err := json.Unmarshal([]byte(jsonData), &pet.Pet); err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
+		return
+	}
+	findPet, err := h.petUsecase.GetPetById(ctx, &pet.Pet.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Pet Id Not Found ! ", Error: err.Error()})
+		return
+	}
+	if strings.ToLower(helpers.GetRoleFromContext(ctx)) == "user" {
+		if findPet.ShelterId != nil && len(findPet.ShelterId) > 0 {
+			data, _ := h.shelterHttp.shelterUsecase.GetOneDataById(ctx, &Pet.ShelterSearch{
+				ShelterId: *findPet.ShelterId,
+			})
+			fmt.Println("data User Id --> ", data.UserId)
+			fmt.Println("data User Id Login --> ", helpers.GetUserId(ctx))
+			if data.UserId != helpers.GetUserId(ctx) {
+				ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Pet"})
+				return
+			}
+		}
+	}
+	if form.File != nil {
+		pet, _ = image_helpers.UploadPet(ctx, form, pet)
+	}
+	updatedPet, errUpdatePet := h.petUsecase.UpdatePet(ctx, &pet.Pet.ID, &pet.Pet)
+	if errUpdatePet != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: errUpdatePet.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedPet)
 }
 
 func (h *PetHttp) DeletePetByAdmin(ctx *gin.Context) {
