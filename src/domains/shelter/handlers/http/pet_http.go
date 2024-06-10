@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
@@ -170,8 +169,6 @@ func (h *PetHttp) UpdatePet(ctx *gin.Context) {
 			data, _ := h.shelterHttp.shelterUsecase.GetOneDataById(ctx, &Pet.ShelterSearch{
 				ShelterId: *findPet.ShelterId,
 			})
-			fmt.Println("data User Id --> ", data.UserId)
-			fmt.Println("data User Id Login --> ", helpers.GetUserId(ctx))
 			if data.UserId != helpers.GetUserId(ctx) {
 				ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Pet"})
 				return

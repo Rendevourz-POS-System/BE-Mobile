@@ -164,9 +164,7 @@ func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Shelter Update Request ! ", Error: err.Error()})
 		return
 	}
-	if helpers.GetRoleFromContext(c) != "admin" {
-		shelter.UserId = helpers.GetUserId(c)
-	}
+	shelter.UserId = helpers.GetUserId(c)
 	shelterReq.Shelter = shelter
 	findShelter, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, &Shelter.ShelterSearch{
 		UserId: shelter.UserId,
@@ -174,6 +172,12 @@ func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Get Shelter Data ! ", Error: err.Error()})
 		return
+	}
+	if helpers.GetRoleFromContext(c) == "user" {
+		if findShelter.UserId != shelter.UserId {
+			c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Shelter"})
+			return
+		}
 	}
 	shelterReq.Shelter.ID = findShelter.ID
 	if form.File != nil {
