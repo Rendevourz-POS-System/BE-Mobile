@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	Midtrans "main.go/domains/payment/interfaces"
 	Request "main.go/domains/request/entities"
 	"main.go/domains/request/interfaces"
@@ -42,7 +43,7 @@ func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request
 		UserId:      req.UserId,
 		ShelterId:   req.ShelterId,
 		Type:        req.Type,
-		Status:      req.Status,
+		Status:      "Ongoing",
 		Reason:      req.Reason,
 		RequestedAt: helpers.GetCurrentTime(nil),
 	})
@@ -58,12 +59,18 @@ func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request
 }
 
 func (u *requestUsecase) fillDefaultRequest(req *Request.Request) *Request.Request {
+	var petId *primitive.ObjectID
+	if req.PetId.Hex() != "" {
+		petId = req.PetId
+	}
 	return &Request.Request{
-		UserId:      req.UserId,
-		ShelterId:   req.ShelterId,
-		Type:        req.Type,
-		Status:      req.Status,
-		Reason:      req.Reason,
+		UserId:    req.UserId,
+		ShelterId: req.ShelterId,
+		Type:      req.Type,
+		Status:    req.Status,
+		Reason:    req.Reason,
+		PetId:     petId,
+
 		RequestedAt: helpers.GetCurrentTime(nil),
 	}
 }

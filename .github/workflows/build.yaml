@@ -7,8 +7,10 @@ on:
 
 env:
   IMAGE_NAME: shelter-apps
-  ARTIFACT_REGISTRY: ${{ secrets.ARTIFACT_REGISTRY }}
-  GAR_LOCATION: ${{ secrets.ARTIFACT_REGISTRY }}/${{ secrets.GCP_PROJECT }}/docker-artifact/
+  GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
+  GAR_NAME: ${{ secrets.GAR_NAME }}
+  REGION: ${{ secrets.GAR_REGION }}
+  PROJECT_ID: ${{ secrets.GAR_PROJECT}}
   CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
   GIT_TAG: v0.1.0
 
@@ -30,76 +32,34 @@ jobs:
       - name: Display Go version
         run:  go version
 
-      - name: Login To Docker Hub
-        uses: docker/login-action@v2
-        with:
-            username: ${{ secrets.HUB_USERNAME }}
-            password: ${{ secrets.HUB_PASSWORD }}
-
       - id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_APPLICATION_CREDENTIALS }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT }}
-          install_components: gcloud,beta
-
-#      - name: Use gcloud CLI
-#        run: gcloud info
-#
-#      - name: Use gcloud CLI
-#        run: gcloud auth list --filter=status:ACTIVE --format="value(account)"
-
-      - name: Build Docker image
-        run: |-
-          docker build -t ${{ env.IMAGE_NAME }}:latest .
-          docker ps -a
-#          docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/${{ env.IMAGE_NAME }}:latest .
+#      - name: Login To Google Docker Hub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.HUB_USERNAME }}
+#          password: ${{ secrets.HUB_PASSWORD }}
 
       - name: Configure Docker with gcloud
         run: |-
-          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }} --quiet
+          gcloud auth configure-docker "${{ env.GAR_LOCATION }}-docker.pkg.dev"
 
-      - name: Push Docker image to GCR (Google Container Registry)
+      - name: Build Docker image
         run: |-
-            docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker ps -a
-          
+          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{env.IMAGE_NAME}}:${{ github.sha }}" ./
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{env.IMAGE_NAME}}:${{ github.sha }}"
+          docker ps -a
 
-#            docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+      - name: Deploy to cloud run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.IMAGE_NAME }}
+          region: ${{ env.GAR_LOCATION }}
+          image: "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{env.IMAGE_NAME}}:${{ github.sha }}"
 
-#            docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-#            docker push ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
-#            docker push gcr.io/${{ secrets.GCP_PROJECT }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
-
-#  deploy:
-#    needs: build-and-push
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout Code
-#        uses: actions/checkout@v4
-
-#      - name: Deploy to Compute Engine
-#        run: |
-#          gcloud compute ssh ${{ secrets.GCE_INSTANCE_NAME }} --zone ${{ secrets.GCE_ZONE }} --command " \
-#          docker pull gcr.io/${{ secrets.GCP_PROJECT }}/myapp:latest && \
-#          docker stop myapp || true && \
-#          docker run --rm -d --name myapp -p 80:8080 gcr.io/${{ secrets.GCP_PROJECT }}/myapp:latest"
-
-#      - name: Configure Docker with gcloud
-#        env:
-#          GOOGLE_PROJECT: ${{ secrets.GCP_PROJECT }}
-#        run: |
-#          gcloud auth configure-docker asia-southeast2-docker.pkg.dev
-#
-#      - name: Build Docker image
-#        run: |
-#          docker build -t asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest .
-#
-#      - name: Push Docker image
-#        run: |
-#          docker push asia-southeast2-docker.pkg.dev/$GCP_PROJECT/docker-artifact/shelter-apps:latest
-
+      - name: Shout Output
+        run: echo ${{ steps.deploy.outputs.url }}

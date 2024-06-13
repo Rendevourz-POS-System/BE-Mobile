@@ -2,18 +2,17 @@ package entities
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"main.go/domains/request/presistence"
 	User "main.go/domains/user/entities"
 	"time"
 )
 
 type Request struct {
-	Id        primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
-	UserId    primitive.ObjectID `json:"UserId" bson:"user_id"`
-	PetId     primitive.ObjectID `json:"PetId" bson:"pet_id"`
-	ShelterId primitive.ObjectID `json:"ShelterId" bson:"shelter_id"`
-	Type      string             `json:"Type" bson:"type" validate:"required,request-type"`
-	Status    presistence.Status `json:"Status" bson:"status_id" validate:"omitempty" default:"New"`
+	Id        primitive.ObjectID  `json:"Id" bson:"_id,omitempty"`
+	UserId    primitive.ObjectID  `json:"UserId" bson:"user_id"`
+	PetId     *primitive.ObjectID `json:"PetId" bson:"pet_id"`
+	ShelterId primitive.ObjectID  `json:"ShelterId" bson:"shelter_id"`
+	Type      string              `json:"Type" bson:"type" validate:"required,request-type"`
+	Status    string              `json:"Status" bson:"status" validate:"omitempty" default:"New"`
 	//Job         string             `json:"Job" bson:"job"`
 	Reason      *string    `json:"Reason,omitempty" bson:"reason"`
 	RequestedAt *time.Time `json:"RequestedAt,omitempty" bson:"RequestedAt,omitempty"`
@@ -33,7 +32,7 @@ type (
 		ShelterId primitive.ObjectID `json:"ShelterId" bson:"shelter_id" validate:"required"`
 		RequestId primitive.ObjectID `json:"RequestId,omitempty" bson:"request_id"`
 		Type      string             `json:"Type" bson:"type" validate:"required,donations"`
-		Status    presistence.Status `json:"Status" bson:"status_id" validate:"omitempty" default:"New"`
+		Status    string             `json:"Status" bson:"status" validate:"omitempty" default:"New"`
 		//Job         string             `json:"Job" bson:"job"`
 		Reason         *string    `json:"Reason,omitempty" bson:"reason"`
 		Amount         int64      `json:"Amount" validate:"omitempty"`
