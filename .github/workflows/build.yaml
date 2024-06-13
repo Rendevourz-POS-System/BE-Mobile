@@ -43,9 +43,6 @@ jobs:
 #        with:
 #          username: ${{ secrets.HUB_USERNAME }}
 #          password: ${{ secrets.HUB_PASSWORD }}
-      - name: Debug Environment Variables
-        run: |
-          echo "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
       - name: Configure Docker with gcloud
         run: |-
@@ -55,6 +52,11 @@ jobs:
         run: |
           docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{env.IMAGE_NAME}}:${{ github.sha }}" ./
           docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{env.IMAGE_NAME}}:${{ github.sha }}"
+
+      - name: Debug Environment Variables
+        run: |
+          echo "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
 
       - name: Deploy to cloud run
         id: deploy
