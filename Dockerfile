@@ -30,7 +30,6 @@ WORKDIR /app/
 COPY --from=builder /app/src/shelter-apps /app/src/
 COPY --from=builder /app/config /app/config/
 COPY --from=builder /app/src/local.env /app/src/
-COPY --from=builder /app/src/. /app/src/
 
 # Expose port 8008 to the outside world
 EXPOSE 8080
