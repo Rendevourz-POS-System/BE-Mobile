@@ -10,7 +10,7 @@ env:
   GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
   GAR_NAME: ${{ secrets.GAR_NAME }}
   REGION: ${{ secrets.GCP_REGION }}
-  PROJECT_ID: ${{ secrets.GAR_PROJECT}}
+  PROJECT_ID: ${{ secrets.GCP_PROJECT}}
   CONTAINER_REGISTRY: gcr.io/${{ secrets.GCP_PROJECT }}
   GIT_TAG: v0.1.0
 
