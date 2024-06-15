@@ -66,3 +66,12 @@ jobs:
 
       - name: Shout Output
         run: echo ${{ steps.deploy.outputs.url }}
+
+      - name: Make Cloud Run Service Public
+        run: |
+          gcloud run services add-iam-policy-binding ${{ env.IMAGE_NAME }} \
+            --member="allUsers" \
+            --role="roles/run.invoker" \
+            --region=${{ env.GAR_LOCATION }} \
+            --project=${{ env.PROJECT_ID }}
+
