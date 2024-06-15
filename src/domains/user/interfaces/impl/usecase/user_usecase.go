@@ -133,6 +133,7 @@ func (u *userUsecase) LoginUser(ctx context.Context, userReq *User.LoginPayload)
 	}
 	res.Token = token
 	res.Username = user.Username
+	res.User = user
 	return res, nil
 }
 
