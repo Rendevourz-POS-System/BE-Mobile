@@ -25,9 +25,10 @@ type RequestHttp struct {
 	adoptionHandlers *AdoptionShelterHttp
 	userHandlers     *UserHttp.UserHttp
 	shelterHandler   *Shelter.ShelterHttp
+	petHttp          *Shelter.PetHttp
 }
 
-func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUsecase, donationHandlers *DonationShelterHttp, adoptionHandlers *AdoptionShelterHttp, userHandlers *UserHttp.UserHttp, shelterHandlers *Shelter.ShelterHttp) *RequestHttp {
+func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUsecase, donationHandlers *DonationShelterHttp, adoptionHandlers *AdoptionShelterHttp, userHandlers *UserHttp.UserHttp, shelterHandlers *Shelter.ShelterHttp, petHttp *Shelter.PetHttp) *RequestHttp {
 	handlers := &RequestHttp{
 		requestUsecase: usecase.NewRequestUsecase(
 			repository.NewRequestRepository(database.GetDatabase(_const.DB_SHELTER_APP)),
@@ -37,6 +38,7 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 		userHandlers:     userHandlers,
 		shelterHandler:   shelterHandlers,
 		midtransUsecase:  midtrans,
+		petHttp:          petHttp,
 	}
 	guest := router.Group("/request")
 	{
@@ -85,4 +87,8 @@ func (RequestHttp *RequestHttp) CreateDonationRequest(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: res, Message: res.StatusMessage})
+}
+
+func (RequestHttp *RequestHttp) CreateRescue(ctx *gin.Context) {
+
 }

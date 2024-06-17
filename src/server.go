@@ -148,13 +148,13 @@ func RegisterRoutes(router *gin.Engine) {
 	userTokenHttp := UserHttp.NewUserTokenHttp(router)
 	userHandler := UserHttp.NewUserHttp(router, userTokenHttp)
 	shelterHttp := Shelter.NewShelterHttp(router)
-	Shelter.NewPetHttp(router, shelterHttp)
+	petHttp := Shelter.NewPetHttp(router, shelterHttp)
 	Shelter.NewShelterFavoriteHttp(router)
 	Shelter.NewPetFavoriteHttp(router)
 	Master.NewPetTypeHttp(router)
 	Master.NewShelterLocationHttp(router)
 	donationHandlers := Request.NewDonationShelterHttp(router)
 	adoptionHandlers := Request.NewAdoptionShelterHttp(router)
-	Request.NewRequestHttp(router, midtransUsecase, donationHandlers, adoptionHandlers, userHandler, shelterHttp)
+	Request.NewRequestHttp(router, midtransUsecase, donationHandlers, adoptionHandlers, userHandler, shelterHttp, petHttp)
 
 }
