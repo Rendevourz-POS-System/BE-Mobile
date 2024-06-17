@@ -2,16 +2,17 @@ package image_helpers
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
-	"main.go/configs/app"
-	Pet "main.go/domains/shelter/entities"
-	"main.go/domains/user/entities"
-	"main.go/shared/message/errors"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
+	"main.go/configs/app"
+	Pet "main.go/domains/shelter/entities"
+	"main.go/domains/user/entities"
+	"main.go/shared/message/errors"
 )
 
 func GenerateImagePath(data ...string) string {
@@ -109,7 +110,7 @@ func UploadShelter(ctx *gin.Context, form *multipart.Form, shelterUpdate *Pet.Sh
 		// Move the uploaded files to their final location with the data.ID in the path
 		for _, RealFileName := range shelterUpdate.Shelter.OldImage {
 			// Construct the final file path
-			OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, shelterUpdate.Shelter.ID.Hex(), app.GetConfig().Image.ShelterPath, RealFileName)
+			OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), RealFileName)
 			// Check if a file already exists at the FilePath
 			if _, err = os.Stat(OldFilePath); err == nil {
 				// File exists, attempt to remove it
@@ -130,7 +131,7 @@ func UploadShelter(ctx *gin.Context, form *multipart.Form, shelterUpdate *Pet.Sh
 		return shelterUpdate, nil
 	}
 	for _, File := range files {
-		FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, shelterUpdate.Shelter.ID.Hex(), app.GetConfig().Image.ShelterPath, File.Filename)
+		FilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), File.Filename)
 		// Create directories if they don't exist
 		if err = os.MkdirAll(filepath.Dir(FilePath), 0755); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.ErrorWrapper{Message: "Failed To Create Directories ! ", Errors: err})
