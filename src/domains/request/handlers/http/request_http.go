@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"main.go/configs/app"
 	_const "main.go/configs/const"
@@ -15,7 +17,6 @@ import (
 	"main.go/middlewares"
 	"main.go/shared/helpers"
 	"main.go/shared/message/errors"
-	"net/http"
 )
 
 type RequestHttp struct {
@@ -50,6 +51,7 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 		user.POST("/donation", handlers.CreateDonationRequest)
 	}
 	return handlers
+
 }
 
 func (RequestHttp *RequestHttp) CreateRequest(ctx *gin.Context) {
