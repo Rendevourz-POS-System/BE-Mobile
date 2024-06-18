@@ -225,7 +225,7 @@ func (shelterHttp *ShelterHttp) UpdateShelterByAdmin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Get Shelter Data ! ", Error: err.Error()})
 		return
 	}
-	shelterReq.Shelter.ID = findShelter.ID
+	shelterReq.Shelter.UserId = findShelter.UserId
 	if form.File != nil {
 		shelterReq, _ = image_helpers.UploadShelter(c, form, shelterReq)
 	}

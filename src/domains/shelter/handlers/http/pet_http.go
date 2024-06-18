@@ -194,6 +194,16 @@ func (h *PetHttp) FindPetById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data, Message: "Success Get Pet Detail ! "})
 }
 
+func (h *PetHttp) FindPetByIdForRequest(ctx *gin.Context) (*Pet.Pet, error) {
+	Id := helpers.ParseStringToObjectId(ctx.Param("id"))
+	data, err := h.petUsecase.GetPetById(ctx, &Id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
+		return nil, err
+	}
+	return data, nil
+}
+
 func (h *PetHttp) UpdatePet(ctx *gin.Context) {
 	pet := &Pet.PetUpdatePayload{}
 	// Parse the multipart form with a maximum of 30 MB memory
