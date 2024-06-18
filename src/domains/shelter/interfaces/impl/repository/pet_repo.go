@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -266,9 +266,12 @@ func (r *petRepo) DestroyPetByAdmin(ctx context.Context, Id *primitive.ObjectID)
 
 func (r *petRepo) DestroyPetByUser(ctx context.Context, Pets Pet.PetDeletePayload) (res []Pet.Pet, err []string) {
 	var Shelter *Pet.Shelter
-	errFindShelter := r.database.Collection(collections.ShelterCollectionName).FindOne(ctx, bson.M{"_id": Pets.ShelterId, "user_id": "a"}).Decode(&Shelter)
-	logrus.Warnf("Get Shelter", errFindShelter)
+	errFindShelter := r.database.Collection(collections.ShelterCollectionName).FindOne(ctx, bson.M{"_id": Pets.ShelterId, "user_id": Pets.UserId}).Decode(&Shelter)
 	if errFindShelter != nil {
+		if errFindShelter == mongo.ErrNoDocuments {
+			err = append(err, errors.New("Not Valid Shelter !").Error())
+			return nil, err
+		}
 		err = append(err, errFindShelter.Error())
 		return nil, err
 	}

@@ -174,7 +174,7 @@ func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
 		return
 	}
 	if helpers.GetRoleFromContext(c) == "user" {
-		if findShelter.UserId.Hex() != shelter.UserId.Hex() {
+		if findShelter.UserId != shelter.UserId {
 			c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Shelter"})
 			return
 		}
