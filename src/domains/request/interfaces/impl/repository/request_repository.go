@@ -31,6 +31,7 @@ func (r *requestRepo) StoreOneRequest(ctx context.Context, req *Request.Request)
 			if err == mongo.ErrNoDocuments {
 				return nil, errors.New("Pet not found !")
 			}
+			return nil, err
 		}
 		if findPet.IsAdopted == true {
 			return nil, errors.New("Pet Already Adopted !")
