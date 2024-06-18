@@ -94,6 +94,54 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
+func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context) (*Pet.Pet, error) {
+	pet := &Pet.PetCreate{}
+	// Parse the multipart form with a maximum of 30 MB memory
+	if err := ctx.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Parse MultiPartForm Request ! ", Error: err.Error()})
+		return nil, err
+	}
+	// Get the multipart form data
+	form, _ := ctx.MultipartForm()
+	// Unmarshal the JSON data into the Pet struct
+	jsonData := form.Value["pet"][0]
+	if err := json.Unmarshal([]byte(jsonData), &pet.Pet); err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
+		return nil, err
+	}
+	filesName, err := image_helpers.SaveImageToTemp(ctx, form)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
+	}
+	// Create the pet data
+	data, errs := h.petUsecase.CreatePets(ctx, pet)
+	if errs != nil {
+		// Delete temporary files if pet creation fails
+		go image_helpers.RemoveTempImagePath(filesName)
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
+		return nil, err
+	}
+	if filesName != nil {
+		if pet.Pet.ShelterId == nil {
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.PetPath, data.ID.Hex())
+		} else {
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, pet.Pet.ShelterId.Hex(), app.GetConfig().Image.PetPath, data.ID.Hex())
+		}
+	}
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image Pet ! ", Error: err.Error()})
+		return nil, err
+	}
+	data.Image = pet.Pet.Image
+	// Update the pet entity with the image paths
+	_, err = h.petUsecase.UpdatePet(ctx, &data.ID, data)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: err.Error()})
+		return nil, err
+	}
+	return data, nil
+}
+
 func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 	search := &Pet.PetSearch{
 		Search:           ctx.Query("search"),
@@ -175,6 +223,12 @@ func (h *PetHttp) UpdatePet(ctx *gin.Context) {
 				ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Pet"})
 				return
 			}
+		}
+	}
+	if pet.Pet.ReadyToAdopt != nil || pet.Pet.IsAdopted != nil {
+		if ok, _ := h.petUsecase.CheckIsValidForUpdate(ctx, &pet.Pet.ID); !ok {
+			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: "Can't Update Pet Still In Progress Please Check For Request Activity !"})
+			return
 		}
 	}
 	if form.File != nil {

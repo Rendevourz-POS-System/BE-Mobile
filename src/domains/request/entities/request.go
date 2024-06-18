@@ -2,7 +2,9 @@ package entities
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	Pet "main.go/domains/shelter/entities"
 	User "main.go/domains/user/entities"
+	"mime/multipart"
 	"time"
 )
 
@@ -59,5 +61,14 @@ type (
 		Status    *string             `json:"Status"`
 		Page      int                 `json:"Page"`
 		PageSize  int                 `json:"PageSize"`
+	}
+	CreateRescueAndSurrenderRequestPayload struct {
+		Files   *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
+		Pet     *Pet.Pet              `form:"Pet" bson:"Pet" validate:"required"`
+		Request *Request              `form:"Request" bson:"-" validate:"required"`
+	}
+	RescueAndSurrenderResponse struct {
+		Pet     *Pet.Pet `form:"Pet" bson:"Pet" validate:"required"`
+		Request *Request `form:"Request" bson:"-" validate:"required"`
 	}
 )

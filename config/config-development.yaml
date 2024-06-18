@@ -58,6 +58,8 @@ Image:
   Folder: uploads
   PetPath : pets
   UserPath: user
+  RescuePath: rescue
+  SurrenderPath: surrender
   ShelterPath: shelter
   ProfilePath: profile
   TempPath: temp

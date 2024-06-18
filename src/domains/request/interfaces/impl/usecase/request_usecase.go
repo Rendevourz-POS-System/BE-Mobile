@@ -71,14 +71,17 @@ func (u *requestUsecase) fillDefaultRequest(req *Request.Request) *Request.Reque
 	if req.PetId.Hex() != "" {
 		petId = req.PetId
 	}
+	request := "Ongoing"
+	if req.Status != "" {
+		request = req.Status
+	}
 	return &Request.Request{
-		UserId:    req.UserId,
-		ShelterId: req.ShelterId,
-		Type:      req.Type,
-		Status:    req.Status,
-		Reason:    req.Reason,
-		PetId:     petId,
-
+		UserId:      req.UserId,
+		ShelterId:   req.ShelterId,
+		Type:        req.Type,
+		Status:      request,
+		Reason:      req.Reason,
+		PetId:       petId,
 		RequestedAt: helpers.GetCurrentTime(nil),
 	}
 }

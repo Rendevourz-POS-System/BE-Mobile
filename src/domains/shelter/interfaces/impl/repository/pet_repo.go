@@ -7,9 +7,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	Request "main.go/domains/request/entities"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/shared/collections"
 	"main.go/shared/helpers"
+	"strings"
 )
 
 type petRepo struct {
@@ -19,6 +21,19 @@ type petRepo struct {
 
 func NewPetRepository(database *mongo.Database) *petRepo {
 	return &petRepo{database, database.Collection(collections.PetCollectionName)}
+}
+
+func (r *petRepo) ValidateIfValidForUpdate(ctx context.Context, Id *primitive.ObjectID) (bool, error) {
+	var reqData *Request.Request
+	if err := r.database.Collection(collections.RequestName).FindOne(ctx, bson.M{"pet_id": Id}).Decode(&reqData); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return true, nil
+		}
+		if strings.ToLower(reqData.Status) != "done" {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func (r *petRepo) filterPets(search *Pet.PetSearch) bson.D {

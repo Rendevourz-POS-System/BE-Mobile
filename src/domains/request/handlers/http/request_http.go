@@ -1,6 +1,8 @@
 package http
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -50,10 +52,12 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 		user.GET("/find", handlers.FindAll)
 		user.POST("/create", handlers.CreateRequest)
 		user.POST("/donation", handlers.CreateDonationRequest)
+		user.POST("/rescue_or_surrender", handlers.CreateRescueAndSurrender)
 	}
 	return handlers
 
 }
+
 func (RequestHttp *RequestHttp) FindAll(ctx *gin.Context) {
 	searchReq := &Request.SearchRequestPayload{
 		RequestId: helpers.ParseStringToObjectIdAddress(ctx.Query("request_id")),
@@ -111,6 +115,31 @@ func (RequestHttp *RequestHttp) CreateDonationRequest(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: res, Message: res.StatusMessage})
 }
 
-func (RequestHttp *RequestHttp) CreateRescue(ctx *gin.Context) {
-
+func (RequestHttp *RequestHttp) CreateRescueAndSurrender(ctx *gin.Context) {
+	request := &Request.CreateRescueAndSurrenderRequestPayload{}
+	pet, err := RequestHttp.petHttp.CreatePetForRescueAndSurenderPet(ctx)
+	if err != nil {
+		return
+	}
+	request.Pet = pet
+	request.Request = helpers.FillRequestData(pet, ctx)
+	form, _ := ctx.MultipartForm()
+	// Unmarshal the JSON data into the Pet struct
+	jsonData := form.Value["request"][0]
+	if errParse := json.Unmarshal([]byte(jsonData), &request.Request); errParse != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: errParse.Error()})
+		return
+	}
+	request.Request.UserId = helpers.GetUserId(ctx)
+	data, errCreateReq := RequestHttp.requestUsecase.CreateRequest(ctx, request.Request, nil)
+	if errCreateReq != nil {
+		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: errCreateReq})
+		return
+	}
+	request.Request = data
+	response := &Request.RescueAndSurrenderResponse{
+		Pet:     request.Pet,
+		Request: request.Request,
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Create %s Request !", request.Request.Type), Data: response})
 }

@@ -13,6 +13,7 @@ type PetRepository interface {
 	FindPetById(ctx context.Context, Id *primitive.ObjectID) (*Pet.Pet, error)
 	DestroyPetByAdmin(ctx context.Context, Id *primitive.ObjectID) (*Pet.Pet, error)
 	DestroyPetByUser(ctx context.Context, Pets Pet.PetDeletePayload) ([]Pet.Pet, []string)
+	ValidateIfValidForUpdate(ctx context.Context, Id *primitive.ObjectID) (bool, error)
 }
 
 type PetUseCase interface {
@@ -22,4 +23,5 @@ type PetUseCase interface {
 	GetPetById(ctx context.Context, Id *primitive.ObjectID) (*Pet.Pet, error)
 	DeletePetByAdmin(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error)
 	DeletePetByUser(ctx context.Context, Pets Pet.PetDeletePayload) (res []Pet.Pet, err []string)
+	CheckIsValidForUpdate(ctx context.Context, Id *primitive.ObjectID) (bool, error)
 }

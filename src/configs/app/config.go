@@ -79,12 +79,14 @@ type Proxy struct {
 }
 
 type Image struct {
-	Folder      string
-	PetPath     string
-	ShelterPath string
-	UserPath    string
-	ProfilePath string
-	TempPath    string
+	Folder        string
+	PetPath       string
+	ShelterPath   string
+	RescuePath    string
+	SurrenderPath string
+	UserPath      string
+	ProfilePath   string
+	TempPath      string
 }
 
 type Payment struct {

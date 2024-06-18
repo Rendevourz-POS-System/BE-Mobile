@@ -11,6 +11,7 @@ const (
 	Rescue     Type = "rescue"
 	Monitoring Type = "monitoring"
 	Publish    Type = "publish"
+	Surrender  Type = "surrender"
 )
 
 const (

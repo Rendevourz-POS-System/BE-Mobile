@@ -20,6 +20,10 @@ func NewPetUseCase(petRepo interfaces.PetRepository) *petUseCase {
 	return &petUseCase{petRepo}
 }
 
+func (u *petUseCase) CheckIsValidForUpdate(ctx context.Context, Id *primitive.ObjectID) (bool, error) {
+	return u.petRepo.ValidateIfValidForUpdate(ctx, Id)
+}
+
 func (u *petUseCase) GetAllPets(ctx context.Context, search *Pet.PetSearch) (res []Pet.PetResponsePayload, err error) {
 	if res, err = u.petRepo.FindAllPets(ctx, search); err != nil {
 		return nil, err

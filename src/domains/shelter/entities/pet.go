@@ -14,7 +14,7 @@ type Pet struct {
 	PetAge         int                 `json:"PetAge" bson:"pet_age" validate:"required,number,pet-age"`
 	PetGender      string              `json:"PetGender" bson:"pet_gender" validate:"omitempty,required,pet-gender"`
 	IsAdopted      *bool               `json:"IsAdopted" bson:"is_adopted" validate:"omitempty" default:"false"`
-	ReadyToAdopt   *bool               `json:"ReadyToAdopt" bson:"ready_to_adopt" validate:"required" default:"false"`
+	ReadyToAdopt   *bool               `json:"ReadyToAdopt" bson:"ready_to_adopt" validate:"omitempty" default:"false"`
 	PetDescription string              `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
 	IsVaccinated   bool                `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required"`
 	OldImage       []string            `json:"OldImage,omitempty"`

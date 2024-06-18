@@ -142,7 +142,7 @@ func paymentTypeValidation(fl validator.FieldLevel) bool {
 func requestTypeValidation(fl validator.FieldLevel) bool {
 	reqType := RequestPersistence.Type(strings.ToLower(fl.Field().String()))
 	switch reqType {
-	case RequestPersistence.Adoption, RequestPersistence.Donation, RequestPersistence.Rescue, RequestPersistence.Monitoring, RequestPersistence.Publish:
+	case RequestPersistence.Adoption, RequestPersistence.Donation, RequestPersistence.Rescue, RequestPersistence.Monitoring, RequestPersistence.Publish, RequestPersistence.Surrender:
 		return true
 	default:
 		return false
