@@ -135,6 +135,11 @@ func (RequestHttp *RequestHttp) CreateRescueAndSurrender(ctx *gin.Context) {
 		if err != nil {
 			return
 		}
+	} else if presistence.Type(request.Request.Type) == presistence.Surrender {
+		//pet, err = RequestHttp.petHttp.FindPetById(ctx)
+		//if err != nil {
+		//	return
+		//}
 	}
 	request.Pet = pet
 	request.Request = helpers.FillRequestData(pet, ctx)

@@ -216,10 +216,10 @@ func (shelterHttp *ShelterHttp) UpdateShelterByAdmin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Marshal Shelter Update Request ! ", Error: err.Error()})
 		return
 	}
-	shelter.UserId = helpers.ParseStringToObjectId(c.Param("id"))
+	shelter.ID = helpers.ParseStringToObjectId(c.Param("id"))
 	shelterReq.Shelter = shelter
-	findShelter, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, &Shelter.ShelterSearch{
-		UserId: shelter.UserId,
+	findShelter, err := shelterHttp.shelterUsecase.GetOneDataByIdForRequest(c, &Shelter.ShelterSearch{
+		ShelterId: shelter.ID,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Get Shelter Data ! ", Error: err.Error()})
