@@ -56,6 +56,13 @@ func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res *P
 		pet.Pet.PetGender = "Unknown"
 	}
 	pet.Pet.PetDob = nil
+	flag := false
+	if pet.Pet.IsAdopted == nil {
+		pet.Pet.IsAdopted = &flag
+	}
+	if pet.Pet.ReadyToAdopt == nil {
+		pet.Pet.ReadyToAdopt = &flag
+	}
 	pet.Pet.CreatedAt = helpers.GetCurrentTime(nil)
 	if res, err = u.petRepo.StorePets(ctx, &pet.Pet); err != nil {
 		return nil, err

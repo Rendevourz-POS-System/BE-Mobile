@@ -13,8 +13,8 @@ type Pet struct {
 	PetType        string              `json:"PetType" bson:"pet_type" validate:"required"`
 	PetAge         int                 `json:"PetAge" bson:"pet_age" validate:"required,number,pet-age"`
 	PetGender      string              `json:"PetGender" bson:"pet_gender" validate:"omitempty,required,pet-gender"`
-	IsAdopted      bool                `json:"IsAdopted" bson:"is_adopted" validate:"omitempty" default:"false"`
-	ReadyToAdopt   bool                `json:"ReadyToAdopt" bson:"ready_to_adopt" validate:"required" default:"false"`
+	IsAdopted      *bool               `json:"IsAdopted" bson:"is_adopted" validate:"omitempty" default:"false"`
+	ReadyToAdopt   *bool               `json:"ReadyToAdopt" bson:"ready_to_adopt" validate:"required" default:"false"`
 	PetDescription string              `json:"PetDescription" bson:"pet_description" validate:"omitempty,required,min=10"`
 	IsVaccinated   bool                `json:"IsVaccinated" bson:"is_vaccinated" validate:"omitempty,required"`
 	OldImage       []string            `json:"OldImage,omitempty"`
@@ -28,19 +28,21 @@ type Pet struct {
 type (
 	// PetSearch struct
 	PetSearch struct {
-		Search      string             `json:"Search"`
-		Page        int                `json:"Page"`
-		PageSize    int                `json:"PageSize"`
-		OrderBy     string             `json:"OrderBy"`
-		Sort        string             `json:"Sort"`
-		ShelterId   string             `json:"ShelterId,omitempty"`
-		ShelterName string             `json:"ShelterName"`
-		Location    string             `json:"Location"`
-		Gender      string             `json:"Gender"`
-		AgeStart    int                `json:"AgeStart"`
-		AgeEnd      int                `json:"AgeEnd"`
-		Type        []string           `json:"Type"`
-		UserId      primitive.ObjectID `json:"UserId,omitempty"`
+		Search           string             `json:"Search"`
+		Page             int                `json:"Page"`
+		PageSize         int                `json:"PageSize"`
+		OrderBy          string             `json:"OrderBy"`
+		Sort             string             `json:"Sort"`
+		ShelterId        string             `json:"ShelterId,omitempty"`
+		ShelterName      string             `json:"ShelterName"`
+		Location         string             `json:"Location"`
+		Gender           string             `json:"Gender"`
+		AgeStart         int                `json:"AgeStart"`
+		AgeEnd           int                `json:"AgeEnd"`
+		Type             []string           `json:"Type"`
+		UserId           primitive.ObjectID `json:"UserId,omitempty"`
+		ReadyForAdoption *bool              `json:"ReadyForAdoption,omitempty"`
+		IsAdopted        *bool              `json:"IsAdopted,omitempty"`
 	}
 
 	// PetUpdate Payload
@@ -67,6 +69,8 @@ type (
 		PetStatus       bool                `json:"PetStatus" bson:"pet_status"`
 		PetDescription  string              `json:"PetDescription" bson:"pet_description"`
 		IsVaccinated    bool                `json:"IsVaccinated" bson:"is_vaccinated"`
+		IsAdopted       *bool               `json:"IsAdopted" bson:"is_adopted"`
+		ReadyToAdopt    *bool               `json:"ReadyToAdopt" bson:"ready_to_adopt"`
 		Image           []string            `json:"Image" bson:"image"`
 		ImageBase64     []string            `json:"ImageBase64"`
 		PetAge          int                 `json:"PetAge" bson:"pet_age"`

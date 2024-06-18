@@ -33,10 +33,10 @@ func (r *requestRepo) StoreOneRequest(ctx context.Context, req *Request.Request)
 			}
 			return nil, err
 		}
-		if findPet.IsAdopted == true {
+		if *findPet.IsAdopted == true {
 			return nil, errors.New("Pet Already Adopted !")
 		}
-		if findPet.ReadyToAdopt == false {
+		if *findPet.ReadyToAdopt == false {
 			return nil, errors.New("Pet Not Ready For Adopt !")
 		}
 	}

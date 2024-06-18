@@ -155,6 +155,17 @@ func ArrayAddress(value []string) *[]string {
 	return &value
 }
 
+func ParseStringToBoolean(value string) *bool {
+	if value == "" {
+		return nil
+	}
+	values, err := strconv.ParseBool(value)
+	if err != nil {
+		logrus.Warnf("Failed to parse string to boolean !")
+	}
+	return &values
+}
+
 func ParseObjectIdToString(value primitive.ObjectID) string {
 	return value.Hex()
 }

@@ -55,6 +55,18 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) bson.D {
 			},
 		})
 	}
+	if search.ReadyForAdoption != nil {
+		filter = append(filter, bson.E{
+			Key:   "ready_to_adopt",
+			Value: search.ReadyForAdoption,
+		})
+	}
+	if search.IsAdopted != nil {
+		filter = append(filter, bson.E{
+			Key:   "is_adopted",
+			Value: search.IsAdopted,
+		})
+	}
 	if search.Gender != "" {
 		filter = append(filter, bson.E{
 			Key:   "pet_gender",

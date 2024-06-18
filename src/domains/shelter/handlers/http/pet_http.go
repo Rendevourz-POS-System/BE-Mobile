@@ -96,18 +96,20 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 
 func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 	search := &Pet.PetSearch{
-		Search:      ctx.Query("search"),
-		Page:        helpers.ParseStringToInt(ctx.Query("page")),
-		PageSize:    helpers.ParseStringToInt(ctx.Query("page_size")),
-		Gender:      helpers.CheckPetGender(ctx.Query("gender")),
-		Type:        ctx.QueryArray("type"),
-		Sort:        ctx.Query("sort"),
-		OrderBy:     ctx.Query("order_by"),
-		Location:    ctx.Query("location"),
-		AgeStart:    helpers.ParseStringToInt(ctx.Query("age_start")),
-		AgeEnd:      helpers.ParseStringToInt(ctx.Query("age_end")),
-		ShelterName: ctx.Query("shelter_name"),
-		ShelterId:   ctx.Query("shelter_id"),
+		Search:           ctx.Query("search"),
+		Page:             helpers.ParseStringToInt(ctx.Query("page")),
+		PageSize:         helpers.ParseStringToInt(ctx.Query("page_size")),
+		Gender:           helpers.CheckPetGender(ctx.Query("gender")),
+		Type:             ctx.QueryArray("type"),
+		Sort:             ctx.Query("sort"),
+		OrderBy:          ctx.Query("order_by"),
+		Location:         ctx.Query("location"),
+		AgeStart:         helpers.ParseStringToInt(ctx.Query("age_start")),
+		AgeEnd:           helpers.ParseStringToInt(ctx.Query("age_end")),
+		ShelterName:      ctx.Query("shelter_name"),
+		ShelterId:        ctx.Query("shelter_id"),
+		IsAdopted:        helpers.ParseStringToBoolean(ctx.Query("is_adopted")),
+		ReadyForAdoption: helpers.ParseStringToBoolean(ctx.Query("ready_for_adoption")),
 	}
 	data, err := h.petUsecase.GetAllPets(ctx, search)
 	if err != nil {
