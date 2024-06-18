@@ -49,6 +49,7 @@ func NewUserHttp(router *gin.Engine, tokenHttp *UserTokenHttp) *UserHttp {
 	}
 	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
 	{
+		admin.PUT("/update:id", handler.UpdateUser)
 		admin.DELETE("/delete/:id", handler.DeleteUserByAdmin)
 	}
 	return handler
@@ -143,7 +144,11 @@ func (userHttp *UserHttp) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Update User Bad Request", Error: err.Error()})
 		return
 	}
-	data.ID = helpers.GetUserId(c)
+	if helpers.GetRoleFromContext(c) == "user" {
+		data.ID = helpers.GetUserId(c)
+	} else if helpers.GetRoleFromContext(c) == "admin" {
+		data.ID = helpers.ParseStringToObjectId(c.Param("id"))
+	}
 	if file != nil {
 		data, _ = image_helpers.UploadProfile(c, file, data)
 	}
