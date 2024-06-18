@@ -2,13 +2,16 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	Request "main.go/domains/request/entities"
+	Pet "main.go/domains/shelter/entities"
 	"main.go/shared/collections"
 	"main.go/shared/helpers"
+	"strings"
 )
 
 type requestRepo struct {
@@ -21,6 +24,21 @@ func NewRequestRepository(database *mongo.Database) *requestRepo {
 }
 
 func (r *requestRepo) StoreOneRequest(ctx context.Context, req *Request.Request) (res *Request.Request, err error) {
+	if strings.ToLower(req.Type) == "adoption" {
+		var findPet *Pet.Pet
+		errs := r.database.Collection(collections.PetCollectionName).FindOne(ctx, bson.M{"_id": req.PetId}).Decode(&findPet)
+		if errs != nil {
+			if err == mongo.ErrNoDocuments {
+				return nil, errors.New("Pet not found !")
+			}
+		}
+		if findPet.IsAdopted == true {
+			return nil, errors.New("Pet Already Adopted !")
+		}
+		if findPet.ReadyToAdopt == false {
+			return nil, errors.New("Pet Not Ready For Adopt !")
+		}
+	}
 	data, errInsert := r.collection.InsertOne(ctx, req)
 	if errInsert != nil {
 		return nil, errInsert
