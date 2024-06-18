@@ -100,7 +100,7 @@ func (h *PetHttp) GetAllPets(ctx *gin.Context) {
 		Page:        helpers.ParseStringToInt(ctx.Query("page")),
 		PageSize:    helpers.ParseStringToInt(ctx.Query("page_size")),
 		Gender:      helpers.CheckPetGender(ctx.Query("gender")),
-		Type:        ctx.Query("type"),
+		Type:        ctx.QueryArray("type"),
 		Sort:        ctx.Query("sort"),
 		OrderBy:     ctx.Query("order_by"),
 		Location:    ctx.Query("location"),

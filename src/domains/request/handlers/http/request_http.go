@@ -47,11 +47,31 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 	}
 	user := router.Group(guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
 	{
+		user.GET("/find", handlers.FindAll)
 		user.POST("/create", handlers.CreateRequest)
 		user.POST("/donation", handlers.CreateDonationRequest)
 	}
 	return handlers
 
+}
+func (RequestHttp *RequestHttp) FindAll(ctx *gin.Context) {
+	searchReq := &Request.SearchRequestPayload{
+		RequestId: helpers.ParseStringToObjectIdAddress(ctx.Query("request_id")),
+		UserId:    helpers.ParseStringToObjectIdAddress(ctx.Query("user_id")),
+		ShelterId: helpers.ParseStringToObjectIdAddress(ctx.Query("shelter_id")),
+		Type:      helpers.ArrayAddress(ctx.QueryArray("type")),
+		Reason:    nil,
+		Status:    helpers.GetAddressString(ctx.Query("status")),
+		Search:    helpers.GetAddressString(ctx.Query("search")),
+		Page:      helpers.ParseStringToInt(ctx.Query("page")),
+		PageSize:  helpers.ParseStringToInt(ctx.Query("page_size")),
+	}
+	data, err := RequestHttp.requestUsecase.GetAllData(ctx, searchReq)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to get all data !", Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: data})
 }
 
 func (RequestHttp *RequestHttp) CreateRequest(ctx *gin.Context) {

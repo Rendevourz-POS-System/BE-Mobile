@@ -136,6 +136,25 @@ func ParseStringToObjectId(value string) primitive.ObjectID {
 	return objectId
 }
 
+func ParseStringToObjectIdAddress(value string) *primitive.ObjectID {
+	if value == "" {
+		return nil
+	}
+	objectId, err := primitive.ObjectIDFromHex(value)
+	if err != nil {
+		logrus.Warnf("Failed to parse string to object id !")
+	}
+	return &objectId
+}
+
+func GetAddressString(value string) *string {
+	return &value
+}
+
+func ArrayAddress(value []string) *[]string {
+	return &value
+}
+
 func ParseObjectIdToString(value primitive.ObjectID) string {
 	return value.Hex()
 }

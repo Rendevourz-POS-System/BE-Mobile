@@ -58,6 +58,14 @@ func (u *requestUsecase) CreateDonationRequest(ctx context.Context, req *Request
 	return res, nil
 }
 
+func (u *requestUsecase) GetAllData(ctx context.Context, req *Request.SearchRequestPayload) (res []Request.Request, err error) {
+	res, err = u.requestRepo.FindAllRequest(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (u *requestUsecase) fillDefaultRequest(req *Request.Request) *Request.Request {
 	var petId *primitive.ObjectID
 	if req.PetId.Hex() != "" {

@@ -3,9 +3,12 @@ package repository
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	Request "main.go/domains/request/entities"
 	"main.go/shared/collections"
+	"main.go/shared/helpers"
 )
 
 type requestRepo struct {
@@ -24,6 +27,85 @@ func (r *requestRepo) StoreOneRequest(ctx context.Context, req *Request.Request)
 	}
 	if err = r.collection.FindOne(ctx, bson.M{"_id": data.InsertedID}).Decode(&res); err != nil {
 		return nil, err
+	}
+	return res, nil
+}
+
+func (r *requestRepo) filterRequest(search *Request.SearchRequestPayload) bson.D {
+	var filter bson.D
+	if search.Search != nil {
+		regexFilter := bson.M{"$regex": primitive.Regex{
+			Pattern: *search.Search,
+			Options: "i", // Case-insensitive search
+		}}
+		filter = append(filter, bson.E{
+			Key: "$or",
+			Value: bson.A{
+				bson.M{"reason": regexFilter},
+				bson.M{"type": regexFilter},
+			},
+		})
+	}
+	if search.Status != nil {
+		filter = append(filter, bson.E{
+			Key:   "status",
+			Value: helpers.RegexCaseInsensitivePattern(*search.Status),
+		})
+	}
+	if search.ShelterId != nil {
+		filter = append(filter, bson.E{
+			Key:   "shelter_id",
+			Value: *search.ShelterId,
+		})
+	}
+	if search.UserId != nil {
+		filter = append(filter, bson.E{
+			Key:   "user_id",
+			Value: *search.UserId,
+		})
+	}
+	if search.Type != nil && len(*search.Type) > 0 {
+		filter = append(filter, bson.E{
+			Key:   "type",
+			Value: bson.M{"$in": search.Type},
+		})
+	}
+	// Filter for non-deleted (soft delete check) records.
+	filter = append(filter, bson.E{
+		Key: "$or",
+		Value: bson.A{
+			bson.M{"deleted_at": nil},                      // Matches if `deleted_at` is explicitly set to null
+			bson.M{"deleted_at": bson.M{"$exists": false}}, // Matches if `deleted_at` field does not exist
+		},
+	})
+	return filter
+}
+
+func (r *requestRepo) createPaginationOptions(search *Request.SearchRequestPayload) *options.FindOptions {
+	findOptions := options.Find()
+	page := 1
+	pageSize := 100
+	if search.PageSize > 0 {
+		pageSize = search.PageSize
+	}
+	if search.Page > 0 {
+		page = search.Page
+	}
+	findOptions.SetSkip(int64((page - 1) * pageSize))
+	findOptions.SetLimit(int64(pageSize))
+	return findOptions
+}
+
+func (r *requestRepo) FindAllRequest(ctx context.Context, req *Request.SearchRequestPayload) (res []Request.Request, err error) {
+	filter := r.filterRequest(req)
+	paginationOptions := r.createPaginationOptions(req)
+	cur, err := r.collection.Find(ctx, filter, paginationOptions)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+	if errs := cur.All(ctx, &res); errs != nil {
+		return nil, errs
 	}
 	return res, nil
 }

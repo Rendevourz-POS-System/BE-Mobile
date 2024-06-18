@@ -39,7 +39,7 @@ type (
 		Gender      string             `json:"Gender"`
 		AgeStart    int                `json:"AgeStart"`
 		AgeEnd      int                `json:"AgeEnd"`
-		Type        string             `json:"Type"`
+		Type        []string           `json:"Type"`
 		UserId      primitive.ObjectID `json:"UserId,omitempty"`
 	}
 

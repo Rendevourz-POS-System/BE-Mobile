@@ -61,10 +61,10 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) bson.D {
 			Value: helpers.RegexCaseInsensitivePattern(search.Gender),
 		})
 	}
-	if search.Type != "" {
+	if search.Type != nil && len(search.Type) > 0 {
 		filter = append(filter, bson.E{
 			Key:   "pet_type",
-			Value: helpers.RegexCaseInsensitivePattern(search.Type),
+			Value: bson.M{"$in": search.Type},
 		})
 	}
 	return filter

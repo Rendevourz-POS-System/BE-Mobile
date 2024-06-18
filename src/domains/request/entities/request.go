@@ -49,4 +49,15 @@ type (
 		User            *User.User       `json:"User,omitempty"`
 		UserTarget      *User.User       `json:"UserTarget,omitempty"`
 	}
+	SearchRequestPayload struct {
+		RequestId *primitive.ObjectID `json:"RequestId,omitempty"`
+		UserId    *primitive.ObjectID `json:"UserId,omitempty"`
+		ShelterId *primitive.ObjectID `json:"ShelterId,omitempty"`
+		Type      *[]string           `json:"Type"`
+		Reason    *string             `json:"Reason"`
+		Search    *string             `json:"Search"`
+		Status    *string             `json:"Status"`
+		Page      int                 `json:"Page"`
+		PageSize  int                 `json:"PageSize"`
+	}
 )
