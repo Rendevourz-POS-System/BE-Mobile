@@ -29,10 +29,10 @@ func (m *midtransUsecase) ChargeRequest(req *Request.RequestResponse) (*coreapi.
 		Items: &[]midtrans.ItemDetails{
 			{
 				ID:           req.Request.Id.Hex(),
-				Name:         "Donation",
+				Name:         req.User.Username,
 				Price:        req.Donation.Amount,
 				Qty:          1,
-				Category:     "Donation",
+				Category:     req.Request.Type,
 				MerchantName: "Shelter-apps",
 			},
 		},
