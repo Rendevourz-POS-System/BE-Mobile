@@ -75,6 +75,7 @@ type (
 	UpdateRescueAndSurrenderRequestStatus struct {
 		RequestId primitive.ObjectID `json:"RequestId" bson:"request_id" validate:"required"`
 		Type      string             `json:"Type" bson:"type" validate:"required,request-type,rescueOrSurrender"`
+		Status    string             `json:"Status" bson:"status" validate:"required,approve_or_reject"`
 		Reason    *string            `json:"Reason,omitempty" bson:"reason"`
 	}
 )
