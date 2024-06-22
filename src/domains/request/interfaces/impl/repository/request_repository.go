@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	Request "main.go/domains/request/entities"
+	"main.go/domains/request/presistence"
 	Pet "main.go/domains/shelter/entities"
 	"main.go/shared/collections"
 	"main.go/shared/helpers"
@@ -135,6 +136,26 @@ func (r *requestRepo) FindOneRequestByData(ctx context.Context, data *bson.M) (r
 			return nil, errors.New("Request Not Found ! ")
 		}
 		return nil, err
+	}
+	return res, nil
+}
+
+func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string) {
+	filter := bson.M{"_id": req.RequestId} // Adjust the filter as per your requirements
+	// Define the update operation to update only the `reason` field
+	update := bson.M{
+		"$set": bson.M{
+			"status": presistence.Status(req.Status),
+			"reason": req.Reason,
+		},
+	}
+	// Perform the find and update operation
+	errs := r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&res)
+	if errs != nil {
+		if errs == mongo.ErrNoDocuments {
+			return nil, []string{"Request Not Found!"}
+		}
+		return nil, []string{errs.Error()}
 	}
 	return res, nil
 }

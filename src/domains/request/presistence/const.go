@@ -15,10 +15,11 @@ const (
 )
 
 const (
-	New       Status = "new"
-	Ongoing   Status = "ongoing"
-	Completed Status = "completed"
-	Rejected  Status = "rejected"
-	Cancelled Status = "cancelled"
-	Failed    Status = "failed"
+	New          Status = "new"
+	Ongoing      Status = "ongoing"
+	Approved     Status = "completed"
+	Rejected     Status = "rejected"
+	Cancelled    Status = "cancelled"
+	Failed       Status = "failed"
+	NotContinued Status = "not_continued"
 )

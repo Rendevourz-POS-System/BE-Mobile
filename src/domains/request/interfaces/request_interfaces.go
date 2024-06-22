@@ -11,6 +11,7 @@ type RequestRepository interface {
 	StoreOneRequest(ctx context.Context, req *Request.Request) (*Request.Request, error)
 	FindAllRequest(ctx context.Context, req *Request.SearchRequestPayload) ([]Request.Request, error)
 	FindOneRequestByData(ctx context.Context, req *bson.M) (res *Request.Request, err error)
+	PutStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string)
 }
 
 type RequestUsecase interface {
@@ -18,5 +19,5 @@ type RequestUsecase interface {
 	CreateDonationRequest(ctx context.Context, req *Request.DonationPayload) (res *Request.RequestResponse, err []string)
 	GetAllData(ctx context.Context, req *Request.SearchRequestPayload) (res []Request.Request, err error)
 	GetOneRequestByData(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string)
-	//UpdateStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string)
+	UpdateStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string)
 }

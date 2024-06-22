@@ -98,6 +98,9 @@ func NewValidator() *validator.Validate {
 	if err := validate.RegisterValidation("rescueOrSurrender", rescueOrSurrender); err != nil {
 		panic(err)
 	}
+	if err := validate.RegisterValidation("approve_or_reject", approveOrReject); err != nil {
+		panic(err)
+	}
 
 	//if err := validate.RegisterValidation("valid-email", checkEmailReachable); err != nil {
 	//	panic(err)
@@ -106,6 +109,11 @@ func NewValidator() *validator.Validate {
 	//	panic(err)
 	//}
 	return validate
+}
+
+func approveOrReject(fl validator.FieldLevel) bool {
+	reqType := RequestPersistence.Status(strings.ToLower(fl.Field().String()))
+	return reqType == RequestPersistence.Approved || reqType == RequestPersistence.Rejected
 }
 
 func rescueOrSurrender(fl validator.FieldLevel) bool {
