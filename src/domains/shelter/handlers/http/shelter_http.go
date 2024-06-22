@@ -180,6 +180,7 @@ func (shelterHttp *ShelterHttp) UpdateShelter(c *gin.Context) {
 		}
 	}
 	shelterReq.Shelter.ID = findShelter.ID
+	shelterReq.Shelter.Image = findShelter.Image
 	if form.File != nil {
 		shelterReq, _ = image_helpers.UploadShelter(c, form, shelterReq)
 	}

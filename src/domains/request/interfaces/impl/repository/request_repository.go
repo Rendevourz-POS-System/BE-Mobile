@@ -128,3 +128,13 @@ func (r *requestRepo) FindAllRequest(ctx context.Context, req *Request.SearchReq
 	}
 	return res, nil
 }
+
+func (r *requestRepo) FindOneRequestByData(ctx context.Context, data *bson.M) (res *Request.Request, err error) {
+	if err = r.collection.FindOne(ctx, data).Decode(&res); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("Request Not Found ! ")
+		}
+		return nil, err
+	}
+	return res, nil
+}

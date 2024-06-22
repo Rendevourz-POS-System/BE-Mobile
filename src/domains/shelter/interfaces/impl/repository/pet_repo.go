@@ -94,6 +94,14 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) bson.D {
 			Value: bson.M{"$in": search.Type},
 		})
 	}
+	// Add filter to include only documents where DeletedAt does not exist or is null
+	filter = append(filter, bson.E{
+		Key: "$or",
+		Value: bson.A{
+			bson.M{"deleted_at": bson.M{"$exists": false}},
+			bson.M{"deleted_at": nil},
+		},
+	})
 	return filter
 }
 

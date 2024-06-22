@@ -53,6 +53,7 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 		user.POST("/create", handlers.CreateRequest)
 		user.POST("/donation", handlers.CreateDonationRequest)
 		user.POST("/rescue_or_surrender", handlers.CreateRescueAndSurrender)
+		user.PUT("/rescue_or_surrender/update", handlers.UpdateStatusRescueAndSurrender)
 	}
 	return handlers
 
@@ -142,4 +143,18 @@ func (RequestHttp *RequestHttp) CreateRescueAndSurrender(ctx *gin.Context) {
 		Request: request.Request,
 	}
 	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Create %s Request !", request.Request.Type), Data: response})
+}
+
+func (RequestHttp *RequestHttp) UpdateStatusRescueAndSurrender(ctx *gin.Context) {
+	request := &Request.UpdateRescueAndSurrenderRequestStatus{}
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", ErrorS: []string{err.Error()}})
+		return
+	}
+	data, err := RequestHttp.requestUsecase.GetOneRequestByData(ctx, request)
+	if err != nil {
+		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Update Status [%s] Request !", data.Status), Data: data})
 }

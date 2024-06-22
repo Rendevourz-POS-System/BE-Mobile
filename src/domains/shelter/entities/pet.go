@@ -22,6 +22,7 @@ type Pet struct {
 	ImageBase64    []string            `json:"ImageBase64" validate:"omitempty"`
 	PetDob         *time.Time          `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
 	CreatedAt      *time.Time          `json:"CreatedAt" bson:"CreatedAt,omitempty"`
+	UpdatedAt      *time.Time          `json:"UpdatedAt,omitempty" bson:"UpdatedAt,omitempty"`
 	DeletedAt      *time.Time          `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`
 }
 

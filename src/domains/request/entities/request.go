@@ -18,6 +18,7 @@ type Request struct {
 	//Job         string             `json:"Job" bson:"job"`
 	Reason      *string    `json:"Reason,omitempty" bson:"reason"`
 	RequestedAt *time.Time `json:"RequestedAt,omitempty" bson:"RequestedAt,omitempty"`
+	UpdatedAt   *time.Time `json:"UpdatedAt,omitempty" bson:"UpdatedAt,omitempty"`
 	CompletedAt *time.Time `json:"CompletedAt,omitempty" bson:"CompletedAt,omitempty"`
 }
 
@@ -70,5 +71,10 @@ type (
 	RescueAndSurrenderResponse struct {
 		Pet     *Pet.Pet `form:"Pet" bson:"Pet" validate:"required"`
 		Request *Request `form:"Request" bson:"-" validate:"required"`
+	}
+	UpdateRescueAndSurrenderRequestStatus struct {
+		RequestId primitive.ObjectID `json:"RequestId" bson:"request_id" validate:"required"`
+		Type      string             `json:"Type" bson:"type" validate:"required,request-type,rescueOrSurrender"`
+		Reason    *string            `json:"Reason,omitempty" bson:"reason"`
 	}
 )

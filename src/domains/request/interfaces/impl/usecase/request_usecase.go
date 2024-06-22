@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	Midtrans "main.go/domains/payment/interfaces"
 	Request "main.go/domains/request/entities"
@@ -84,4 +85,22 @@ func (u *requestUsecase) fillDefaultRequest(req *Request.Request) *Request.Reque
 		PetId:       petId,
 		RequestedAt: helpers.GetCurrentTime(nil),
 	}
+}
+
+func (u *requestUsecase) GetOneRequestByData(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string) {
+	validate := helpers.NewValidator()
+	if errs := validate.Struct(req); errs != nil {
+		err = helpers.CustomError(errs)
+		return nil, err
+	}
+	data := &bson.M{
+		"_id":    req.RequestId,
+		"status": "Ongoing",
+	}
+	responseData, errs := u.requestRepo.FindOneRequestByData(ctx, data)
+	if errs != nil {
+		err = append(err, errs.Error())
+		return nil, err
+	}
+	return responseData, nil
 }
