@@ -109,46 +109,46 @@ func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context) (*Pet.Pet, 
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return nil, err
 	}
-	if pet.Pet.ID.Hex() != "" {
-		data, err := h.petUsecase.GetPetById(ctx, &pet.Pet.ID)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
-			return data, nil
-		}
-	} else {
-		filesName, err := image_helpers.SaveImageToTemp(ctx, form)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
-		}
-		// Create the pet data
-		data, errs := h.petUsecase.CreatePets(ctx, pet)
-		if errs != nil {
-			// Delete temporary files if pet creation fails
-			go image_helpers.RemoveTempImagePath(filesName)
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
-			return nil, err
-		}
-		if filesName != nil {
-			if pet.Pet.ShelterId == nil {
-				pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.PetPath, data.ID.Hex())
-			} else {
-				pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, pet.Pet.ShelterId.Hex(), app.GetConfig().Image.PetPath, data.ID.Hex())
-			}
-		}
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image Pet ! ", Error: err.Error()})
-			return nil, err
-		}
-		data.Image = pet.Pet.Image
-		// Update the pet entity with the image paths
-		_, err = h.petUsecase.UpdatePet(ctx, &data.ID, data)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: err.Error()})
-			return nil, err
-		}
-		return data, nil
+	//if len(pet.Pet.ID) > 0 {
+	//	data, err := h.petUsecase.GetPetById(ctx, &pet.Pet.ID)
+	//	if err != nil {
+	//		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
+	//		return data, nil
+	//	}
+	//} else {
+	filesName, err := image_helpers.SaveImageToTemp(ctx, form)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
 	}
-	return nil, nil
+	// Create the pet data
+	data, errs := h.petUsecase.CreatePets(ctx, pet)
+	if errs != nil {
+		// Delete temporary files if pet creation fails
+		go image_helpers.RemoveTempImagePath(filesName)
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Create Pet ! ", ErrorS: errs})
+		return nil, err
+	}
+	if filesName != nil {
+		if pet.Pet.ShelterId == nil {
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.PetPath, data.ID.Hex())
+		} else {
+			pet, err = image_helpers.MoveUploadedFile(ctx, filesName, pet, app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, pet.Pet.ShelterId.Hex(), app.GetConfig().Image.PetPath, data.ID.Hex())
+		}
+	}
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image Pet ! ", Error: err.Error()})
+		return nil, err
+	}
+	data.Image = pet.Pet.Image
+	// Update the pet entity with the image paths
+	_, err = h.petUsecase.UpdatePet(ctx, &data.ID, data)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: err.Error()})
+		return nil, err
+	}
+	return data, nil
+	//}
+	//return nil, nil
 }
 
 func (h *PetHttp) GetAllPets(ctx *gin.Context) {
