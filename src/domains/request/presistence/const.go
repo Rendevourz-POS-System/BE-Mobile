@@ -17,7 +17,7 @@ const (
 const (
 	New          Status = "new"
 	Ongoing      Status = "ongoing"
-	Approved     Status = "completed"
+	Approved     Status = "approved"
 	Rejected     Status = "rejected"
 	Cancelled    Status = "cancelled"
 	Failed       Status = "failed"
