@@ -156,7 +156,7 @@ func (RequestHttp *RequestHttp) UpdateStatusRescueAndSurrender(ctx *gin.Context)
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: err})
 		return
 	}
-	updatedData, errUpdateData := RequestHttp.requestUsecase.UpdateStatusRequest(ctx, request)
+	updatedData, errUpdateData := RequestHttp.requestUsecase.UpdateStatusRequestRescueOrSurrender(ctx, request)
 	if errUpdateData != nil {
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to Update request ! ", ErrorS: err})
 		return
@@ -165,5 +165,29 @@ func (RequestHttp *RequestHttp) UpdateStatusRescueAndSurrender(ctx *gin.Context)
 }
 
 func (RequestHttp *RequestHttp) UpdateStatusAdoption(ctx *gin.Context) {
-
+	req := &Request.UpdateAdoptionRequestStatus{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
+		return
+	}
+	findRequest, errFindRequest := RequestHttp.requestUsecase.GetOneRequestById(ctx, &req.RequestId)
+	if errFindRequest != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Request Id Doesnt Valid ! ", ErrorS: []string{errFindRequest.Error()}})
+		return
+	}
+	findUserData, errFindUserData := RequestHttp.shelterHandler.FindOneByUserIdForRequest(ctx)
+	if errFindUserData != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Get Shelter ! ", ErrorS: []string{errFindUserData.Error()}})
+		return
+	}
+	if findUserData.ID != findRequest.ShelterId {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Request !"})
+		return
+	}
+	data, err := RequestHttp.requestUsecase.UpdateStatusRequestAdoption(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Adoption Request Status ! ", ErrorS: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Adoption Updated Successfully ! ", Data: data})
 }

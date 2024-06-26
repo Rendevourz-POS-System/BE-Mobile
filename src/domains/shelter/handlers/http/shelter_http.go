@@ -137,6 +137,17 @@ func (shelterHttp *ShelterHttp) FindOneByUserId(c *gin.Context) {
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Success Get Shelter By User Id ! ", Data: data})
 }
 
+func (shelterHttp *ShelterHttp) FindOneByUserIdForRequest(c *gin.Context) (*Shelter.ShelterResponsePayload, error) {
+	search := &Shelter.ShelterSearch{
+		UserId: helpers.GetUserId(c),
+	}
+	data, err := shelterHttp.shelterUsecase.GetOneDataByUserId(c, search)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (shelterHttp *ShelterHttp) FindOneById(c *gin.Context) {
 	fmt.Println("ID : ", c.Param("id"))
 	search := &Shelter.ShelterSearch{

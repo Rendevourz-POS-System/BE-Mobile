@@ -76,4 +76,8 @@ type (
 		Request *Request `json:"Request"`
 		Pet     *Pet.Pet `json:"Pet"`
 	}
+	UpdateAdoptionRequestStatus struct {
+		RequestId primitive.ObjectID `json:"RequestId" validate:"required"`
+		ShelterId primitive.ObjectID `json:"ShelterId" validate:"required"`
+	}
 )

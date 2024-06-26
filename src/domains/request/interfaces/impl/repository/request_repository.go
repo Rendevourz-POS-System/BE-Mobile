@@ -146,7 +146,7 @@ func (r *requestRepo) FindOneRequestByData(ctx context.Context, data *bson.M) (r
 	return res, nil
 }
 
-func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
+func (r *requestRepo) PutStatusRequestRescueOrSurrender(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
 	var (
 		request *Request.Request
 		pet     *Pet.Pet
@@ -155,8 +155,9 @@ func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateR
 	// Define the update operation to update only the `reason` field
 	update := bson.M{
 		"$set": bson.M{
-			"status": presistence.Status(req.Status),
-			"reason": req.Reason,
+			"status":      presistence.Status(req.Status),
+			"reason":      req.Reason,
+			"CompletedAt": helpers.GetCurrentTime(nil),
 		},
 	}
 	// Perform the find and update operation
@@ -171,6 +172,54 @@ func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateR
 	updatePet := bson.M{
 		"$set": bson.M{
 			"shelter_id": request.ShelterId,
+		},
+	}
+	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet).Decode(&pet)
+	if errUpdatePet != nil {
+		if errUpdatePet == mongo.ErrNoDocuments {
+			return nil, []string{"Request Not Found!"}
+		}
+		return nil, []string{errUpdatePet.Error()}
+	}
+	res.Request = request
+	res.Pet = pet
+	return res, nil
+}
+
+func (r *requestRepo) FindOneRequestById(ctx context.Context, Id *primitive.ObjectID) (res *Request.Request, err error) {
+	err = r.collection.FindOne(ctx, Id).Decode(&res)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("No Data Request Found !")
+		}
+		return nil, err
+	}
+	return res, nil
+}
+
+func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request.UpdateAdoptionRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
+	filterRequest := bson.M{"_id": req.RequestId}
+	updateRequest := bson.M{
+		"$set": bson.M{
+			"status":      presistence.Approved,
+			"CompletedAt": helpers.GetCurrentTime(nil),
+		},
+	}
+	var (
+		request *Request.Request
+		pet     *Pet.Pet
+	)
+	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest).Decode(&request)
+	if errs != nil {
+		if errs == mongo.ErrNoDocuments {
+			return nil, []string{"Request Not Found!"}
+		}
+		return nil, []string{errs.Error()}
+	}
+	filterPet := bson.M{"_id": request.PetId}
+	updatePet := bson.M{
+		"$set": bson.M{
+			"is_adopted": true,
 		},
 	}
 	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet).Decode(&pet)

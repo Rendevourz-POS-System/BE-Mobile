@@ -105,8 +105,29 @@ func (u *requestUsecase) GetOneRequestByData(ctx context.Context, req *Request.U
 	return responseData, nil
 }
 
-func (u *requestUsecase) UpdateStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
-	res, err = u.requestRepo.PutStatusRequest(ctx, req)
+func (u *requestUsecase) UpdateStatusRequestRescueOrSurrender(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
+	res, err = u.requestRepo.PutStatusRequestRescueOrSurrender(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (u *requestUsecase) GetOneRequestById(ctx context.Context, Id *primitive.ObjectID) (res *Request.Request, err error) {
+	res, err = u.requestRepo.FindOneRequestById(ctx, Id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (u *requestUsecase) UpdateStatusRequestAdoption(ctx context.Context, req *Request.UpdateAdoptionRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
+	validate := helpers.NewValidator()
+	if errs := validate.Struct(req); errs != nil {
+		err = helpers.CustomError(errs)
+		return nil, err
+	}
+	res, err = u.requestRepo.PutStatusRequestAdoption(ctx, req)
 	if err != nil {
 		return nil, err
 	}
