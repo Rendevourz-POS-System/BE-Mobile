@@ -78,6 +78,6 @@ type (
 	}
 	UpdateAdoptionRequestStatus struct {
 		RequestId primitive.ObjectID `json:"RequestId" validate:"required"`
-		ShelterId primitive.ObjectID `json:"ShelterId" validate:"required"`
+		ShelterId primitive.ObjectID `json:"ShelterId"`
 	}
 )
