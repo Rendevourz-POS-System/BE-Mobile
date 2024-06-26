@@ -87,7 +87,8 @@ type (
 	}
 	// Change Ready For Adopt Payload
 	UpdateReadyForAdoptPayload struct {
-		PetId  primitive.ObjectID `json:"PetId" validate:"required"`
-		UserId primitive.ObjectID `json:"UserId" validate:"required"`
+		PetId     primitive.ObjectID `json:"PetId" validate:"required"`
+		ShelterId primitive.ObjectID `json:"ShelterId" validate:"required"`
+		UserId    primitive.ObjectID `json:"UserId" validate:"required"`
 	}
 )
