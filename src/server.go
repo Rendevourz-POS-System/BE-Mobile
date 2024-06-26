@@ -156,5 +156,4 @@ func RegisterRoutes(router *gin.Engine) {
 	donationHandlers := Request.NewDonationShelterHttp(router)
 	adoptionHandlers := Request.NewAdoptionShelterHttp(router)
 	Request.NewRequestHttp(router, midtransUsecase, donationHandlers, adoptionHandlers, userHandler, shelterHttp, petHttp)
-
 }

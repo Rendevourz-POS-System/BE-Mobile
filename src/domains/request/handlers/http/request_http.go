@@ -51,12 +51,12 @@ func NewRequestHttp(router *gin.Engine, midtrans midtrans_interfaces.MidtransUse
 	{
 		user.GET("/find", handlers.FindAll)
 		user.POST("/create", handlers.CreateRequest)
+		user.POST("/update_adoption", handlers.UpdateStatusAdoption)
 		user.POST("/donation", handlers.CreateDonationRequest)
 		user.POST("/rescue_or_surrender", handlers.CreateRescueAndSurrender)
 		user.PUT("/rescue_or_surrender/update", handlers.UpdateStatusRescueAndSurrender)
 	}
 	return handlers
-
 }
 
 func (RequestHttp *RequestHttp) FindAll(ctx *gin.Context) {
@@ -161,5 +161,9 @@ func (RequestHttp *RequestHttp) UpdateStatusRescueAndSurrender(ctx *gin.Context)
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to Update request ! ", ErrorS: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Update Status [%s] to [%s] Request !", data.Status, updatedData.Status), Data: updatedData})
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Update Status [%s] to [%s] Request !", data.Status, updatedData.Request.Status), Data: updatedData})
+}
+
+func (RequestHttp *RequestHttp) UpdateStatusAdoption(ctx *gin.Context) {
+
 }

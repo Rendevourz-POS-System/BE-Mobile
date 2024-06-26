@@ -323,3 +323,21 @@ func (r *petRepo) DestroyPetByUser(ctx context.Context, Pets Pet.PetDeletePayloa
 	}
 	return res, nil
 }
+
+func (r *petRepo) PutReadyForAdoptStatus(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
+	filter := bson.M{"_id": Id}
+	update := bson.M{
+		"$set": bson.M{
+			"ready_to_adopt": true,
+		},
+	}
+	// Perform the update operation
+	err = r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&res)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("Cannot Find Pet ! ")
+		}
+		return nil, err
+	}
+	return res, nil
+}

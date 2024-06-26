@@ -148,3 +148,11 @@ func (u *petUseCase) DeletePetByUser(ctx context.Context, pet Pet.PetDeletePaylo
 	}
 	return res, err
 }
+
+func (u *petUseCase) UpdateReadyForAdoptStatus(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
+	res, err = u.petRepo.PutReadyForAdoptStatus(ctx, Id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

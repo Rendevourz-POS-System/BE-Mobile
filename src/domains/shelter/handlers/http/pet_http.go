@@ -39,6 +39,7 @@ func NewPetHttp(router *gin.Engine, shelterHttp *ShelterHttp) *PetHttp {
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.DELETE("/delete", handler.DeletePetByUser)
 		user.PUT("/update", handler.UpdatePet)
+		user.PUT("/change_ready_for_adopt", handler.UpdateReadyForAdopt)
 	}
 	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
 	{
@@ -109,13 +110,6 @@ func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context) (*Pet.Pet, 
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
 		return nil, err
 	}
-	//if len(pet.Pet.ID) > 0 {
-	//	data, err := h.petUsecase.GetPetById(ctx, &pet.Pet.ID)
-	//	if err != nil {
-	//		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to find pet !", Errors: err})
-	//		return data, nil
-	//	}
-	//} else {
 	filesName, err := image_helpers.SaveImageToTemp(ctx, form)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
@@ -147,8 +141,6 @@ func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context) (*Pet.Pet, 
 		return nil, err
 	}
 	return data, nil
-	//}
-	//return nil, nil
 }
 
 func (h *PetHttp) GetAllPets(ctx *gin.Context) {
@@ -259,6 +251,36 @@ func (h *PetHttp) UpdatePet(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, updatedPet)
+}
+
+func (h *PetHttp) UpdateReadyForAdopt(ctx *gin.Context) {
+	req := &Pet.UpdateReadyForAdoptPayload{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: err.Error()})
+		return
+	}
+	findPet, err := h.petUsecase.GetPetById(ctx, &req.PetId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Pet Id Not Found ! ", Error: err.Error()})
+		return
+	}
+	if strings.ToLower(helpers.GetRoleFromContext(ctx)) == "user" {
+		if findPet.ShelterId != nil && len(findPet.ShelterId) > 0 {
+			data, _ := h.shelterHttp.shelterUsecase.GetOneDataById(ctx, &Pet.ShelterSearch{
+				ShelterId: *findPet.ShelterId,
+			})
+			if data.UserId != helpers.GetUserId(ctx) {
+				ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "You Can Only Update Your Own Pet"})
+				return
+			}
+		}
+	}
+	updatedPet, errUpdatePet := h.petUsecase.UpdateReadyForAdoptStatus(ctx, &req.PetId)
+	if errUpdatePet != nil {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: errUpdatePet.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Data: updatedPet, Message: "Updated Successfully"})
 }
 
 func (h *PetHttp) DeletePetByAdmin(ctx *gin.Context) {

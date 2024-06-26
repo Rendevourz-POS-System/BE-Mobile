@@ -199,9 +199,9 @@ func RegexCaseInsensitivePattern(pattern interface{}) *bson.M {
 func FillRequestData(req *Pet.Pet, ctx *gin.Context) (res *Request.Request) {
 	userId := GetUserId(ctx)
 	res = &Request.Request{
-		PetId:     &req.ID,
-		ShelterId: *req.ShelterId,
-		UserId:    userId,
+		PetId: &req.ID,
+		//ShelterId: *req.ShelterId,
+		UserId: userId,
 	}
 	return res
 }

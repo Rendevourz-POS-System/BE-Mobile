@@ -105,7 +105,7 @@ func (u *requestUsecase) GetOneRequestByData(ctx context.Context, req *Request.U
 	return responseData, nil
 }
 
-func (u *requestUsecase) UpdateStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string) {
+func (u *requestUsecase) UpdateStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
 	res, err = u.requestRepo.PutStatusRequest(ctx, req)
 	if err != nil {
 		return nil, err

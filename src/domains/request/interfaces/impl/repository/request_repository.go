@@ -53,6 +53,12 @@ func (r *requestRepo) StoreOneRequest(ctx context.Context, req *Request.Request)
 
 func (r *requestRepo) filterRequest(search *Request.SearchRequestPayload) bson.D {
 	var filter bson.D
+	if search.RequestId != nil {
+		filter = append(filter, bson.E{
+			Key:   "status",
+			Value: search.RequestId,
+		})
+	}
 	if search.Search != nil {
 		regexFilter := bson.M{"$regex": primitive.Regex{
 			Pattern: *search.Search,
@@ -140,7 +146,11 @@ func (r *requestRepo) FindOneRequestByData(ctx context.Context, data *bson.M) (r
 	return res, nil
 }
 
-func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.Request, err []string) {
+func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string) {
+	var (
+		request *Request.Request
+		pet     *Pet.Pet
+	)
 	filter := bson.M{"_id": req.RequestId} // Adjust the filter as per your requirements
 	// Define the update operation to update only the `reason` field
 	update := bson.M{
@@ -150,12 +160,27 @@ func (r *requestRepo) PutStatusRequest(ctx context.Context, req *Request.UpdateR
 		},
 	}
 	// Perform the find and update operation
-	errs := r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&res)
+	errs := r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&request)
 	if errs != nil {
 		if errs == mongo.ErrNoDocuments {
 			return nil, []string{"Request Not Found!"}
 		}
 		return nil, []string{errs.Error()}
 	}
+	filterPet := bson.M{"_id": request.PetId}
+	updatePet := bson.M{
+		"$set": bson.M{
+			"shelter_id": request.ShelterId,
+		},
+	}
+	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet).Decode(&pet)
+	if errUpdatePet != nil {
+		if errUpdatePet == mongo.ErrNoDocuments {
+			return nil, []string{"Request Not Found!"}
+		}
+		return nil, []string{errUpdatePet.Error()}
+	}
+	res.Request = request
+	res.Pet = pet
 	return res, nil
 }

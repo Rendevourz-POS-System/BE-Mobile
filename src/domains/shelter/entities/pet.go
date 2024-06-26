@@ -85,4 +85,9 @@ type (
 		PetsId    []primitive.ObjectID `json:"PetId" validate:"required"`
 		UserId    primitive.ObjectID   `json:"UserId,omitempty"`
 	}
+	// Change Ready For Adopt Payload
+	UpdateReadyForAdoptPayload struct {
+		PetId  primitive.ObjectID `json:"PetId" validate:"required"`
+		UserId primitive.ObjectID `json:"UserId" validate:"required"`
+	}
 )

@@ -23,12 +23,6 @@ type Request struct {
 }
 
 type (
-	RescuePayload struct {
-		Request `json:"Request" validate:"required"`
-	}
-	AdoptionPayload struct {
-		Request `json:"Request" validate:"required"`
-	}
 	DonationPayload struct {
 		Id        primitive.ObjectID `json:"Id" bson:"_id,omitempty"`
 		UserId    primitive.ObjectID `json:"UserId" bson:"user_id"`
@@ -77,5 +71,9 @@ type (
 		Type      string             `json:"Type" bson:"type" validate:"required,request-type,rescueOrSurrender"`
 		Status    string             `json:"Status" bson:"status" validate:"required,approve_or_reject"`
 		Reason    *string            `json:"Reason,omitempty" bson:"reason"`
+	}
+	UpdateRescueAndSurrenderRequestStatusResponse struct {
+		Request *Request `json:"Request"`
+		Pet     *Pet.Pet `json:"Pet"`
 	}
 )
