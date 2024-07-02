@@ -55,7 +55,7 @@ func (r *requestRepo) filterRequest(search *Request.SearchRequestPayload) bson.D
 	var filter bson.D
 	if search.RequestId != nil {
 		filter = append(filter, bson.E{
-			Key:   "status",
+			Key:   "_id",
 			Value: search.RequestId,
 		})
 	}
