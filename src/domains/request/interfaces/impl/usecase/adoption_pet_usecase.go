@@ -1,6 +1,6 @@
 package usecase
 
-import "main.go/domains/request/interfaces"
+import "main.go/src/domains/request/interfaces"
 
 type adoptionPetUsecase struct {
 	adoptionPetRepo interfaces.AdoptionPetRepository

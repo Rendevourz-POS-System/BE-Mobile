@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"main.go/configs/app"
-	Pet "main.go/domains/shelter/entities"
-	"main.go/domains/user/entities"
-	"main.go/shared/message/errors"
+	"main.go/src/configs/app"
+	Pet "main.go/src/domains/shelter/entities"
+	"main.go/src/domains/user/entities"
+	"main.go/src/shared/message/errors"
 )
 
 func GenerateImagePath(data ...string) string {

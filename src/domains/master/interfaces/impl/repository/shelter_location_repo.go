@@ -6,8 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	ShelterLocation "main.go/domains/master/entities"
-	"main.go/shared/collections"
+	ShelterLocation "main.go/src/domains/master/entities"
+	"main.go/src/shared/collections"
 )
 
 type shelterLocationRepo struct {

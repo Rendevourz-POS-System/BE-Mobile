@@ -2,16 +2,16 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"main.go/configs/app"
-	_const "main.go/configs/const"
-	"main.go/configs/database"
-	Shelter "main.go/domains/shelter/entities"
-	"main.go/domains/shelter/interfaces"
-	"main.go/domains/shelter/interfaces/impl/repository"
-	"main.go/domains/shelter/interfaces/impl/usecase"
-	"main.go/middlewares"
-	"main.go/shared/helpers"
-	"main.go/shared/message/errors"
+	"main.go/src/configs/app"
+	_const "main.go/src/configs/const"
+	"main.go/src/configs/database"
+	Shelter "main.go/src/domains/shelter/entities"
+	"main.go/src/domains/shelter/interfaces"
+	"main.go/src/domains/shelter/interfaces/impl/repository"
+	"main.go/src/domains/shelter/interfaces/impl/usecase"
+	"main.go/src/middlewares"
+	"main.go/src/shared/helpers"
+	"main.go/src/shared/message/errors"
 	"net/http"
 )
 

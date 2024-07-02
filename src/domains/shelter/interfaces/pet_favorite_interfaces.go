@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"context"
-	Shelter "main.go/domains/shelter/entities"
+	Shelter "main.go/src/domains/shelter/entities"
 )
 
 type PetFavoriteUseCase interface {

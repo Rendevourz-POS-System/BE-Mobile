@@ -3,7 +3,7 @@ package interfaces
 import (
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
-	Request "main.go/domains/request/entities"
+	Request "main.go/src/domains/request/entities"
 )
 
 type MidtransCoreServices interface {

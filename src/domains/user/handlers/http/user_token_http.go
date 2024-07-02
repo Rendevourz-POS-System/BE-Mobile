@@ -2,11 +2,11 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	_const "main.go/configs/const"
-	"main.go/configs/database"
-	"main.go/domains/user/interfaces"
-	"main.go/domains/user/interfaces/impl/repository"
-	"main.go/domains/user/interfaces/impl/usecase"
+	_const "main.go/src/configs/const"
+	"main.go/src/configs/database"
+	"main.go/src/domains/user/interfaces"
+	"main.go/src/domains/user/interfaces/impl/repository"
+	"main.go/src/domains/user/interfaces/impl/usecase"
 	"net/http"
 )
 

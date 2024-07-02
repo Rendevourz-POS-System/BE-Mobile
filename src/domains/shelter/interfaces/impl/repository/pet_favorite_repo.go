@@ -4,8 +4,8 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	Shelter "main.go/domains/shelter/entities"
-	"main.go/shared/collections"
+	Shelter "main.go/src/domains/shelter/entities"
+	"main.go/src/shared/collections"
 )
 
 type petFavoriteRepo struct {

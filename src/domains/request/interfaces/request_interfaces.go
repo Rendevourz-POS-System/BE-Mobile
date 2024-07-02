@@ -4,8 +4,8 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"main.go/domains/payment/interfaces"
-	Request "main.go/domains/request/entities"
+	"main.go/src/domains/payment/interfaces"
+	Request "main.go/src/domains/request/entities"
 )
 
 type RequestRepository interface {

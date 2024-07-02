@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gopkg.in/gomail.v2"
 	"log"
-	"main.go/configs/app"
-	"main.go/domains/user/mail"
+	"main.go/src/configs/app"
+	"main.go/src/domains/user/mail"
 	"os"
 )
 

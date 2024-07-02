@@ -4,8 +4,8 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	Request "main.go/domains/request/entities"
-	"main.go/shared/collections"
+	Request "main.go/src/domains/request/entities"
+	"main.go/src/shared/collections"
 )
 
 type donationShelterRepo struct {

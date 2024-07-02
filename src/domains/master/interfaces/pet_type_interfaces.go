@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"context"
-	PetType "main.go/domains/master/entities"
+	PetType "main.go/src/domains/master/entities"
 )
 
 type PetTypeRepository interface {

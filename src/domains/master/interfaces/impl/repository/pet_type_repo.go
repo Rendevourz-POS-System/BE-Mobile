@@ -6,8 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	PetType "main.go/domains/master/entities"
-	"main.go/shared/collections"
+	PetType "main.go/src/domains/master/entities"
+	"main.go/src/shared/collections"
 )
 
 type petTypeRepo struct {

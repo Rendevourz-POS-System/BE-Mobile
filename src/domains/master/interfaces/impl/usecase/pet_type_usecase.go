@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	PetType "main.go/domains/master/entities"
-	"main.go/domains/master/interfaces"
+	PetType "main.go/src/domains/master/entities"
+	"main.go/src/domains/master/interfaces"
 )
 
 type petTypeUsecase struct {

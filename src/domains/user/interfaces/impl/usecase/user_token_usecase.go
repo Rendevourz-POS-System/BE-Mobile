@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	JwtEmailClaims "main.go/domains/user/entities"
-	"main.go/domains/user/interfaces"
+	JwtEmailClaims "main.go/src/domains/user/entities"
+	"main.go/src/domains/user/interfaces"
 )
 
 type userTokenUsecase struct {

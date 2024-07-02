@@ -8,9 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	User "main.go/domains/user/entities"
-	"main.go/shared/collections"
-	"main.go/shared/helpers"
+	User "main.go/src/domains/user/entities"
+	"main.go/src/shared/collections"
+	"main.go/src/shared/helpers"
 )
 
 type userRepository struct {

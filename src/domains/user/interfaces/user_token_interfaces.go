@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	JwtEmailClaims "main.go/domains/user/entities"
+	JwtEmailClaims "main.go/src/domains/user/entities"
 )
 
 type UserTokenRepository interface {

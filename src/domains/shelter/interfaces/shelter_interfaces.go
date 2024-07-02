@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	Shelter "main.go/domains/shelter/entities"
+	Shelter "main.go/src/domains/shelter/entities"
 )
 
 type ShelterRepository interface {

@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
-	"main.go/configs/app"
+	"main.go/src/configs/app"
 	"strings"
 )
 

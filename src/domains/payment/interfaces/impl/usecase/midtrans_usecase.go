@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
-	"main.go/domains/payment/interfaces"
-	Request "main.go/domains/request/entities"
-	"main.go/shared/helpers"
+	"main.go/src/domains/payment/interfaces"
+	Request "main.go/src/domains/request/entities"
+	"main.go/src/shared/helpers"
 	"strings"
 )
 
