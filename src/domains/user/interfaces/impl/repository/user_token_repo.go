@@ -6,9 +6,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	JwtEmailClaims "main.go/domains/user/entities"
-	"main.go/shared/collections"
-	"main.go/shared/helpers"
+	JwtEmailClaims "main.go/src/domains/user/entities"
+	"main.go/src/shared/collections"
+	"main.go/src/shared/helpers"
 	"time"
 )
 

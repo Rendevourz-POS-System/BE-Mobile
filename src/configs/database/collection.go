@@ -2,7 +2,7 @@ package database
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
-	"main.go/shared/collections"
+	"main.go/src/shared/collections"
 )
 
 var (

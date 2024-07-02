@@ -2,13 +2,13 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	_const "main.go/configs/const"
-	"main.go/configs/database"
-	PetType "main.go/domains/master/entities"
-	"main.go/domains/master/interfaces"
-	"main.go/domains/master/interfaces/impl/repository"
-	"main.go/domains/master/interfaces/impl/usecase"
-	"main.go/shared/message/errors"
+	_const "main.go/src/configs/const"
+	"main.go/src/configs/database"
+	PetType "main.go/src/domains/master/entities"
+	"main.go/src/domains/master/interfaces"
+	"main.go/src/domains/master/interfaces/impl/repository"
+	"main.go/src/domains/master/interfaces/impl/usecase"
+	"main.go/src/shared/message/errors"
 	"net/http"
 )
 

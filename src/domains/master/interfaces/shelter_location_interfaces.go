@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"context"
-	ShelterLocation "main.go/domains/master/entities"
+	ShelterLocation "main.go/src/domains/master/entities"
 )
 
 type ShelterLocationRepository interface {

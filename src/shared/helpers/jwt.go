@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	_ "go.mongodb.org/mongo-driver/bson/primitive"
-	appConfig "main.go/configs/app"
-	User "main.go/domains/user/entities"
+	appConfig "main.go/src/configs/app"
+	User "main.go/src/domains/user/entities"
 	"time"
 )
 

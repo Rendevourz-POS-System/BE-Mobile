@@ -2,8 +2,8 @@ package helpers
 
 import (
 	"fmt"
-	Request "main.go/domains/request/entities"
-	Pet "main.go/domains/shelter/entities"
+	Request "main.go/src/domains/request/entities"
+	Pet "main.go/src/domains/shelter/entities"
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -16,10 +16,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"main.go/configs/app"
-	_const "main.go/configs/const"
-	ShelterPresistence "main.go/domains/shelter/presistence"
-	"main.go/domains/user/presistence"
+	"main.go/src/configs/app"
+	_const "main.go/src/configs/const"
+	ShelterPresistence "main.go/src/domains/shelter/presistence"
+	"main.go/src/domains/user/presistence"
 )
 
 var (

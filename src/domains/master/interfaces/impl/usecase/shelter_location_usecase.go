@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	ShelterLocation "main.go/domains/master/entities"
-	"main.go/domains/master/interfaces"
+	ShelterLocation "main.go/src/domains/master/entities"
+	"main.go/src/domains/master/interfaces"
 )
 
 type shelterLocationUsecase struct {

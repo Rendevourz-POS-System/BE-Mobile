@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"main.go/configs/app"
-	Email "main.go/domains/user/entities"
-	"main.go/domains/user/mail/service"
+	"main.go/src/configs/app"
+	Email "main.go/src/domains/user/entities"
+	"main.go/src/domains/user/mail/service"
 	"os"
 	"path/filepath"
 )

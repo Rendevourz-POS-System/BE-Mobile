@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	Shelter "main.go/domains/shelter/entities"
-	"main.go/domains/shelter/interfaces"
+	Shelter "main.go/src/domains/shelter/entities"
+	"main.go/src/domains/shelter/interfaces"
 )
 
 type petFavoriteUseCase struct {

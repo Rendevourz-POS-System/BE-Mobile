@@ -3,9 +3,9 @@ package middlewares
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"main.go/configs/app"
-	"main.go/shared/helpers"
-	"main.go/shared/message/errors"
+	"main.go/src/configs/app"
+	"main.go/src/shared/helpers"
+	"main.go/src/shared/message/errors"
 	"net/http"
 	"strings"
 )

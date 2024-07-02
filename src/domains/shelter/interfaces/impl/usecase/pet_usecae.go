@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/base64"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"main.go/configs/app"
-	Pet "main.go/domains/shelter/entities"
-	"main.go/domains/shelter/interfaces"
-	"main.go/shared/helpers"
-	"main.go/shared/helpers/image_helpers"
+	"main.go/src/configs/app"
+	Pet "main.go/src/domains/shelter/entities"
+	"main.go/src/domains/shelter/interfaces"
+	"main.go/src/shared/helpers"
+	"main.go/src/shared/helpers/image_helpers"
 	"os"
 )
 

@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	User "main.go/domains/user/entities"
+	User "main.go/src/domains/user/entities"
 )
 
 type UserRepository interface {

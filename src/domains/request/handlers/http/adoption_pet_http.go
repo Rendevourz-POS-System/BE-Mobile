@@ -2,13 +2,13 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"main.go/configs/app"
-	_const "main.go/configs/const"
-	"main.go/configs/database"
-	"main.go/domains/request/interfaces"
-	"main.go/domains/request/interfaces/impl/repository"
-	"main.go/domains/request/interfaces/impl/usecase"
-	"main.go/middlewares"
+	"main.go/src/configs/app"
+	_const "main.go/src/configs/const"
+	"main.go/src/configs/database"
+	"main.go/src/domains/request/interfaces"
+	"main.go/src/domains/request/interfaces/impl/repository"
+	"main.go/src/domains/request/interfaces/impl/usecase"
+	"main.go/src/middlewares"
 )
 
 type AdoptionShelterHttp struct {

@@ -2,8 +2,8 @@ package entities
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	Pet "main.go/domains/shelter/entities"
-	User "main.go/domains/user/entities"
+	Pet "main.go/src/domains/shelter/entities"
+	User "main.go/src/domains/user/entities"
 	"mime/multipart"
 	"time"
 )

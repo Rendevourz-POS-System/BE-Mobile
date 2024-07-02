@@ -98,7 +98,7 @@ type Payment struct {
 
 func loadConfig(environment string) (*viper.Viper, error) {
 	v := viper.New()
-	v.SetConfigName(fmt.Sprintf("../config/config-%s", environment))
+	v.SetConfigName(fmt.Sprintf("./config/config-%s", environment))
 	v.AddConfigPath(".")
 	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {

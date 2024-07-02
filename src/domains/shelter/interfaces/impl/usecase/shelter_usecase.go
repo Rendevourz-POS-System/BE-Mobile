@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/base64"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"main.go/configs/app"
-	Shelter "main.go/domains/shelter/entities"
-	"main.go/domains/shelter/interfaces"
-	"main.go/domains/shelter/presistence"
-	"main.go/shared/helpers"
-	"main.go/shared/helpers/image_helpers"
+	"main.go/src/configs/app"
+	Shelter "main.go/src/domains/shelter/entities"
+	"main.go/src/domains/shelter/interfaces"
+	"main.go/src/domains/shelter/presistence"
+	"main.go/src/shared/helpers"
+	"main.go/src/shared/helpers/image_helpers"
 	"os"
 )
 

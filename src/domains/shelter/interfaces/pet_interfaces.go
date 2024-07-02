@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	Pet "main.go/domains/shelter/entities"
+	Pet "main.go/src/domains/shelter/entities"
 )
 
 type PetRepository interface {

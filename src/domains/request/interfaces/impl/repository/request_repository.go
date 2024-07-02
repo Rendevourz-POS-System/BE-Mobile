@@ -7,11 +7,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	Request "main.go/domains/request/entities"
-	"main.go/domains/request/presistence"
-	Pet "main.go/domains/shelter/entities"
-	"main.go/shared/collections"
-	"main.go/shared/helpers"
+	Request "main.go/src/domains/request/entities"
+	"main.go/src/domains/request/presistence"
+	Pet "main.go/src/domains/shelter/entities"
+	"main.go/src/shared/collections"
+	"main.go/src/shared/helpers"
 	"strings"
 )
 

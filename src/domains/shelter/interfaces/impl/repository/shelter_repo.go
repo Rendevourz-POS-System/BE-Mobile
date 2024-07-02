@@ -7,9 +7,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	Shelter "main.go/domains/shelter/entities"
-	"main.go/shared/collections"
-	"main.go/shared/helpers"
+	Shelter "main.go/src/domains/shelter/entities"
+	"main.go/src/shared/collections"
+	"main.go/src/shared/helpers"
 )
 
 type shelterRepository struct {

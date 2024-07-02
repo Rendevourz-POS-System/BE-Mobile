@@ -3,8 +3,8 @@ package interfaces
 import (
 	"context"
 	"github.com/midtrans/midtrans-go/coreapi"
-	midtrans_interfaces "main.go/domains/payment/interfaces"
-	Request "main.go/domains/request/entities"
+	midtrans_interfaces "main.go/src/domains/payment/interfaces"
+	Request "main.go/src/domains/request/entities"
 )
 
 type DonationShelterRepository interface {

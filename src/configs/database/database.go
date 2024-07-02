@@ -6,9 +6,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"main.go/configs/app"
-	_const "main.go/configs/const"
-	"main.go/shared/helpers"
+	"main.go/src/configs/app"
+	_const "main.go/src/configs/const"
+	"main.go/src/shared/helpers"
 	"net/url"
 )
 
