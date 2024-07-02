@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
-	appConfig "main.go/configs/app"
-	_const "main.go/configs/const"
-	"main.go/configs/database"
+	appConfig "main.go/src/configs/app"
+	_const "main.go/src/configs/const"
+	"main.go/src/configs/database"
 )
 
 func init() {
