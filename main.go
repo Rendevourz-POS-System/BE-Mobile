@@ -15,9 +15,11 @@ func init() {
 	if err != nil {
 		log.Fatal("Error loading local.env file")
 	}
+	//gin.SetMode(gin.ReleaseMode)
 }
 
 func main() {
+	//app := gin.New()
 	app := gin.Default()
 	db := database.ConnectDatabase(_const.DB_SHELTER_APP)
 	defer func() {
