@@ -102,11 +102,15 @@ func (r *petRepo) filterPets(search *Pet.PetSearch) bson.D {
 			bson.M{"deleted_at": nil},
 		},
 	})
-	// Add filter to include only documents where ShelterId is not null
-	filter = append(filter, bson.E{
-		Key:   "shelter_id",
-		Value: bson.M{"$ne": nil},
-	})
+	if search.ShowPetWithShelter != nil {
+		// Add filter to include only documents where ShelterId is not null
+		if *search.ShowPetWithShelter == false {
+			filter = append(filter, bson.E{
+				Key:   "shelter_id",
+				Value: bson.M{"$ne": nil},
+			})
+		}
+	}
 	return filter
 }
 
