@@ -163,8 +163,9 @@ func (r *requestRepo) PutStatusRequestRescueOrSurrender(ctx context.Context, req
 	update := bson.M{
 		"$set": dataBsonM,
 	}
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	// Perform the find and update operation
-	errs := r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&request)
+	errs := r.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&request)
 	if errs != nil {
 		if errs == mongo.ErrNoDocuments {
 			return nil, []string{"Request Not Found!"}
@@ -177,15 +178,17 @@ func (r *requestRepo) PutStatusRequestRescueOrSurrender(ctx context.Context, req
 			"shelter_id": request.ShelterId,
 		},
 	}
-	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet).Decode(&pet)
+	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
 	if errUpdatePet != nil {
 		if errUpdatePet == mongo.ErrNoDocuments {
 			return nil, []string{"Request Not Found!"}
 		}
 		return nil, []string{errUpdatePet.Error()}
 	}
-	res.Request = request
-	res.Pet = pet
+	res = &Request.UpdateRescueAndSurrenderRequestStatusResponse{
+		Request: request,
+		Pet:     pet,
+	}
 	return res, nil
 }
 
@@ -212,7 +215,8 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		request *Request.Request
 		pet     *Pet.Pet
 	)
-	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest).Decode(&request)
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest, opts).Decode(&request)
 	if errs != nil {
 		if errs == mongo.ErrNoDocuments {
 			return nil, []string{"Request Not Found!"}
@@ -225,7 +229,7 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 			"is_adopted": true,
 		},
 	}
-	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet).Decode(&pet)
+	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
 	if errUpdatePet != nil {
 		if errUpdatePet == mongo.ErrNoDocuments {
 			return nil, []string{"Request Not Found!"}

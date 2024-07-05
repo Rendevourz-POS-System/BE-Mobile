@@ -161,7 +161,7 @@ func (RequestHttp *RequestHttp) UpdateStatusRescueAndSurrender(ctx *gin.Context)
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to Update request ! ", ErrorS: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Update Status [%s] to [%s] Request !", data.Status, updatedData.Request.Status), Data: updatedData})
+	ctx.JSON(http.StatusOK, errors.SuccessWrapper{Message: fmt.Sprintf("Success Update Status [%s] to [%s] Request !", data.Status, request.Status), Data: updatedData})
 }
 
 func (RequestHttp *RequestHttp) UpdateStatusAdoption(ctx *gin.Context) {
