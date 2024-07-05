@@ -153,12 +153,15 @@ func (r *requestRepo) PutStatusRequestRescueOrSurrender(ctx context.Context, req
 	)
 	filter := bson.M{"_id": req.RequestId} // Adjust the filter as per your requirements
 	// Define the update operation to update only the `reason` field
+	dataBsonM := bson.M{
+		"status":      presistence.Status(req.Status),
+		"CompletedAt": helpers.GetCurrentTime(nil),
+	}
+	if req.Reason != nil {
+		dataBsonM["reason"] = *req.Reason
+	}
 	update := bson.M{
-		"$set": bson.M{
-			"status":      presistence.Status(req.Status),
-			"reason":      req.Reason,
-			"CompletedAt": helpers.GetCurrentTime(nil),
-		},
+		"$set": dataBsonM,
 	}
 	// Perform the find and update operation
 	errs := r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&request)
