@@ -175,7 +175,8 @@ func (r *requestRepo) PutStatusRequestRescueOrSurrender(ctx context.Context, req
 	filterPet := bson.M{"_id": request.PetId}
 	updatePet := bson.M{
 		"$set": bson.M{
-			"shelter_id": request.ShelterId,
+			"shelter_id":  request.ShelterId,
+			"is_approved": true,
 		},
 	}
 	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
@@ -212,8 +213,11 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		},
 	}
 	var (
-		request *Request.Request
-		pet     *Pet.Pet
+		request        *Request.Request
+		findPet        *Pet.Pet
+		pet            *Pet.Pet
+		updatePetBsonM bson.M
+		updatePet      bson.M
 	)
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest, opts).Decode(&request)
@@ -224,10 +228,31 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		return nil, []string{errs.Error()}
 	}
 	filterPet := bson.M{"_id": request.PetId}
-	updatePet := bson.M{
-		"$set": bson.M{
-			"is_adopted": true,
-		},
+	if req.IsReadyForAdoption != nil {
+		updatePetBsonM = bson.M{
+			"is_adopted": req.ShelterId,
+		}
+		updatePet = bson.M{
+			"$set": updatePetBsonM,
+		}
+	} else {
+		updatePet = bson.M{
+			"$set": bson.M{
+				"is_adopted": req.ShelterId,
+			},
+		}
+	}
+	errFindOne := r.database.Collection(collections.PetCollectionName).FindOne(ctx, filterPet).Decode(&findPet)
+	if errFindOne != nil {
+		if errFindOne == mongo.ErrNoDocuments {
+			return nil, []string{"Pet Not Found!"}
+		}
+		return nil, []string{errFindOne.Error()}
+	}
+	if findPet.IsApproved != nil {
+		if *findPet.IsApproved != true {
+			return nil, []string{"Pet Not Approved!"}
+		}
 	}
 	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
 	if errUpdatePet != nil {
@@ -236,7 +261,9 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		}
 		return nil, []string{errUpdatePet.Error()}
 	}
-	res.Request = request
-	res.Pet = pet
+	res = &Request.UpdateRescueAndSurrenderRequestStatusResponse{
+		Request: request,
+		Pet:     pet,
+	}
 	return res, nil
 }

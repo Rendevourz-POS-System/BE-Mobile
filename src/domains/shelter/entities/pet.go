@@ -20,6 +20,7 @@ type Pet struct {
 	OldImage       []string            `json:"OldImage,omitempty"`
 	Image          []string            `json:"Image" bson:"image" validate:"omitempty"`
 	ImageBase64    []string            `json:"ImageBase64" validate:"omitempty"`
+	IsApproved     *bool               `json:"IsApproved" bson:"is_approved"`
 	PetDob         *time.Time          `json:"PetDob" bson:"pet_dob" validate:"omitempty"`
 	CreatedAt      *time.Time          `json:"CreatedAt" bson:"CreatedAt,omitempty"`
 	UpdatedAt      *time.Time          `json:"UpdatedAt,omitempty" bson:"UpdatedAt,omitempty"`
@@ -91,5 +92,11 @@ type (
 		PetId     primitive.ObjectID `json:"PetId" validate:"required"`
 		ShelterId primitive.ObjectID `json:"ShelterId" validate:"required"`
 		UserId    primitive.ObjectID `json:"UserId" validate:"required"`
+	}
+	UpdateForIsAdopt struct {
+		PetId          primitive.ObjectID `json:"PetId" validate:"required"`
+		ShelterId      primitive.ObjectID `json:"ShelterId" validate:"required"`
+		UserId         primitive.ObjectID `json:"UserId" validate:"required"`
+		IsReadyToAdopt *bool              `json:"IsReadyToAdopt,omitempty"`
 	}
 )
