@@ -333,15 +333,26 @@ func (r *petRepo) DestroyPetByUser(ctx context.Context, Pets Pet.PetDeletePayloa
 	return res, nil
 }
 
-func (r *petRepo) PutReadyForAdoptStatus(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
-	filter := bson.M{"_id": Id}
-	update := bson.M{
-		"$set": bson.M{
-			"ready_to_adopt": true,
-		},
+func (r *petRepo) PutReadyForAdoptStatus(ctx context.Context, req *Pet.UpdateReadyForAdoptPayload) (res *Pet.Pet, err error) {
+	filter := bson.M{"_id": req.PetId}
+	var (
+		data bson.M
+	)
+	if req.IsReadyToAdopt != nil {
+		data = bson.M{
+			"ready_to_adopt": req.IsReadyToAdopt,
+		}
+	} else {
+		data = bson.M{
+			"ready_to_adopt": false,
+		}
 	}
+	update := bson.M{
+		"$set": data,
+	}
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	// Perform the update operation
-	err = r.collection.FindOneAndUpdate(ctx, filter, update).Decode(&res)
+	err = r.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&res)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("Cannot Find Pet ! ")

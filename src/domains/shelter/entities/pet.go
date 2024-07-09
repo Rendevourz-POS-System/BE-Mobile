@@ -89,14 +89,9 @@ type (
 	}
 	// Change Ready For Adopt Payload
 	UpdateReadyForAdoptPayload struct {
-		PetId     primitive.ObjectID `json:"PetId" validate:"required"`
-		ShelterId primitive.ObjectID `json:"ShelterId" validate:"required"`
-		UserId    primitive.ObjectID `json:"UserId" validate:"required"`
-	}
-	UpdateForIsAdopt struct {
 		PetId          primitive.ObjectID `json:"PetId" validate:"required"`
 		ShelterId      primitive.ObjectID `json:"ShelterId" validate:"required"`
-		UserId         primitive.ObjectID `json:"UserId" validate:"required"`
+		UserId         primitive.ObjectID `json:"UserId"`
 		IsReadyToAdopt *bool              `json:"IsReadyToAdopt,omitempty"`
 	}
 )

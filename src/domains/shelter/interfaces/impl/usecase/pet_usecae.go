@@ -149,8 +149,8 @@ func (u *petUseCase) DeletePetByUser(ctx context.Context, pet Pet.PetDeletePaylo
 	return res, err
 }
 
-func (u *petUseCase) UpdateReadyForAdoptStatus(ctx context.Context, Id *primitive.ObjectID) (res *Pet.Pet, err error) {
-	res, err = u.petRepo.PutReadyForAdoptStatus(ctx, Id)
+func (u *petUseCase) UpdateReadyForAdoptStatus(ctx context.Context, req *Pet.UpdateReadyForAdoptPayload) (res *Pet.Pet, err error) {
+	res, err = u.petRepo.PutReadyForAdoptStatus(ctx, req)
 	if err != nil {
 		return nil, err
 	}

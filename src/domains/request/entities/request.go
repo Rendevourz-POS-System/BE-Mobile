@@ -80,5 +80,6 @@ type (
 		RequestId          primitive.ObjectID `json:"RequestId" validate:"required"`
 		ShelterId          primitive.ObjectID `json:"ShelterId"`
 		IsReadyForAdoption *bool              `json:"IsReadyForAdoption"`
+		Status             string             `json:"Status" bson:"status" validate:"required,approve_or_reject"`
 	}
 )

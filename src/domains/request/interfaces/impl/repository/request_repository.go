@@ -208,16 +208,13 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 	filterRequest := bson.M{"_id": req.RequestId}
 	updateRequest := bson.M{
 		"$set": bson.M{
-			"status":      presistence.Approved,
+			"status":      presistence.Status(req.Status),
 			"CompletedAt": helpers.GetCurrentTime(nil),
 		},
 	}
 	var (
-		request        *Request.Request
-		findPet        *Pet.Pet
-		pet            *Pet.Pet
-		updatePetBsonM bson.M
-		updatePet      bson.M
+		request *Request.Request
+		pet     *Pet.Pet
 	)
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest, opts).Decode(&request)
@@ -228,31 +225,10 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		return nil, []string{errs.Error()}
 	}
 	filterPet := bson.M{"_id": request.PetId}
-	if req.IsReadyForAdoption != nil {
-		updatePetBsonM = bson.M{
-			"is_adopted": req.ShelterId,
-		}
-		updatePet = bson.M{
-			"$set": updatePetBsonM,
-		}
-	} else {
-		updatePet = bson.M{
-			"$set": bson.M{
-				"is_adopted": req.ShelterId,
-			},
-		}
-	}
-	errFindOne := r.database.Collection(collections.PetCollectionName).FindOne(ctx, filterPet).Decode(&findPet)
-	if errFindOne != nil {
-		if errFindOne == mongo.ErrNoDocuments {
-			return nil, []string{"Pet Not Found!"}
-		}
-		return nil, []string{errFindOne.Error()}
-	}
-	if findPet.IsApproved != nil {
-		if *findPet.IsApproved != true {
-			return nil, []string{"Pet Not Approved!"}
-		}
+	updatePet := bson.M{
+		"$set": bson.M{
+			"is_approved": true,
+		},
 	}
 	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
 	if errUpdatePet != nil {

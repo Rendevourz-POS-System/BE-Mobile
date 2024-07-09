@@ -275,7 +275,7 @@ func (h *PetHttp) UpdateReadyForAdopt(ctx *gin.Context) {
 			}
 		}
 	}
-	updatedPet, errUpdatePet := h.petUsecase.UpdateReadyForAdoptStatus(ctx, &req.PetId)
+	updatedPet, errUpdatePet := h.petUsecase.UpdateReadyForAdoptStatus(ctx, req)
 	if errUpdatePet != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: errUpdatePet.Error()})
 		return
