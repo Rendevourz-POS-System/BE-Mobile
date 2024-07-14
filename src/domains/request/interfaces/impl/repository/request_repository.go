@@ -194,7 +194,7 @@ func (r *requestRepo) PutStatusRequestRescueOrSurrender(ctx context.Context, req
 }
 
 func (r *requestRepo) FindOneRequestById(ctx context.Context, Id *primitive.ObjectID) (res *Request.Request, err error) {
-	err = r.collection.FindOne(ctx, Id).Decode(&res)
+	err = r.collection.FindOne(ctx, bson.M{"_id": Id}).Decode(&res)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("No Data Request Found !")
@@ -213,8 +213,10 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		},
 	}
 	var (
-		request *Request.Request
-		pet     *Pet.Pet
+		request   *Request.Request
+		pet       *Pet.Pet
+		filterPet bson.M
+		updatePet bson.M
 	)
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest, opts).Decode(&request)
@@ -224,11 +226,20 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		}
 		return nil, []string{errs.Error()}
 	}
-	filterPet := bson.M{"_id": request.PetId}
-	updatePet := bson.M{
-		"$set": bson.M{
-			"is_approved": true,
-		},
+	if presistence.Status(request.Status) == presistence.Approved {
+		filterPet = bson.M{"_id": request.PetId}
+		updatePet = bson.M{
+			"$set": bson.M{
+				"is_approved": true,
+			},
+		}
+	} else if presistence.Status(request.Status) == presistence.Rejected {
+		filterPet = bson.M{"_id": request.PetId}
+		updatePet = bson.M{
+			"$set": bson.M{
+				"is_approved": false,
+			},
+		}
 	}
 	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
 	if errUpdatePet != nil {
