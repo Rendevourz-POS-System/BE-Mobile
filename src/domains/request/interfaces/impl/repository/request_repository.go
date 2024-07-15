@@ -230,6 +230,7 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		filterPet = bson.M{"_id": request.PetId}
 		updatePet = bson.M{
 			"$set": bson.M{
+				"is_adopted":  true,
 				"is_approved": true,
 			},
 		}
