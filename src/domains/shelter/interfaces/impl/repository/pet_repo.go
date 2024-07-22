@@ -274,19 +274,31 @@ func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res *Pet.Pet, e
 
 func (r *petRepo) UpdatePet(ctx context.Context, pet *Pet.Pet) (res *Pet.Pet, errs error) {
 	filter := bson.D{{Key: "_id", Value: pet.ID}}
-	update := bson.D{{Key: "$set", Value: pet}}
-	// Perform the update operation
-	result, err := r.collection.UpdateOne(ctx, filter, update)
+	// Marshal the struct to a BSON document
+	petBson, err := bson.Marshal(pet)
 	if err != nil {
 		return nil, err
 	}
-
-	if result.MatchedCount == 0 {
-		return nil, mongo.ErrNoDocuments
-	}
-	// Optionally, you can retrieve the updated document
-	err = r.collection.FindOne(ctx, filter).Decode(&res)
+	// Unmarshal back to a map to dynamically remove zero-value fields
+	var petMap bson.M
+	err = bson.Unmarshal(petBson, &petMap)
 	if err != nil {
+		return nil, err
+	}
+	// Remove the _id field from the map to avoid updating it
+	delete(petMap, "_id")
+	// Check if there are any fields to update
+	if len(petMap) == 0 {
+		return nil, errors.New("no fields to update")
+	}
+	update := bson.D{{Key: "$set", Value: petMap}}
+	// Use FindOneAndUpdate to update the document and return the updated document
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err = r.collection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&res)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, mongo.ErrNoDocuments
+		}
 		return nil, err
 	}
 	return res, nil

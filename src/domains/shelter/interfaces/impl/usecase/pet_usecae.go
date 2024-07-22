@@ -76,13 +76,6 @@ func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res *P
 
 func (u *petUseCase) UpdatePet(ctx context.Context, Id *primitive.ObjectID, pet *Pet.Pet) (res *Pet.Pet, err error) {
 	pet.ID = *Id
-	flag := false
-	if pet.ReadyToAdopt == nil {
-		pet.ReadyToAdopt = &flag
-	}
-	if pet.IsAdopted == nil {
-		pet.IsAdopted = &flag
-	}
 	data, errs := u.petRepo.UpdatePet(ctx, pet)
 	if errs != nil {
 		return nil, errs
