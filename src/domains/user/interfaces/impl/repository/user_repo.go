@@ -222,5 +222,5 @@ func (userRepo *userRepository) DestroyUserById(ctx context.Context, Id *primiti
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	return nil, nil
 }
