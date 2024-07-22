@@ -307,7 +307,6 @@ func (shelterRepo *shelterRepository) DestroyAllDataShelterByAdmin(ctx context.C
 		return err
 	}
 	defer session.EndSession(ctx)
-
 	// Define the callback function for the transaction
 	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
 		// Delete from request collection
@@ -333,12 +332,6 @@ func (shelterRepo *shelterRepository) DestroyAllDataShelterByAdmin(ctx context.C
 		if errCallback != nil {
 			return nil, errCallback
 		}
-		//// Update user collection to set shelter_id to null
-		//update := bson.D{{"$set", bson.D{{"shelter_id", nil}}}}
-		//_, errCallback = shelterRepo.database.Collection(collections.UserCollectionName).UpdateMany(sessCtx, bson.M{"shelter_id": shelterID}, update)
-		//if errCallback != nil {
-		//	return nil, errCallback
-		//}
 		return nil, nil
 	}
 	// Run the transaction with the callback
@@ -346,6 +339,5 @@ func (shelterRepo *shelterRepository) DestroyAllDataShelterByAdmin(ctx context.C
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

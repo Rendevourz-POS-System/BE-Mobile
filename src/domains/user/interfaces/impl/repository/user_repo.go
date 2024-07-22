@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	Shelter "main.go/src/domains/shelter/entities"
 	User "main.go/src/domains/user/entities"
 	"main.go/src/shared/collections"
 	"main.go/src/shared/helpers"
@@ -173,7 +174,51 @@ func (userRepo *userRepository) VerifiedUserEmail(ctx context.Context, Id *primi
 }
 
 func (userRepo *userRepository) DestroyUserById(ctx context.Context, Id *primitive.ObjectID) (res *User.User, err error) {
-	err = userRepo.collection.FindOneAndDelete(ctx, bson.M{"_id": Id}).Decode(&res)
+	var shelter *Shelter.Shelter
+	err = userRepo.database.Collection(collections.ShelterCollectionName).FindOne(ctx, bson.M{"user_id": Id}).Decode(&shelter)
+	if err != nil {
+		return nil, err
+	}
+	// Start a session
+	session, err := userRepo.database.Client().StartSession()
+	if err != nil {
+		return nil, err
+	}
+	defer session.EndSession(ctx)
+	// Define the callback function for the transaction
+	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
+		// Delete from request collection
+		_, errCallback := userRepo.database.Collection(collections.PetCollectionName).DeleteMany(sessCtx, bson.M{"shelter_id": shelter.ID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+
+		// Delete from pet collection
+		_, errCallback = userRepo.database.Collection(collections.RequestName).DeleteMany(sessCtx, bson.M{"shelter_id": shelter.ID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+
+		// Delete from shelter favorite collection
+		_, errCallback = userRepo.database.Collection(collections.ShelterFavoriteName).DeleteMany(sessCtx, bson.M{"shelter_id": shelter.ID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+
+		// Delete from shelter collection
+		_, errCallback = userRepo.database.Collection(collections.ShelterCollectionName).DeleteMany(sessCtx, bson.M{"_id": shelter.ID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+		// Delete from user collection
+		_, errCallback = userRepo.database.Collection(collections.ShelterCollectionName).DeleteMany(sessCtx, bson.M{"_id": Id})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+		return nil, nil
+	}
+	// Run the transaction with the callback
+	_, err = session.WithTransaction(ctx, callback)
 	if err != nil {
 		return nil, err
 	}
