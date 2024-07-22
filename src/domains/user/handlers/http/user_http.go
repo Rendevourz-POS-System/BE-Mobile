@@ -223,22 +223,22 @@ func (userHttp *UserHttp) FindUserByIdForRequest(c *gin.Context, Id primitive.Ob
 
 func (userHttp *UserHttp) DeleteUserByAdmin(c *gin.Context) {
 	userId := helpers.ParseStringToObjectId(c.Param("id"))
-	data, err := userHttp.userUsecase.DeleteUserById(c, &userId)
+	_, err := userHttp.userUsecase.DeleteUserById(c, &userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, "User Has Been Deleted !")
 	return
 }
 
 func (userHttp *UserHttp) DeleteUserAccount(c *gin.Context) {
 	userId := helpers.GetUserId(c)
-	data, err := userHttp.userUsecase.DeleteUserById(c, &userId)
+	_, err := userHttp.userUsecase.DeleteUserById(c, &userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, "User Has Been Deleted !")
 	return
 }
