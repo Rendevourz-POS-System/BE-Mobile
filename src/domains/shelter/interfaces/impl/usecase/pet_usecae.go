@@ -67,6 +67,10 @@ func (u *petUseCase) CreatePets(ctx context.Context, pet *Pet.PetCreate) (res *P
 	if pet.Pet.ReadyToAdopt == nil {
 		pet.Pet.ReadyToAdopt = &flag
 	}
+	errCheckStorage := u.petRepo.CheckShelterCapacity(ctx, pet.Pet.ShelterId)
+	if errCheckStorage != nil {
+		return nil, []string{errCheckStorage.Error()}
+	}
 	pet.Pet.CreatedAt = helpers.GetCurrentTime(nil)
 	if res, err = u.petRepo.StorePets(ctx, &pet.Pet); err != nil {
 		return nil, err

@@ -373,3 +373,36 @@ func (r *petRepo) PutReadyForAdoptStatus(ctx context.Context, req *Pet.UpdateRea
 	}
 	return res, nil
 }
+
+func (r *petRepo) CheckShelterCapacity(ctx context.Context, Id *primitive.ObjectID) error {
+	var (
+		res           *Pet.Shelter
+		filter        bson.M
+		updateShelter bson.M
+	)
+	filter = bson.M{"_id": Id}
+	err := r.database.Collection(collections.ShelterCollectionName).FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errors.New("No Data Shelter Found !")
+		}
+		return err
+	}
+	if res.ShelterCapacity <= 0 {
+		return errors.New("Shelter Have No More Capacity !")
+	}
+	updateShelter = bson.M{
+		"$inc": bson.M{
+			"shelter_capacity": -1,
+			"total_pet":        +1,
+		},
+	}
+	errUpdateShelter := r.database.Collection(collections.ShelterCollectionName).FindOneAndUpdate(ctx, filter, updateShelter).Decode(&res)
+	if errUpdateShelter != nil {
+		if errUpdateShelter == mongo.ErrNoDocuments {
+			return errors.New("Shelter Not Found!")
+		}
+		return errors.New(errUpdateShelter.Error())
+	}
+	return nil
+}

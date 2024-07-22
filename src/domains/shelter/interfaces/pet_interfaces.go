@@ -15,6 +15,7 @@ type PetRepository interface {
 	DestroyPetByAdmin(ctx context.Context, Id *primitive.ObjectID) (*Pet.Pet, error)
 	DestroyPetByUser(ctx context.Context, Pets Pet.PetDeletePayload) ([]Pet.Pet, []string)
 	ValidateIfValidForUpdate(ctx context.Context, Id *primitive.ObjectID) (bool, error)
+	CheckShelterCapacity(ctx context.Context, Id *primitive.ObjectID) error
 }
 
 type PetUseCase interface {

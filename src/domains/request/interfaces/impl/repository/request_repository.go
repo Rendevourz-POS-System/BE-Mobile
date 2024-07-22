@@ -272,3 +272,18 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 	}
 	return res, nil
 }
+
+//func (r *requestRepo) CheckShelterCapacity(ctx context.Context, req *Request.Request) (ok bool, err error) {
+//	var res *Pet.Shelter
+//	err = r.collection.FindOne(ctx, bson.M{"_id": req.ShelterId}).Decode(&res)
+//	if err != nil {
+//		if err == mongo.ErrNoDocuments {
+//			return false, errors.New("No Data Shelter Found !")
+//		}
+//		return false, err
+//	}
+//	if res.ShelterCapacity <= 0 {
+//		return false, errors.New("Shelter Have No More Capacity !")
+//	}
+//	return true, nil
+//}

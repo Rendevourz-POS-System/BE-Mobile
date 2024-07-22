@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"main.go/src/configs/app"
 	_const "main.go/src/configs/const"
 	"main.go/src/configs/database"
@@ -95,7 +96,7 @@ func (h *PetHttp) CreatePet(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context) (*Pet.Pet, error) {
+func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context, shelterId *primitive.ObjectID) (*Pet.Pet, error) {
 	pet := &Pet.PetCreate{}
 	// Parse the multipart form with a maximum of 30 MB memory
 	if err := ctx.Request.ParseMultipartForm(30 << 20); err != nil { // 30 MB max memory
@@ -115,6 +116,9 @@ func (h *PetHttp) CreatePetForRescueAndSurenderPet(ctx *gin.Context) (*Pet.Pet, 
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Move Image ! ", Error: err.Error()})
 	}
 	// Create the pet data
+	if shelterId != nil {
+		pet.Pet.ShelterId = shelterId
+	}
 	data, errs := h.petUsecase.CreatePets(ctx, pet)
 	if errs != nil {
 		// Delete temporary files if pet creation fails

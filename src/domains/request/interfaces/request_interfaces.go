@@ -15,6 +15,7 @@ type RequestRepository interface {
 	FindOneRequestById(ctx context.Context, Id *primitive.ObjectID) (res *Request.Request, err error)
 	PutStatusRequestRescueOrSurrender(ctx context.Context, req *Request.UpdateRescueAndSurrenderRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string)
 	PutStatusRequestAdoption(ctx context.Context, req *Request.UpdateAdoptionRequestStatus) (res *Request.UpdateRescueAndSurrenderRequestStatusResponse, err []string)
+	//CheckShelterCapacity(ctx context.Context, req *Request.Request) (bool, error)
 }
 
 type RequestUsecase interface {

@@ -196,12 +196,14 @@ func RegexCaseInsensitivePattern(pattern interface{}) *bson.M {
 	}}
 }
 
-func FillRequestData(req *Pet.Pet, ctx *gin.Context) (res *Request.Request) {
+func FillRequestData(pet *Pet.Pet, request *Request.Request, ctx *gin.Context) (res *Request.Request) {
 	userId := GetUserId(ctx)
-	res = &Request.Request{
-		PetId: &req.ID,
-		//ShelterId: *req.ShelterId,
-		UserId: userId,
-	}
-	return res
+	//res = &Request.Request{
+	//	PetId: &pet.ID,
+	//	//ShelterId: *req.ShelterId,
+	//	UserId: userId,
+	//}
+	request.PetId = &pet.ID
+	request.UserId = userId
+	return request
 }

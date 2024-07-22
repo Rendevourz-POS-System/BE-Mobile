@@ -25,6 +25,7 @@ func (u *requestUsecase) CreateRequest(ctx context.Context, req *Request.Request
 		err = helpers.CustomError(errs)
 		return nil, err
 	}
+	req.Type = strings.ToLower(req.Type)
 	res, failedSendReq := u.requestRepo.StoreOneRequest(ctx, u.fillDefaultRequest(req))
 	if failedSendReq != nil {
 		err = append(err, failedSendReq.Error())

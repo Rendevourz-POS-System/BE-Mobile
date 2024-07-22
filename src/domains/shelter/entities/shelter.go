@@ -21,7 +21,7 @@ type Shelter struct {
 	Image                []string             `json:"ImagePath" bson:"image" validate:"omitempty"`
 	Pin                  string               `json:"Pin" bson:"pin" validate:"omitempty,required,min=6,max=8"`
 	ShelterVerified      bool                 `json:"ShelterVerified" bson:"shelter_verified" default:"false"`
-	OldImage             []string             `json:"OldImagePath,omitempty"`
+	OldImage             []string             `json:"OldImage,omitempty"`
 	CreatedAt            *time.Time           `json:"CreatedAt" bson:"CreatedAt,omitempty"`
 	UpdatedAt            *time.Time           `json:"UpdatedAt" bson:"UpdatedAt,omitempty"`
 	DeletedAt            *time.Time           `json:"DeletedAt,omitempty" bson:"DeletedAt,omitempty"`

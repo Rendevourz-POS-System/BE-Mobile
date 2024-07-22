@@ -120,12 +120,6 @@ func (RequestHttp *RequestHttp) CreateDonationRequest(ctx *gin.Context) {
 
 func (RequestHttp *RequestHttp) CreateRescueAndSurrender(ctx *gin.Context) {
 	request := &Request.CreateRescueAndSurrenderRequestPayload{}
-	pet, err := RequestHttp.petHttp.CreatePetForRescueAndSurenderPet(ctx)
-	if err != nil {
-		return
-	}
-	request.Pet = pet
-	request.Request = helpers.FillRequestData(pet, ctx)
 	form, _ := ctx.MultipartForm()
 	// Unmarshal the JSON data into the Pet struct
 	jsonData := form.Value["request"][0]
@@ -133,7 +127,13 @@ func (RequestHttp *RequestHttp) CreateRescueAndSurrender(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Bind JSON Request ! ", Error: errParse.Error()})
 		return
 	}
-	request.Request.UserId = helpers.GetUserId(ctx)
+	pet, err := RequestHttp.petHttp.CreatePetForRescueAndSurenderPet(ctx, &request.Request.ShelterId)
+	if err != nil {
+		return
+	}
+	request.Pet = pet
+	request.Request = helpers.FillRequestData(pet, request.Request, ctx)
+	//request.Request.UserId = helpers.GetUserId(ctx)
 	data, errCreateReq := RequestHttp.requestUsecase.CreateRequest(ctx, request.Request, nil)
 	if errCreateReq != nil {
 		ctx.JSON(http.StatusExpectationFailed, errors.ErrorWrapper{Message: "Failed to create request ! ", ErrorS: errCreateReq})

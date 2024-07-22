@@ -4,6 +4,7 @@
     <inspection_tool class="GoDfaErrorMayBeNotNil" enabled="true" level="WARNING" enabled_by_default="true">
       <functions>
         <function importPath="main.go/shared/helpers/image_helpers" name="MoveUploadedFile" />
+        <function importPath="main.go/src/shared/helpers/image_helpers" name="MoveUploadedFile" />
       </functions>
       <methods>
         <method importPath="go.mongodb.org/mongo-driver/mongo" receiver="*Collection" name="Find" />

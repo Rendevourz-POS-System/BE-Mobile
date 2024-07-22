@@ -205,7 +205,7 @@ func (shelterRepo *shelterRepository) FindOneDataByUserId(c context.Context, Id 
 			return nil, err
 		}
 	} else {
-		return nil, errors.New("User Does Not Have Shelter!")
+		return nil, errors.New("User Does Not Have Access To This Shelter!")
 	}
 	return res, nil
 }
