@@ -213,10 +213,13 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 		},
 	}
 	var (
-		request   *Request.Request
-		pet       *Pet.Pet
-		filterPet bson.M
-		updatePet bson.M
+		request        *Request.Request
+		pet            *Pet.Pet
+		shelter        *Pet.Shelter
+		filterPet      bson.M
+		updatePet      bson.M
+		updatedShelter bson.M
+		filterShelter  bson.M
 	)
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	errs := r.collection.FindOneAndUpdate(ctx, filterRequest, updateRequest, opts).Decode(&request)
@@ -234,6 +237,20 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 				"is_approved": true,
 			},
 		}
+		filterShelter = bson.M{"_id": request.ShelterId}
+		updatedShelter = bson.M{
+			"$inc": bson.M{
+				"shelter_capacity": -1,
+				"total_pet":        +1,
+			},
+		}
+		errUpdateShelter := r.database.Collection(collections.ShelterCollectionName).FindOneAndUpdate(ctx, filterShelter, updatedShelter, opts).Decode(&shelter)
+		if errUpdateShelter != nil {
+			if errUpdateShelter == mongo.ErrNoDocuments {
+				return nil, []string{"Shelter Not Found!"}
+			}
+			return nil, []string{errUpdateShelter.Error()}
+		}
 	} else if presistence.Status(request.Status) == presistence.Rejected {
 		filterPet = bson.M{"_id": request.PetId}
 		updatePet = bson.M{
@@ -245,7 +262,7 @@ func (r *requestRepo) PutStatusRequestAdoption(ctx context.Context, req *Request
 	errUpdatePet := r.database.Collection(collections.PetCollectionName).FindOneAndUpdate(ctx, filterPet, updatePet, opts).Decode(&pet)
 	if errUpdatePet != nil {
 		if errUpdatePet == mongo.ErrNoDocuments {
-			return nil, []string{"Request Not Found!"}
+			return nil, []string{"Pet Not Found!"}
 		}
 		return nil, []string{errUpdatePet.Error()}
 	}

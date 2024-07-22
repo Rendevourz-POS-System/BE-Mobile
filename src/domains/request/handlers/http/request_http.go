@@ -3,7 +3,9 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"main.go/src/domains/request/presistence"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"main.go/src/configs/app"
@@ -173,6 +175,10 @@ func (RequestHttp *RequestHttp) UpdateStatusAdoption(ctx *gin.Context) {
 	findRequest, errFindRequest := RequestHttp.requestUsecase.GetOneRequestById(ctx, &req.RequestId)
 	if errFindRequest != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Request Id Doesnt Valid ! ", ErrorS: []string{errFindRequest.Error()}})
+		return
+	}
+	if presistence.Type(strings.ToLower(findRequest.Type)) != presistence.Adoption {
+		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Request Id Doesnt Valid ! ", ErrorS: []string{"This Not Adoption Request !"}})
 		return
 	}
 	findUserData, errFindUserData := RequestHttp.shelterHandler.FindOneByUserIdForRequest(ctx)
