@@ -262,15 +262,36 @@ func (shelterRepo *shelterRepository) StoreData(c context.Context, shelter *Shel
 
 func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, shelter *Shelter.Shelter) (res *Shelter.Shelter, err error) {
 	filter := bson.D{{Key: "_id", Value: shelter.ID}}
-	update := bson.D{{Key: "$set", Value: shelter}}
+	shelterBson, err := bson.Marshal(shelter)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal back to a map to dynamically remove zero-value fields
+	var shelterMap bson.M
+	err = bson.Unmarshal(shelterBson, &shelterMap)
+	if err != nil {
+		return nil, err
+	}
+
+	// Remove the _id field from the map to avoid updating it
+	delete(shelterMap, "_id")
+
+	// Check if there are any fields to update
+	if len(shelterMap) == 0 {
+		return nil, errors.New("no fields to update")
+	}
+	update := bson.D{{Key: "$set", Value: shelterMap}}
 	// Perform the update operation
 	result, err := shelterRepo.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
+
 	if result.MatchedCount == 0 {
 		return nil, mongo.ErrNoDocuments
 	}
+
 	// Optionally, you can retrieve the updated document
 	err = shelterRepo.collection.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
