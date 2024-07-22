@@ -13,6 +13,7 @@ type ShelterRepository interface {
 	FindOneDataByUserId(c context.Context, search *primitive.ObjectID) (res *Shelter.ShelterResponsePayload, err error)
 	UpdateOneShelter(ctx context.Context, pet *Shelter.Shelter) (*Shelter.Shelter, error)
 	FindOneDataByIdForRequest(c context.Context, Id *primitive.ObjectID) (res *Shelter.Shelter, err error)
+	DestroyAllDataShelterByAdmin(ctx context.Context, searchId *primitive.ObjectID) error
 }
 
 type ShelterUsecase interface {
@@ -22,4 +23,5 @@ type ShelterUsecase interface {
 	GetOneDataByIdForRequest(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.Shelter, error)
 	GetOneDataByUserId(ctx context.Context, search *Shelter.ShelterSearch) (*Shelter.ShelterResponsePayload, error)
 	UpdateShelterById(ctx context.Context, Id *primitive.ObjectID, search *Shelter.Shelter) (*Shelter.Shelter, error)
+	DeleteAllDataShelterByAdmin(ctx context.Context, searchId *primitive.ObjectID) error
 }

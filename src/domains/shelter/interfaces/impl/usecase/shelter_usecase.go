@@ -11,6 +11,7 @@ import (
 	"main.go/src/shared/helpers"
 	"main.go/src/shared/helpers/image_helpers"
 	"os"
+	"time"
 )
 
 type shelterUsecase struct {
@@ -117,4 +118,13 @@ func (u *shelterUsecase) UpdateShelterById(ctx context.Context, Id *primitive.Ob
 		return nil, errs
 	}
 	return data, nil
+}
+
+func (u *shelterUsecase) DeleteAllDataShelterByAdmin(ctx context.Context, shelterId *primitive.ObjectID) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if err := u.shelterRepo.DestroyAllDataShelterByAdmin(ctx, shelterId); err != nil {
+		return err
+	}
+	return nil
 }

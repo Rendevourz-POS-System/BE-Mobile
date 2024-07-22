@@ -299,3 +299,53 @@ func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, shel
 	}
 	return res, nil
 }
+
+func (shelterRepo *shelterRepository) DestroyAllDataShelterByAdmin(ctx context.Context, shelterID *primitive.ObjectID) error {
+	// Start a session
+	session, err := shelterRepo.database.Client().StartSession()
+	if err != nil {
+		return err
+	}
+	defer session.EndSession(ctx)
+
+	// Define the callback function for the transaction
+	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
+		// Delete from request collection
+		_, errCallback := shelterRepo.database.Collection(collections.PetCollectionName).DeleteMany(sessCtx, bson.M{"shelter_id": shelterID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+
+		// Delete from pet collection
+		_, errCallback = shelterRepo.database.Collection(collections.RequestName).DeleteMany(sessCtx, bson.M{"shelter_id": shelterID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+
+		// Delete from shelter favorite collection
+		_, errCallback = shelterRepo.database.Collection(collections.ShelterFavoriteName).DeleteMany(sessCtx, bson.M{"shelter_id": shelterID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+
+		// Delete from shelter collection
+		_, errCallback = shelterRepo.database.Collection(collections.ShelterCollectionName).DeleteMany(sessCtx, bson.M{"_id": shelterID})
+		if errCallback != nil {
+			return nil, errCallback
+		}
+		//// Update user collection to set shelter_id to null
+		//update := bson.D{{"$set", bson.D{{"shelter_id", nil}}}}
+		//_, errCallback = shelterRepo.database.Collection(collections.UserCollectionName).UpdateMany(sessCtx, bson.M{"shelter_id": shelterID}, update)
+		//if errCallback != nil {
+		//	return nil, errCallback
+		//}
+		return nil, nil
+	}
+	// Run the transaction with the callback
+	_, err = session.WithTransaction(ctx, callback)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

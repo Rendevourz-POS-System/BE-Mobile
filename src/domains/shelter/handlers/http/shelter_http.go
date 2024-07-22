@@ -43,10 +43,10 @@ func NewShelterHttp(router *gin.Engine) *ShelterHttp {
 		user.GET("/favorite", handler.FindAllFavorite)
 		user.PUT("/update", handler.UpdateShelter)
 	}
-	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "user", "admin"))
+	admin := router.Group("/admin"+guest.BasePath(), middlewares.JwtAuthMiddleware(app.GetConfig().AccessToken.AccessTokenSecret, "admin"))
 	{
 		admin.PUT("/update/:id", handler.UpdateShelterByAdmin)
-		admin.Group("/delete/")
+		admin.DELETE("/delete/:id", handler.DeleteShelterByAdmin)
 	}
 	return handler
 }
@@ -246,4 +246,15 @@ func (shelterHttp *ShelterHttp) UpdateShelterByAdmin(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Shelter updated successfully ! ", Data: res})
+}
+
+func (shelterHttp *ShelterHttp) DeleteShelterByAdmin(c *gin.Context) {
+	Id := c.Param("id")
+	shelterId := helpers.ParseStringToObjectIdAddress(Id)
+	err := shelterHttp.shelterUsecase.DeleteAllDataShelterByAdmin(c, shelterId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed to Delete Shelter ! ", Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, errors.SuccessWrapper{Message: "Shelter deleted successfully ! "})
 }
