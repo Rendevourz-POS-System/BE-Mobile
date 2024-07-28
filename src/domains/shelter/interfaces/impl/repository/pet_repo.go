@@ -275,6 +275,7 @@ func (r *petRepo) StorePets(ctx context.Context, data *Pet.Pet) (res *Pet.Pet, e
 func (r *petRepo) UpdatePet(ctx context.Context, pet *Pet.Pet) (res *Pet.Pet, errs error) {
 	filter := bson.D{{Key: "_id", Value: pet.ID}}
 	// Marshal the struct to a BSON document
+	pet.OldImage = nil
 	petBson, err := bson.Marshal(pet)
 	if err != nil {
 		return nil, err

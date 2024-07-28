@@ -249,7 +249,7 @@ func (h *PetHttp) UpdatePet(ctx *gin.Context) {
 	if form.File != nil {
 		pet, _ = image_helpers.UploadPet(ctx, form, pet)
 	}
-	updatedPet, errUpdatePet := h.petUsecase.UpdatePet(ctx, &pet.Pet.ID, &pet.Pet)
+	updatedPet, errUpdatePet := h.petUsecase.UpdatePet(ctx, &pet.Pet.ID, pet.Pet)
 	if errUpdatePet != nil {
 		ctx.JSON(http.StatusBadRequest, errors.ErrorWrapper{Message: "Failed To Update Pet with Image Paths ! ", Error: errUpdatePet.Error()})
 		return

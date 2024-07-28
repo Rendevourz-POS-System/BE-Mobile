@@ -51,7 +51,7 @@ type (
 	// PetUpdate Payload
 	PetUpdatePayload struct {
 		Files *multipart.FileHeader `form:"Files" bson:"-" validate:"omitempty"`
-		Pet   Pet                   `form:"Pet" bson:"Pet" validate:"required"`
+		Pet   *Pet                  `form:"Pet" bson:"Pet" validate:"required"`
 	}
 	// PetCreate Payload
 	PetCreate struct {
