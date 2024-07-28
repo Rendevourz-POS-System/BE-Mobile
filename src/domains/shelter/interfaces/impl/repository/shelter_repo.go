@@ -262,6 +262,7 @@ func (shelterRepo *shelterRepository) StoreData(c context.Context, shelter *Shel
 
 func (shelterRepo *shelterRepository) UpdateOneShelter(ctx context.Context, shelter *Shelter.Shelter) (res *Shelter.Shelter, err error) {
 	filter := bson.D{{Key: "_id", Value: shelter.ID}}
+	shelter.OldImage = nil
 	shelterBson, err := bson.Marshal(shelter)
 	if err != nil {
 		return nil, err
