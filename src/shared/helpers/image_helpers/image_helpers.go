@@ -108,6 +108,7 @@ func UploadShelter(ctx *gin.Context, form *multipart.Form, shelterUpdate *Pet.Sh
 	files := form.File["files"]
 	if shelterUpdate.Shelter.OldImage != nil && len(shelterUpdate.Shelter.OldImage) > 0 {
 		// Move the uploaded files to their final location with the data.ID in the path
+		shelterUpdate.Shelter.Image = nil
 		for _, RealFileName := range shelterUpdate.Shelter.OldImage {
 			// Construct the final file path
 			OldFilePath := GenerateImagePath(app.GetConfig().Image.UserPath, app.GetConfig().Image.ShelterPath, shelterUpdate.Shelter.ID.Hex(), RealFileName)
@@ -174,6 +175,7 @@ func UploadPet(ctx *gin.Context, form *multipart.Form, petUpdate *Pet.PetUpdateP
 	files := form.File["files"]
 	if petUpdate.Pet.OldImage != nil && len(petUpdate.Pet.OldImage) > 0 {
 		// Move the uploaded files to their final location with the data.ID in the path
+		petUpdate.Pet.Image = nil
 		for _, RealFileName := range petUpdate.Pet.OldImage {
 			// Construct the final file path
 			var OldFilePath string
