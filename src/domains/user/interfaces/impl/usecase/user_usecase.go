@@ -288,7 +288,7 @@ func (u *userUsecase) ResendVerificationRequest(ctx context.Context, req *User.R
 		err := helpers.CustomError(err)
 		return nil, err
 	}
-	findUser, err := u.userRepo.FindUserById(ctx, req.UserId.Hex())
+	findUser, err := u.userRepo.FindByEmail(ctx, req.Email)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			errs = append(errs, errors.New("user Not Valid ! ").Error())
